@@ -6,6 +6,16 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		2B7661E42F39849600BB24F2 /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 2B7661E32F39849600BB24F2 /* Auth */; };
+		2B7661E62F39849600BB24F2 /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = 2B7661E52F39849600BB24F2 /* Functions */; };
+		2B7661E82F39849600BB24F2 /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = 2B7661E72F39849600BB24F2 /* PostgREST */; };
+		2B7661EA2F39849600BB24F2 /* Realtime in Frameworks */ = {isa = PBXBuildFile; productRef = 2B7661E92F39849600BB24F2 /* Realtime */; };
+		2B7661EC2F39849600BB24F2 /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 2B7661EB2F39849600BB24F2 /* Storage */; };
+		2B7661EE2F39849600BB24F2 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 2B7661ED2F39849600BB24F2 /* Supabase */; };
+		2BBC787A2F827AC800BA6032 /* RentManagerShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 2BBC78702F827AC800BA6032 /* RentManagerShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		2B4024F52F1F677500B4D3FC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -21,17 +31,59 @@
 			remoteGlobalIDString = 2B4024E62F1F677300B4D3FC;
 			remoteInfo = RentManager;
 		};
+		2BBC78782F827AC800BA6032 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2B4024DF2F1F677300B4D3FC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2BBC786F2F827AC800BA6032;
+			remoteInfo = RentManagerShareExtension;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2BBC787B2F827AC800BA6032 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				2BBC787A2F827AC800BA6032 /* RentManagerShareExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		2B4024E72F1F677300B4D3FC /* RentManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RentManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B4024F42F1F677500B4D3FC /* RentManagerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RentManagerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B4024FE2F1F677500B4D3FC /* RentManagerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RentManagerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2BBC78702F827AC800BA6032 /* RentManagerShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RentManagerShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2BBC787E2F827AC800BA6032 /* Exceptions for "RentManagerShareExtension" folder in "RentManagerShareExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 2BBC786F2F827AC800BA6032 /* RentManagerShareExtension */;
+		};
+		2BBC79A92F82DC0100BA6032 /* Exceptions for "RentManager" folder in "RentManager" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 2B4024E62F1F677300B4D3FC /* RentManager */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		2B4024E92F1F677300B4D3FC /* RentManager */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2BBC79A92F82DC0100BA6032 /* Exceptions for "RentManager" folder in "RentManager" target */,
+			);
 			path = RentManager;
 			sourceTree = "<group>";
 		};
@@ -45,6 +97,14 @@
 			path = RentManagerUITests;
 			sourceTree = "<group>";
 		};
+		2BBC78712F827AC800BA6032 /* RentManagerShareExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2BBC787E2F827AC800BA6032 /* Exceptions for "RentManagerShareExtension" folder in "RentManagerShareExtension" target */,
+			);
+			path = RentManagerShareExtension;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +112,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2B7661E82F39849600BB24F2 /* PostgREST in Frameworks */,
+				2B7661E62F39849600BB24F2 /* Functions in Frameworks */,
+				2B7661EE2F39849600BB24F2 /* Supabase in Frameworks */,
+				2B7661E42F39849600BB24F2 /* Auth in Frameworks */,
+				2B7661EC2F39849600BB24F2 /* Storage in Frameworks */,
+				2B7661EA2F39849600BB24F2 /* Realtime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -69,6 +135,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2BBC786D2F827AC800BA6032 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -78,6 +151,8 @@
 				2B4024E92F1F677300B4D3FC /* RentManager */,
 				2B4024F72F1F677500B4D3FC /* RentManagerTests */,
 				2B4025012F1F677500B4D3FC /* RentManagerUITests */,
+				2BBC78712F827AC800BA6032 /* RentManagerShareExtension */,
+				2B7661E22F39848C00BB24F2 /* Frameworks */,
 				2B4024E82F1F677300B4D3FC /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,8 +163,16 @@
 				2B4024E72F1F677300B4D3FC /* RentManager.app */,
 				2B4024F42F1F677500B4D3FC /* RentManagerTests.xctest */,
 				2B4024FE2F1F677500B4D3FC /* RentManagerUITests.xctest */,
+				2BBC78702F827AC800BA6032 /* RentManagerShareExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		2B7661E22F39848C00BB24F2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -102,16 +185,24 @@
 				2B4024E32F1F677300B4D3FC /* Sources */,
 				2B4024E42F1F677300B4D3FC /* Frameworks */,
 				2B4024E52F1F677300B4D3FC /* Resources */,
+				2BBC787B2F827AC800BA6032 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				2BBC78792F827AC800BA6032 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				2B4024E92F1F677300B4D3FC /* RentManager */,
 			);
 			name = RentManager;
 			packageProductDependencies = (
+				2B7661E32F39849600BB24F2 /* Auth */,
+				2B7661E52F39849600BB24F2 /* Functions */,
+				2B7661E72F39849600BB24F2 /* PostgREST */,
+				2B7661E92F39849600BB24F2 /* Realtime */,
+				2B7661EB2F39849600BB24F2 /* Storage */,
+				2B7661ED2F39849600BB24F2 /* Supabase */,
 			);
 			productName = RentManager;
 			productReference = 2B4024E72F1F677300B4D3FC /* RentManager.app */;
@@ -163,6 +254,28 @@
 			productReference = 2B4024FE2F1F677500B4D3FC /* RentManagerUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		2BBC786F2F827AC800BA6032 /* RentManagerShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2BBC787F2F827AC800BA6032 /* Build configuration list for PBXNativeTarget "RentManagerShareExtension" */;
+			buildPhases = (
+				2BBC786C2F827AC800BA6032 /* Sources */,
+				2BBC786D2F827AC800BA6032 /* Frameworks */,
+				2BBC786E2F827AC800BA6032 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				2BBC78712F827AC800BA6032 /* RentManagerShareExtension */,
+			);
+			name = RentManagerShareExtension;
+			packageProductDependencies = (
+			);
+			productName = RentManagerShareExtension;
+			productReference = 2BBC78702F827AC800BA6032 /* RentManagerShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -184,6 +297,9 @@
 						CreatedOnToolsVersion = 26.0.1;
 						TestTargetID = 2B4024E62F1F677300B4D3FC;
 					};
+					2BBC786F2F827AC800BA6032 = {
+						CreatedOnToolsVersion = 26.0.1;
+					};
 				};
 			};
 			buildConfigurationList = 2B4024E22F1F677300B4D3FC /* Build configuration list for PBXProject "RentManager" */;
@@ -195,6 +311,9 @@
 			);
 			mainGroup = 2B4024DE2F1F677300B4D3FC;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				2B7661DB2F39840700BB24F2 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2B4024E82F1F677300B4D3FC /* Products */;
 			projectDirPath = "";
@@ -203,6 +322,7 @@
 				2B4024E62F1F677300B4D3FC /* RentManager */,
 				2B4024F32F1F677500B4D3FC /* RentManagerTests */,
 				2B4024FD2F1F677500B4D3FC /* RentManagerUITests */,
+				2BBC786F2F827AC800BA6032 /* RentManagerShareExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -223,6 +343,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		2B4024FC2F1F677500B4D3FC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2BBC786E2F827AC800BA6032 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -253,6 +380,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2BBC786C2F827AC800BA6032 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -265,6 +399,11 @@
 			isa = PBXTargetDependency;
 			target = 2B4024E62F1F677300B4D3FC /* RentManager */;
 			targetProxy = 2B4024FF2F1F677500B4D3FC /* PBXContainerItemProxy */;
+		};
+		2BBC78792F827AC800BA6032 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2BBC786F2F827AC800BA6032 /* RentManagerShareExtension */;
+			targetProxy = 2BBC78782F827AC800BA6032 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -395,11 +534,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = RentManager/RentManager.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = R6CU6N8W65;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RentManager/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -427,11 +568,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = RentManager/RentManager.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = R6CU6N8W65;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RentManager/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -538,6 +681,64 @@
 			};
 			name = Release;
 		};
+		2BBC787C2F827AC800BA6032 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = RentManagerShareExtension/RentManagerShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = R6CU6N8W65;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RentManagerShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = RentManagerShareExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = edwardsuwandi.RentManager.RentManagerShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2BBC787D2F827AC800BA6032 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = RentManagerShareExtension/RentManagerShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = R6CU6N8W65;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RentManagerShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = RentManagerShareExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = edwardsuwandi.RentManager.RentManagerShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -577,7 +778,60 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		2BBC787F2F827AC800BA6032 /* Build configuration list for PBXNativeTarget "RentManagerShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2BBC787C2F827AC800BA6032 /* Debug */,
+				2BBC787D2F827AC800BA6032 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2B7661DB2F39840700BB24F2 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2B7661E32F39849600BB24F2 /* Auth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2B7661DB2F39840700BB24F2 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
+		};
+		2B7661E52F39849600BB24F2 /* Functions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2B7661DB2F39840700BB24F2 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Functions;
+		};
+		2B7661E72F39849600BB24F2 /* PostgREST */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2B7661DB2F39840700BB24F2 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = PostgREST;
+		};
+		2B7661E92F39849600BB24F2 /* Realtime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2B7661DB2F39840700BB24F2 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Realtime;
+		};
+		2B7661EB2F39849600BB24F2 /* Storage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2B7661DB2F39840700BB24F2 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Storage;
+		};
+		2B7661ED2F39849600BB24F2 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2B7661DB2F39840700BB24F2 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2B4024DF2F1F677300B4D3FC /* Project object */;
 }
