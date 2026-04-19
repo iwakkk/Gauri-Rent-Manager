@@ -7,74 +7,80 @@
 
 import SwiftUI
 
+import SwiftUI
+
 struct InvoiceView: View {
     
-    var draft: BookingDraft
-    @Binding var showOrderSheet : Bool
-    @Binding var bookingId: UUID?
-    @State private var pdfURL: URL?
-    @State private var viewModel = InvoiceViewModel()
-    @State private var allOrdersViewModel = AllOrdersViewModel()
-    @State private var isSaving = false
+    var bookingId: UUID
+    @Binding var showOrderSheet: Bool
+    
+    @State private var booking: Bookings?
+    @State private var isLoading = true
+    
+    private let service = BookingsService()
     
     var body: some View {
         
         VStack {
             
-            if let pdfURL {
-                PDFKitView(url: pdfURL)
+            if isLoading {
+                ProgressView("Loading Invoice...")
+            }
+            else if let urlString = booking?.invoiceURL,
+                    let url = URL(string: urlString) {
+                
+                PDFKitView(url: url)
+                
             } else {
-                ProgressView("Generating Invoice...")
+                Text("No Invoice Found")
+                    .foregroundColor(.secondary)
             }
-            Button {
-                Task {
-                    isSaving = true
-                    
-                    do {
-                        let bookingId = try await viewModel.saveBooking(
-                            draft: draft,
-                            pdfURL: pdfURL
-                        )
-                        
-                        await allOrdersViewModel.loadOrders()
-                        showOrderSheet = false
-                        
-                        print("✅ Saved:", bookingId)
-                        
-                    } catch {
-                        print("❌ Failed:", error)
-                    }
-                    
-                    isSaving = false
-                }
-            } label: {
-                if isSaving {
-                    ProgressView()
-                } else {
-                    Text("Selesai")
-                }
+            
+            Button("Done") {
+                showOrderSheet = false
             }
-            .disabled(isSaving)
             .buttonStyle(.borderedProminent)
             .padding()
         }
         .navigationTitle("Invoice")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             
             ToolbarItem(placement: .topBarTrailing) {
-                
-                if let pdfURL {
-                    ShareLink(item: pdfURL) {
+                if let urlString = booking?.invoiceURL,
+                   let url = URL(string: urlString) {
+                    
+                    ShareLink(item: url) {
                         Image(systemName: "square.and.arrow.up")
                     }
                 }
             }
+            
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Done") {
+                    showOrderSheet = false
+                }
+            }
         }
         .task {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                let invoiceView = InvoiceContentView(draft: draft, bookingId: $bookingId)
-                pdfURL = PDFGenerator.generate(from: invoiceView)
-            }
+            await loadBooking()
+        }
+    }
+    
+    // MARK: - Load single booking
+    func loadBooking() async {
+        isLoading = true
+        defer { isLoading = false }
+        
+        do {
+            let bookings = try await service.fetchBookings()
+            
+            self.booking = bookings.first(where: {
+                $0.id == bookingId
+            })
+            
+        } catch {
+            print("❌ error loading booking:", error)
         }
     }
 }

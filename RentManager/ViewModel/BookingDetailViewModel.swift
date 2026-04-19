@@ -15,12 +15,33 @@ class BookingDetailViewModel {
     private let customerService = CustomerService()
     private let bookingService = BookingsService()
     
-    func createBooking(_ draft: BookingDraft) async throws -> UUID {
-        try await bookingService.createBooking(draft)
+    func createBooking(_ draft: BookingDraft, pdfURL: URL) async throws -> UUID {
+        let bookingId = try await bookingService.createBooking(draft)
+        
+        try await uploadInvoice(fileURL: pdfURL, bookingId: bookingId)
+        return bookingId
     }
 
-    func updateBooking(_ id: UUID, _ draft: BookingDraft) async throws {
+    func updateBooking(_ id: UUID, _ draft: BookingDraft, pdfURL: URL) async throws {
         try await bookingService.updateBooking(id: id, draft: draft)
+        
+        try await uploadInvoice(fileURL: pdfURL, bookingId: id)
+    }
+    
+    func uploadInvoice(fileURL: URL, bookingId: UUID) async throws {
+        _ = try await bookingService.uploadInvoice(
+            fileURL: fileURL,
+            bookingId: bookingId
+        )
+    }
+    
+    func updateInvoiceURL(bookingId: UUID, url: String) async throws {
+        
+        try await supabase
+            .from("bookings")
+            .update(["invoice_url": url])
+            .eq("id", value: bookingId)
+            .execute()
     }
     
     func loadCustomers() async {

@@ -1,0 +1,40 @@
+//
+//  OrderSectionView.swift
+//  RentManager
+//
+//  Created by Edward Suwandi on 19/04/26.
+//
+
+import SwiftUI
+
+struct OrderSectionView: View {
+    
+    @Binding var draft: BookingDraft
+    var allProducts: [Products]
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            
+            Text("Order Details")
+                .font(.title3)
+                .fontWeight(.bold)
+            
+            ForEach(draft.items.indices, id: \.self) { index in
+                OrderItemView(
+                    item: $draft.items[index],
+                    allProducts: allProducts,
+                    onDelete: {
+                        draft.items.remove(at: index)
+                    },
+                    canDelete: draft.items.count > 1
+                )
+            }
+            
+            Button {
+                draft.items.append(BookingItemDraft())
+            } label: {
+                Label("Add Product", systemImage: "plus.circle.fill")
+            }
+        }
+    }
+}
