@@ -98,7 +98,7 @@ struct BookingsService {
             .upload(
                 path: fileName,
                 file: data,
-                options: FileOptions(contentType: "application/pdf")
+                options: FileOptions(contentType: "application/pdf", upsert: true)
             )
 
         let url = try supabase.storage
@@ -119,7 +119,7 @@ struct BookingsService {
         return urlString
     }
     
-    // MARK: - FETCH BOOKINGS
+    // MARK: - FETCH ALL BOOKINGS
     func fetchBookings() async throws -> [Bookings] {
 
         return try await supabase
@@ -128,6 +128,20 @@ struct BookingsService {
             .order("created_at", ascending: false)
             .execute()
             .value
+    }
+    
+    // MARK: FETCH SINGLE BOOKING
+    func fetchBooking(by id: UUID) async throws -> Bookings {
+        
+        let response: Bookings = try await supabase
+            .from("bookings")
+            .select()
+            .eq("id", value: id.uuidString)
+            .single()
+            .execute()
+            .value
+        
+        return response
     }
     
     

@@ -11,6 +11,7 @@ struct BookingDetailView: View {
     
     @State var draft: BookingDraft
     var allProducts: [Products]
+    
     @Binding var bookingId: UUID?
     @Binding var showOrderSheet: Bool
     
@@ -70,6 +71,7 @@ struct BookingDetailView: View {
                     do {
                         if let id = bookingId {
                             try await viewModel.updateBooking(id, draft, pdfURL: pdfURL!)
+                            
                         } else {
                             let newId = try await viewModel.createBooking(draft, pdfURL: pdfURL!)
                             bookingId = newId
@@ -93,7 +95,7 @@ struct BookingDetailView: View {
                 InvoiceView(bookingId: id, showOrderSheet: $showOrderSheet)
             }
             else {
-                Text("BOOKING ID TIDAK DITEMUKAN")
+                Text("Booking ID not found")
             }
         }
         .task {

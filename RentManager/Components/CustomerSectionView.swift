@@ -19,30 +19,25 @@ struct CustomerSectionView: View {
                 .font(.title3)
                 .fontWeight(.bold)
             
-            Picker("Select Customer", selection: Binding(
-                get: {
-                    customers.first {
-                        $0.name == draft.customerName &&
-                        $0.phone == draft.customerPhone &&
-                        $0.bankAccount == draft.customerBankAccount
-                    }
-                },
-                set: { newValue in
-                    if let c = newValue {
-                        draft.customerName = c.name
-                        draft.customerPhone = c.phone
-                        draft.customerBankAccount = c.bankAccount
-                    }
-                }
-            )) {
-                Text("Select Customer").tag(Customers?.none)
-                
+            Picker("Select Customer", selection: $draft.customerId) {
+
+                Text("Select Customer")
+                    .tag(UUID?.none)
+
                 ForEach(customers, id: \.id) { customer in
                     Text(customer.name)
-                        .tag(Optional(customer))
+                        .tag(Optional(customer.id))
                 }
             }
-            .pickerStyle(.menu)
+            .onChange(of: draft.customerId) {
+                
+                guard let id = draft.customerId,
+                      let c = customers.first(where: { $0.id == id }) else { return }
+                
+                draft.customerName = c.name
+                draft.customerPhone = c.phone
+                draft.customerBankAccount = c.bankAccount
+            }
             
             VStack(spacing: 14) {
                 FormFieldRow(title: "Customer Name", text: $draft.customerName)

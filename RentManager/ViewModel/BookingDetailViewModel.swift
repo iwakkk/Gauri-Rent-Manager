@@ -12,6 +12,7 @@ import Supabase
 class BookingDetailViewModel {
     
     var customers: [Customers] = []
+    
     private let customerService = CustomerService()
     private let bookingService = BookingsService()
     
@@ -75,6 +76,7 @@ class BookingDetailViewModel {
         
         return true
     }
+    
     
     
     

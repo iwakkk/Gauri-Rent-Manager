@@ -16,8 +16,34 @@ struct ProductsService {
             .select()
             .execute()
             .value
-            
+        
         return products
+    }
+    
+    // MARK: - INSERT PRODUCT
+    func insertProduct(_ product: Products) async throws {
+        try await supabase
+            .from("products")
+            .insert(product)
+            .execute()
+    }
+    
+    // MARK: - UPDATE PRODUCT
+    func updateProduct(_ product: Products) async throws {
+        try await supabase
+            .from("products")
+            .update(product)
+            .eq("id", value: product.id)
+            .execute()
+    }
+    
+    // MARK: - DELETE PRODUCT
+    func deleteProduct(id: UUID) async throws {
+        try await supabase
+            .from("products")
+            .delete()
+            .eq("id", value: id)
+            .execute()
     }
 }
     

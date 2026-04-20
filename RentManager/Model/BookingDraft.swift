@@ -9,6 +9,8 @@ import Foundation
 
 struct BookingDraft {
     
+    var customerId: UUID?
+    
     var customerName: String = ""
     var customerPhone: String = ""
     var customerAddress: String = ""

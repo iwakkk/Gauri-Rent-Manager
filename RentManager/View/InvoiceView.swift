@@ -11,22 +11,19 @@ import SwiftUI
 
 struct InvoiceView: View {
     
-    var bookingId: UUID
+    let bookingId: UUID
     @Binding var showOrderSheet: Bool
     
-    @State private var booking: Bookings?
-    @State private var isLoading = true
-    
-    private let service = BookingsService()
+    @State private var viewModel = InvoiceViewModel()
     
     var body: some View {
         
         VStack {
             
-            if isLoading {
+            if viewModel.isLoading {
                 ProgressView("Loading Invoice...")
             }
-            else if let urlString = booking?.invoiceURL,
+            else if let urlString = viewModel.booking?.invoiceURL,
                     let url = URL(string: urlString) {
                 
                 PDFKitView(url: url)
@@ -47,7 +44,7 @@ struct InvoiceView: View {
         .toolbar {
             
             ToolbarItem(placement: .topBarTrailing) {
-                if let urlString = booking?.invoiceURL,
+                if let urlString = viewModel.booking?.invoiceURL,
                    let url = URL(string: urlString) {
                     
                     ShareLink(item: url) {
@@ -63,24 +60,9 @@ struct InvoiceView: View {
             }
         }
         .task {
-            await loadBooking()
+            await viewModel.loadBooking(currentId: bookingId)
         }
     }
     
-    // MARK: - Load single booking
-    func loadBooking() async {
-        isLoading = true
-        defer { isLoading = false }
-        
-        do {
-            let bookings = try await service.fetchBookings()
-            
-            self.booking = bookings.first(where: {
-                $0.id == bookingId
-            })
-            
-        } catch {
-            print("❌ error loading booking:", error)
-        }
-    }
+    
 }
