@@ -7,6 +7,7 @@
 
 import Foundation
 import Supabase
+import UIKit
 
 struct ProductsService {
     
@@ -44,6 +45,34 @@ struct ProductsService {
             .delete()
             .eq("id", value: id)
             .execute()
+    }
+
+    
+    func uploadImage(_ data: Data) async throws -> String {
+        
+        guard let image = UIImage(data: data),
+              let compressed = image.jpegData(compressionQuality: 0.3) else {
+            throw URLError(.badURL)
+        }
+        
+        let fileName = "\(UUID().uuidString).jpg"
+        
+        try await supabase.storage
+            .from("product-images")
+            .upload(
+                path: fileName,
+                file: compressed,
+                options: FileOptions(
+                    contentType: "image/jpeg",
+                    upsert: true
+                )
+            )
+        
+        let publicURL = try supabase.storage
+            .from("product-images")
+            .getPublicURL(path: fileName)
+        
+        return publicURL.absoluteString
     }
 }
     

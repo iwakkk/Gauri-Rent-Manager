@@ -19,14 +19,23 @@ struct OrderItemsTableView: View {
 
                 Text("Product")
                     .fontWeight(.bold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
-                Spacer()
+                Text("Color")
+                    .fontWeight(.bold)
+                    .frame(maxWidth: .infinity)
+
+                Text("Size")
+                    .fontWeight(.bold)
+                    .frame(maxWidth: .infinity)
 
                 Text("Qty")
                     .fontWeight(.bold)
+                    .frame(maxWidth: .infinity)
 
                 Text("Subtotal")
                     .fontWeight(.bold)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
             }
 
             Divider()
@@ -36,12 +45,19 @@ struct OrderItemsTableView: View {
                 HStack {
 
                     Text(item.name)
+                        .frame(maxWidth: .infinity, alignment: .leading)
 
-                    Spacer()
+                    Text("\(item.color)")
+                        .frame(maxWidth: .infinity)
+
+                    Text("\(item.size)")
+                        .frame(maxWidth: .infinity)
 
                     Text("\(item.quantity)")
+                        .frame(maxWidth: .infinity)
 
                     Text("Rp \(Int(item.subtotal))")
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                 }
 
                 Divider()

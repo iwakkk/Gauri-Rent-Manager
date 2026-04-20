@@ -8,13 +8,13 @@
 import Foundation
 import Supabase
 
-struct Products: Codable, Hashable {
+struct Products: Codable, Hashable, Identifiable {
     let id: UUID
     let name: String
     let color: String
-    let size: String
+    let size: [String]
     let price: Double
-    let stock: Int
+    let isRented: Bool
     let imageUrl: String?
     
     enum CodingKeys: String, CodingKey {
@@ -23,7 +23,7 @@ struct Products: Codable, Hashable {
         case color
         case size
         case price
-        case stock
+        case isRented = "is_rented"
         case imageUrl = "image_url"
     }
 }

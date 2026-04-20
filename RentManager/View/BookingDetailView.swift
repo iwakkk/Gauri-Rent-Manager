@@ -61,24 +61,28 @@ struct BookingDetailView: View {
             Button("Next to Invoice") {
                 
                 Task {
-                    let invoiceView = InvoiceContentView(
-                        draft: draft,
-                        bookingId: $bookingId
-                    )
-
-                    let pdfURL = PDFGenerator.generate(from: invoiceView)
-
                     do {
                         if let id = bookingId {
-                            try await viewModel.updateBooking(id, draft, pdfURL: pdfURL!)
+                            try await viewModel.updateBooking(id, draft)
                             
                         } else {
-                            let newId = try await viewModel.createBooking(draft, pdfURL: pdfURL!)
+                            let newId = try await viewModel.createBooking(draft)
                             bookingId = newId
                         }
-
+                        
+                        
+                        let id = bookingId!
+                        let invoiceView = InvoiceContentView(
+                            draft: draft,
+                            bookingId: .constant(id)
+                        )
+                        
+                        let pdfURL = PDFGenerator.generate(from: invoiceView)
+                        
+                        try await viewModel.uploadInvoice(fileURL: pdfURL!, bookingId: id)
+                        
                         goToInvoicePage = true
-
+                        
                     } catch {
                         print("❌ error:", error)
                     }

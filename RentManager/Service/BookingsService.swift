@@ -9,12 +9,14 @@ import Foundation
 import Supabase
 
 struct BookingUpdate: Encodable {
-    let rent_start_date: String
-    let rent_end_date: String
+    let rent_start_date: Date
+    let rent_end_date: Date
     let subtotal_amount: Double
     let shipping_fee: Double
     let deposit_amount: Double
     let total_amount: Double
+    let invoice_url: String
+    let customer_id: UUID
     let address: String
 }
 
@@ -51,7 +53,8 @@ struct BookingsService {
                 bookingId: bookingId,
                 productId: $0.selectedProduct?.id ?? UUID(),
                 quantity: $0.quantity,
-                subtotal: $0.subtotal
+                subtotal: $0.subtotal,
+                size: $0.size
             )
         }
 
@@ -67,15 +70,20 @@ struct BookingsService {
     // MARK: update booking with the same booking id
     func updateBooking(id: UUID, draft: BookingDraft) async throws {
 
-        let formatter = ISO8601DateFormatter()
 
+        // 1. FIND / UPDATE CUSTOMER (SAMA SEPERTI CREATE)
+        let customerId = try await findCustomer(draft: draft)
+
+        // 2. UPDATE BOOKING HEADER (LENGKAP seperti create)
         let data = BookingUpdate(
-            rent_start_date: formatter.string(from: draft.rentStartDate),
-            rent_end_date: formatter.string(from: draft.rentEndDate),
+            rent_start_date: draft.rentStartDate,
+            rent_end_date: draft.rentEndDate,
             subtotal_amount: draft.subtotalAmount,
             shipping_fee: draft.shippingFee,
             deposit_amount: draft.deposit,
             total_amount: draft.totalAmount,
+            invoice_url: "",
+            customer_id: customerId,
             address: draft.customerAddress
         )
 
@@ -83,6 +91,29 @@ struct BookingsService {
             .from("bookings")
             .update(data)
             .eq("id", value: id)
+            .execute()
+
+        // 3. REPLACE ITEMS (clean & consistent)
+        try await supabase
+            .from("booking_items")
+            .delete()
+            .eq("booking_id", value: id)
+            .execute()
+
+        let items = draft.items.map {
+            BookingItems(
+                id: UUID(),
+                bookingId: id,
+                productId: $0.selectedProduct?.id ?? UUID(),
+                quantity: $0.quantity,
+                subtotal: $0.subtotal,
+                size: $0.size
+            )
+        }
+
+        try await supabase
+            .from("booking_items")
+            .insert(items)
             .execute()
     }
 
@@ -159,8 +190,8 @@ struct BookingsService {
                     color,
                     size,
                     price,
-                    image_url,
-                    stock
+                    is_rented,
+                    image_url
                 )
             """)
             .eq("booking_id", value: bookingId)

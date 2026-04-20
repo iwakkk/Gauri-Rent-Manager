@@ -16,17 +16,15 @@ class BookingDetailViewModel {
     private let customerService = CustomerService()
     private let bookingService = BookingsService()
     
-    func createBooking(_ draft: BookingDraft, pdfURL: URL) async throws -> UUID {
+    func createBooking(_ draft: BookingDraft) async throws -> UUID {
         let bookingId = try await bookingService.createBooking(draft)
         
-        try await uploadInvoice(fileURL: pdfURL, bookingId: bookingId)
         return bookingId
     }
 
-    func updateBooking(_ id: UUID, _ draft: BookingDraft, pdfURL: URL) async throws {
+    func updateBooking(_ id: UUID, _ draft: BookingDraft) async throws {
         try await bookingService.updateBooking(id: id, draft: draft)
         
-        try await uploadInvoice(fileURL: pdfURL, bookingId: id)
     }
     
     func uploadInvoice(fileURL: URL, bookingId: UUID) async throws {

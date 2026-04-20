@@ -86,7 +86,6 @@ struct NewBookingView: View {
         
         print("✅ TEXT FOUND:", text)
         
-        // 🔥 update UI di main thread
         DispatchQueue.main.async {
             bookingFormText = text
         }
@@ -99,8 +98,6 @@ struct NewBookingView: View {
                 viewModel.parsedDraft = parsed
             }
         }
-        
-        // 🔥 clear setelah dipakai
         defaults?.removeObject(forKey: "sharedText")
     }
 }

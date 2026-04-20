@@ -11,6 +11,8 @@ import SwiftUI
 struct DisplayOrderItem: Identifiable {
     let id = UUID()
     let name: String
+    let color: String
+    let size: String
     let quantity: Int
     let subtotal: Double
 }
@@ -62,6 +64,8 @@ struct InvoiceContentView: View {
                 items: draft.items.map {
                     DisplayOrderItem(
                         name: $0.productName,
+                        color: $0.color,
+                        size: $0.size,
                         quantity: $0.quantity,
                         subtotal: $0.subtotal
                     )

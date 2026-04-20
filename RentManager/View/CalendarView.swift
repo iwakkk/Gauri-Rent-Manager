@@ -17,7 +17,7 @@ struct CalendarView: View {
     var body: some View {
         VStack {
             
-            Title(title: "Orders",
+            Title(title: "Calendar",
                   buttonAction: nil,
                   buttonIcon: ""
             )

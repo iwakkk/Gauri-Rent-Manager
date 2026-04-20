@@ -15,6 +15,8 @@ struct OrderItemView: View {
     var canDelete: Bool
     
     var body: some View {
+        
+        
         VStack(spacing: 14) {
             
             HStack {
@@ -45,7 +47,7 @@ struct OrderItemView: View {
                 if let product = newValue {
                     item.productName = product.name
                     item.color = product.color
-                    item.size = product.size
+                    item.size = ""
                     item.price = product.price
                 }
             }
@@ -63,7 +65,7 @@ struct OrderItemView: View {
             )
             
             FormFieldRow(title: "Color", text: $item.color)
-            FormFieldRow(title: "Size", text: $item.size)
+            
             
             FormFieldRow(
                 title: "Price",
@@ -73,6 +75,38 @@ struct OrderItemView: View {
                 ),
                 keyboard: .numberPad
             )
+            
+            Text("Size")
+                .fontWeight(.semibold)
+            
+            if let product = item.selectedProduct {
+                
+                
+                
+                HStack(spacing: 12) {
+                    
+                    let sizes = product.size ?? []
+                    
+                    ForEach(sizes, id: \.self) { size in
+                        Button {
+                            item.size = size
+                        } label: {
+                            HStack(spacing: 6) {
+                                
+                                Text(size)
+                                    .foregroundColor(.primary)
+                                
+                                Image(systemName: item.size == size
+                                      ? "largecircle.fill.circle"
+                                      : "circle")
+                                    .foregroundColor(.blue)
+                            }
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                        }
+                    }
+                }
+            }
             
             HStack {
                 Spacer()

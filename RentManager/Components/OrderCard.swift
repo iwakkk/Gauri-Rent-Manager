@@ -112,9 +112,9 @@ struct OrderCard: View {
         id: UUID(),
         name: "Kimono Sakura",
         color: "Pink",
-        size: "M",
+        size: ["M"],
         price: 250000,
-        stock: 5,
+        isRented: false,
         imageUrl: ""
     )
 
@@ -125,6 +125,7 @@ struct OrderCard: View {
             productId: UUID(),
             quantity: 1,
             subtotal: 250000,
+            size: "M",
             products: dummyProduct
         ),
         BookingItems(
@@ -133,6 +134,7 @@ struct OrderCard: View {
             productId: UUID(),
             quantity: 1,
             subtotal: 250000,
+            size: "L",
             products: dummyProduct
         )
     ]

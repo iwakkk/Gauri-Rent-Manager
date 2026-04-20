@@ -13,6 +13,7 @@ struct BookingItems: Codable, Identifiable{
     let productId: UUID
     let quantity: Int
     let subtotal: Double
+    let size: String
     
     var products: Products? = nil 
     
@@ -22,6 +23,7 @@ struct BookingItems: Codable, Identifiable{
         case productId = "product_id"
         case quantity
         case subtotal
+        case size
         case products
     }
 }

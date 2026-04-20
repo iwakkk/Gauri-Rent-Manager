@@ -11,6 +11,9 @@ struct OrderDetailView: View {
     
     @State var viewModel: OrderDetailViewModel
     @State private var showInvoiceSheet = false
+    @State private var showCancelAlert = false
+    @State private var showConfirmAlert = false
+    
     @Binding var selectedTab: BookingStatus?
     @Environment(\.dismiss) var dismiss
     
@@ -89,19 +92,57 @@ struct OrderDetailView: View {
                             .foregroundColor(.secondary)
                     } else {
                         ForEach(viewModel.items) { item in
-                            VStack{
-                                HStack {
-                                    Text(item.products?.name ?? "-")
-                                    Spacer()
-                                    Text("x\(item.quantity)")
-                                    Spacer()
-                                    Text("Rp \(Int(item.subtotal))")
-                                }
-                                .padding(.vertical, 4)
-                            }
                             
+                            HStack(alignment: .top, spacing: 12) {
+                                
+                                // MARK: PRODUCT IMAGE (BIGGER)
+                                if let urlString = item.products?.imageUrl,
+                                   let url = URL(string: urlString) {
+                                    
+                                    AsyncImage(url: url) { image in
+                                        image
+                                            .resizable()
+                                            .scaledToFill()
+                                    } placeholder: {
+                                        Color.gray.opacity(0.2)
+                                    }
+                                    .frame(width: 70, height: 70)
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                    
+                                } else {
+                                    Color.gray.opacity(0.2)
+                                        .frame(width: 70, height: 70)
+                                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                                }
+                                
+                                // MARK: INFO SECTION
+                                VStack(alignment: .leading, spacing: 6) {
+                                    
+                                    Text(item.products?.name ?? "-")
+                                        .font(.body.weight(.semibold))
+                                    
+                                    Text("Qty: \(item.quantity)")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    
+                                    Text("Size: \(item.size)")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    
+                                    Text("Subtotal: Rp \(Int(item.subtotal))")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                
+                                Spacer()
+                            }
+                            .padding(10)
+                            .background(Color(.systemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
                     }
+                    
+                    
                 }
                 .padding()
                 .background(Color(.systemBackground))
@@ -171,39 +212,39 @@ struct OrderDetailView: View {
             
         }
         .background(Color(.systemGroupedBackground))
-//        .toolbar {
-//            
-//            // tombol cancel (HANYA kalau unpaid)
-//            if viewModel.booking.status == .unpaid {
-//                ToolbarItem(placement: .topBarTrailing) {
-//                    Button {
-//                        showCancelAlert = true
-//                    } label: {
-//                        Image(systemName: "trash")
-//                            .foregroundColor(.red)
-//                    }
-//                }
-//            }
-//        }
-//        .safeAreaInset(edge: .bottom){
-//            
-//            if viewModel.booking.status.hasAction,
-//               let next = viewModel.booking.status.nextStatus {
-//                
-//                Button {
-//                    showConfirmAlert = true
-//                } label: {
-//                    Text(booking.status.actionTitle)
-//                        .frame(maxWidth: .infinity)
-//                        .padding()
-//                        .background(Color.blue)
-//                        .foregroundColor(.white)
-//                        .cornerRadius(30)
-//                }
-//                .padding(.horizontal)
-//            }
-//            
-//        }
+        .toolbar {
+            
+            // tombol cancel (HANYA kalau unpaid)
+            if viewModel.booking.status == .unpaid {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showCancelAlert = true
+                    } label: {
+                        Image(systemName: "trash")
+                            .foregroundColor(.red)
+                    }
+                }
+            }
+        }
+        .safeAreaInset(edge: .bottom){
+            
+            if viewModel.booking.status.hasAction,
+               let next = viewModel.booking.status.nextStatus {
+                
+                Button {
+                    showConfirmAlert = true
+                } label: {
+                    Text(viewModel.booking.status.actionTitle)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(30)
+                }
+                .padding(.horizontal)
+            }
+            
+        }
 //        .alert("Batalkan Pesanan?", isPresented: $showCancelAlert) {
 //            
 //            Button("Ya, Batalkan", role: .destructive) {
