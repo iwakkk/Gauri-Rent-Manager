@@ -14,6 +14,8 @@ struct DateCell: View {
     let inCurrentMonth: Bool
     let count: Int
     let position: RangePosition
+    let isStartDate: Bool
+    let isEndDate: Bool
     let onTap: () -> Void
     
     private let calendar = Calendar.current
@@ -23,25 +25,20 @@ struct DateCell: View {
             
             VStack(spacing: 2) {
                 
-                // MARK: SINGLE BOX (ALL IN ONE)
                 ZStack {
                     
-                    // BACKGROUND STATE
                     RoundedRectangle(cornerRadius: 8)
                         .fill(backgroundColor)
                     
                     VStack(spacing: 2) {
                         
-                        // DATE
                         Text("\(calendar.component(.day, from: date))")
                             .font(.subheadline)
                             .fontWeight(isSelected ? .semibold : .regular)
                             .foregroundColor(textColor.opacity(opacitySetting))
                         
-                        // INDICATOR (INSIDE SAME BOX)
                         if count > 0 {
                             HStack(spacing: 3) {
-                                
                                 Circle()
                                     .fill(Color.red)
                                     .frame(width: 4, height: 4)
@@ -61,21 +58,29 @@ struct DateCell: View {
         .buttonStyle(.plain)
     }
     
-    // MARK: - BACKGROUND
-    
+    // MARK: BACKGROUND
     private var backgroundColor: Color {
         if isSelected {
             return .blue
+            
+        } else if isStartDate {
+            return .green.opacity(0.85)   // START
+            
+        } else if isEndDate {
+            return .blue.opacity(0.10)
+            
         } else if isToday {
             return .blue.opacity(0.4)
-        } else if position != .none {
+            
+        } else if position == .middle {
             return .blue.opacity(0.10)
+            
         } else {
             return .clear
         }
     }
-    // MARK: - STATES
     
+    // MARK: STATES
     private var isSelected: Bool {
         calendar.isDate(date, inSameDayAs: selectedDate)
     }
@@ -85,22 +90,13 @@ struct DateCell: View {
     }
     
     private var opacitySetting: Double {
-        if !inCurrentMonth {
-            return 0.3
-        } else {
-            return 1
-        }
+        inCurrentMonth ? 1 : 0.3
     }
     
     private var textColor: Color {
-        if isSelected {
-            return .white
-        } else {
-            return .primary
-        }
+        isSelected ? .white : .primary
     }
 }
-
 #Preview {
     ContentView()
 }

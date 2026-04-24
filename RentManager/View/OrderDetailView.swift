@@ -192,17 +192,17 @@ struct OrderDetailView: View {
                     } label: {
                         HStack {
                             Image(systemName: "doc.text")
-                            Text("Lihat Invoice")
+                            Text("View Invoice")
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.blue.opacity(0.1))
-                        .foregroundColor(.blue)
-                        .cornerRadius(10)
+                        .background(Color.gauriprimary)
+                        .foregroundColor(.white)
+                        .cornerRadius(30)
                     }
                     
                 } else {
-                    Text("Invoice belum tersedia")
+                    Text("Invoice is not available")
                         .foregroundColor(.secondary)
                 }
                 
@@ -210,8 +210,9 @@ struct OrderDetailView: View {
             }
             .padding()
             
+            
         }
-        .background(Color(.systemGroupedBackground))
+        .background(Color.gauribackground.ignoresSafeArea())
         .toolbar {
             
             // tombol cancel (HANYA kalau unpaid)
@@ -226,8 +227,22 @@ struct OrderDetailView: View {
                 }
             }
         }
-        .safeAreaInset(edge: .bottom){
+        .alert("Cancel Order?", isPresented: $showCancelAlert) {
             
+            Button("Yes, Cancel", role: .destructive) {
+                Task {
+                    await viewModel.cancelBooking()
+                    selectedTab = viewModel.booking.status
+                    dismiss()
+                }
+            }
+            
+            Button("No", role: .cancel) {}
+            
+        } message: {
+            Text("This order will be canceled")
+        }
+        .safeAreaInset(edge: .bottom) {
             if viewModel.booking.status.hasAction,
                let next = viewModel.booking.status.nextStatus {
                 
@@ -237,95 +252,48 @@ struct OrderDetailView: View {
                     Text(viewModel.booking.status.actionTitle)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.blue)
+                        .background(Color.gauriprimary)
                         .foregroundColor(.white)
                         .cornerRadius(30)
                 }
                 .padding(.horizontal)
             }
-            
         }
-//        .alert("Batalkan Pesanan?", isPresented: $showCancelAlert) {
-//            
-//            Button("Ya, Batalkan", role: .destructive) {
-//                Task {
-//                    isUpdating = true
-//                    do {
-//                        try await BookingsService().updateStatus(
-//                            bookingId: booking.id,
-//                            status: .cancelled
-//                        )
-//                        
-//                        toastMessage = "Pesanan berhasil dibatalkan"
-//                        showToast = true
-//                        selectedTab = booking.status.nextStatus
-//                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-//                            dismiss()
-//                        }
-//                        
-//                    } catch {
-//                        print("❌ Failed cancel:", error)
-//                    }
-//                    isUpdating = false
-//                }
-//            }
-//            
-//            Button("Tidak", role: .cancel) { }
-//            
-//        } message: {
-//            Text("Pesanan ini akan dibatalkan dan tidak bisa dikembalikan.")
-//        }
-//        .alert("Konfirmasi", isPresented: $showConfirmAlert) {
-//            
-//            Button("Ya") {
-//                Task {
-//                    isUpdating = true
-//                    do {
-//                        if let next = booking.status.nextStatus {
-//                            try await BookingsService().updateStatus(
-//                                bookingId: booking.id,
-//                                status: next
-//                            )
-//                            
-//                            toastMessage = "Status berhasil diupdate"
-//                            showToast = true
-//                            selectedTab = booking.status.nextStatus
-//                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-//                                dismiss()
-//                            }
-//                        }
-//                    } catch {
-//                        print("❌ Failed update:", error)
-//                    }
-//                    isUpdating = false
-//                }
-//            }
-//            
-//            Button("Batal", role: .cancel) { }
-//            
-//        } message: {
-//            Text("Apakah Anda yakin ingin melanjutkan?")
-//        }
-//        .overlay(alignment: .top) {
-//            if showToast {
-//                Text(toastMessage)
-//                    .padding(.horizontal, 16)
-//                    .padding(.vertical, 10)
-//                    .background(Color.green.opacity(0.8))
-//                    .foregroundColor(.white)
-//                    .cornerRadius(12)
-//                    .padding(.top, 60)
-//                    .transition(.move(edge: .top).combined(with: .opacity))
-//                    .onAppear {
-//                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-//                            withAnimation {
-//                                showToast = false
-//                            }
-//                        }
-//                    }
-//            }
-//        }
-//        .animation(.easeInOut, value: showToast)
+        .alert("Confirmation", isPresented: $showConfirmAlert) {
+            
+            Button("Yes") {
+                Task {
+                    if let next = viewModel.booking.status.nextStatus {
+                        await viewModel.updateStatus(to: next)
+                        selectedTab = viewModel.booking.status
+                        dismiss()
+                    }
+                }
+            }
+            
+            Button("Cancel", role: .cancel) {}
+            
+        } message: {
+            Text("Are you sure you want to continue?")
+        }
+        .overlay(alignment: .top) {
+            if viewModel.showToast {
+                Text(viewModel.toastMessage)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(Color.green.opacity(0.8))
+                    .foregroundColor(.white)
+                    .cornerRadius(12)
+                    .padding(.top, 60)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                            viewModel.showToast = false
+                        }
+                    }
+            }
+        }
+        .animation(.easeInOut, value: viewModel.showToast)
         .sheet(isPresented: $showInvoiceSheet) {
             NavigationStack{
                 if let urlString = viewModel.booking.invoiceURL,
@@ -354,19 +322,6 @@ struct OrderDetailView: View {
             await viewModel.loadBookingItems()
         }
     }
-    
-//    // MARK: Fetch Booking Items with Products
-//    func loadBookingItems() async {
-//        isLoading = true
-//        do {
-//            let fetchedItems = try await BookingsService().fetchItems(for: booking.id)
-//            self.items = fetchedItems
-//        } catch {
-//            print("❌ Failed to fetch booking items:", error)
-//            self.items = []
-//        }
-//        isLoading = false
-//    }
     
   
 }

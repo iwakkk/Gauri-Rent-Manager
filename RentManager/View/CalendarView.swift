@@ -15,52 +15,63 @@ struct CalendarView: View {
     @State private var isCollapsed = false
     
     var body: some View {
+        
         VStack {
-            
-            Title(title: "Calendar",
-                  buttonAction: nil,
-                  buttonIcon: ""
+            Title(
+                title: "Calendar",
+                actionIcon: nil,
+                actionTap: nil
             )
-
-            CustomCalendar(
-                            selectedDate: $selectedDate,
-                            bookings: viewModel.bookings
-                        )
             
-            Divider()
-            
-            ScrollView {
-                VStack(spacing: 12) {
-                    
-                    let calendar = Calendar.current
-
-                    let filteredBookings = viewModel.bookings.filter { booking in
-                        guard let start = booking.rentStartDate,
-                              let end = booking.rentEndDate else { return false }
+            VStack {
+                
+                let visibleBookings = viewModel.bookings.filter {
+                    $0.status != .unpaid
+                }
+                
+                CustomCalendar(
+                    selectedDate: $selectedDate,
+                    bookings: visibleBookings
+                )
+                .padding()
+                Divider()
+                
+                ScrollView {
+                    VStack(spacing: 12) {
                         
-                        return calendar.compare(selectedDate, to: start, toGranularity: .day) != .orderedAscending &&
-                               calendar.compare(selectedDate, to: end, toGranularity: .day) != .orderedDescending
-                    }
-                    
-                    if filteredBookings.isEmpty {
-                        Text("No orders on this date")
-                            .foregroundColor(.gray)
-                            .padding(.top, 20)
-                    } else {
-                        ForEach(filteredBookings) { booking in
+                        let calendar = Calendar.current
+                        
+                        let filteredBookings = visibleBookings.filter { booking in
                             
-                            NavigationLink(value: booking) {
-                                OrderCard(
-                                    booking: booking,
-                                    items: viewModel.itemsByBooking[booking.id] ?? []
-                                )
+                            guard let start = booking.rentStartDate,
+                                  let end = booking.rentEndDate else { return false }
+                            
+                            return Calendar.current.compare(selectedDate, to: start, toGranularity: .day) != .orderedAscending &&
+                            Calendar.current.compare(selectedDate, to: end, toGranularity: .day) != .orderedDescending
+                        }
+                        
+                        if filteredBookings.isEmpty {
+                            BookingEmptyState()
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .padding(.top, 100)
+                        } else {
+                            ForEach(filteredBookings) { booking in
+                                
+                                NavigationLink(value: booking) {
+                                    OrderCard(
+                                        booking: booking,
+                                        items: viewModel.itemsByBooking[booking.id] ?? []
+                                    )
+                                }
                             }
                         }
                     }
+                    .padding(.vertical)
                 }
-                .padding()
             }
+            .background(Color.gauribackground.ignoresSafeArea())
         }
+        
         .task {
             await viewModel.loadOrders()
         }
@@ -72,5 +83,7 @@ struct CalendarView: View {
 }
 
 #Preview {
-    CalendarView()
+    ContentView()
+        .environmentObject(AppState())
 }
+

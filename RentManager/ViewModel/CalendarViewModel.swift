@@ -20,10 +20,10 @@ enum RangePosition {
 class CalendarViewModel {
     
     var bookings: [Bookings] = []
-    var bookingMap: [Date: Int] = [:]
     
     private let calendar = Calendar.current
     
+    // MARK: Generate Calendar Days
     func generateDays(for month: Date) -> [Date] {
         guard let monthInterval = calendar.dateInterval(of: .month, for: month),
               let firstWeek = calendar.dateInterval(of: .weekOfMonth, for: monthInterval.start),
@@ -41,54 +41,82 @@ class CalendarViewModel {
         return days
     }
     
-    func buildBookingMap() {
-        var map: [Date: Int] = [:]
-        
-        for booking in bookings {
-            guard let start = booking.rentStartDate,
-                  let end = booking.rentEndDate else { continue }
-            
-            var current = normalize(start)
-            let endDate = normalize(end)
-            
-            while current <= endDate {
-                map[current, default: 0] += 1
-                current = calendar.date(byAdding: .day, value: 1, to: current) ?? Date()
-            }
-        }
-        
-        bookingMap = map
-    }
-    
+    // MARK: Normalize
     func normalize(_ date: Date) -> Date {
         calendar.startOfDay(for: date)
     }
     
+    // MARK: Count booking per day
     func count(for date: Date) -> Int {
-        bookingMap[normalize(date)] ?? 0
+        let d = normalize(date)
+        
+        return bookings.filter {
+            guard let start = $0.rentStartDate,
+                  let end = $0.rentEndDate else { return false }
+            
+            let s = normalize(start)
+            let e = normalize(end)
+            
+            return d >= s && d <= e
+        }.count
     }
     
+    // MARK: START detection
+    func isStartDate(_ date: Date) -> Bool {
+        let d = normalize(date)
+        
+        return bookings.contains { booking in
+            guard let start = booking.rentStartDate else { return false }
+            return normalize(start) == d
+        }
+    }
+    
+    // MARK: END detection
+    func isEndDate(_ date: Date) -> Bool {
+        let d = normalize(date)
+        
+        return bookings.contains { booking in
+            guard let end = booking.rentEndDate else { return false }
+            return normalize(end) == d
+        }
+    }
+    
+    // MARK: Range Position (optional UI highlight)
     func rangePosition(for date: Date) -> RangePosition {
         let d = normalize(date)
         
-        let hasCurrent = bookingMap[d] ?? 0 > 0
-        if !hasCurrent { return .none }
+        let hasBooking = bookings.contains { booking in
+            guard let start = booking.rentStartDate,
+                  let end = booking.rentEndDate else { return false }
+            
+            let s = normalize(start)
+            let e = normalize(end)
+            
+            return d >= s && d <= e
+        }
+        
+        if !hasBooking { return .none }
         
         let prev = calendar.date(byAdding: .day, value: -1, to: d) ?? Date()
         let next = calendar.date(byAdding: .day, value: 1, to: d) ?? Date()
         
-        let hasPrev = (bookingMap[prev] ?? 0) > 0
-        let hasNext = (bookingMap[next] ?? 0) > 0
+        let hasPrev = bookings.contains { booking in
+            guard let start = booking.rentStartDate,
+                  let end = booking.rentEndDate else { return false }
+            return prev >= normalize(start) && prev <= normalize(end)
+        }
+        
+        let hasNext = bookings.contains { booking in
+            guard let start = booking.rentStartDate,
+                  let end = booking.rentEndDate else { return false }
+            return next >= normalize(start) && next <= normalize(end)
+        }
         
         switch (hasPrev, hasNext) {
-        case (false, false):
-            return .single
-        case (false, true):
-            return .start
-        case (true, true):
-            return .middle
-        case (true, false):
-            return .end
+        case (false, false): return .single
+        case (false, true): return .start
+        case (true, true): return .middle
+        case (true, false): return .end
         }
     }
 }

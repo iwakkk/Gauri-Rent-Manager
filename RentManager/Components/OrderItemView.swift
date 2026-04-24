@@ -39,7 +39,7 @@ struct OrderItemView: View {
                 Text("Select From Catalog").tag(Products?.none)
                 
                 ForEach(allProducts, id: \.id) { product in
-                    Text("\(product.name) - \(product.color) - \(product.size)")
+                    Text("\(product.name) - \(product.color)")
                         .tag(Optional(product))
                 }
             }

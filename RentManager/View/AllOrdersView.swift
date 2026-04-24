@@ -18,11 +18,16 @@ struct AllOrdersView: View {
     @State private var selectedTab: BookingStatus? = nil
     
     var filteredBookings: [Bookings] {
+        let result: [Bookings]
+           
         if let selectedTab {
-            return viewModel.bookings.filter { $0.status == selectedTab }
+            result =  viewModel.bookings.filter { $0.status == selectedTab }
         } else {
-            return viewModel.bookings
+            result = viewModel.bookings
         }
+        return result.sorted {
+            $0.rentStartDate ?? .distantFuture < $1.rentStartDate ?? .distantFuture
+            }
     }
     
     var body: some View {
@@ -30,11 +35,15 @@ struct AllOrdersView: View {
             VStack{
                 
                 // Title
-                Title(title: "Orders",
-                      buttonAction: { showOrderSheet = true},
-                      buttonIcon: "plus.circle.fill"
+                Title(
+                    title: "Bookings",
+                    actionIcon: "plus.circle.fill",
+                    actionTap: {
+                        showOrderSheet = true
+                    }
                 )
-                
+              
+                // Order List
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
                         
@@ -44,6 +53,7 @@ struct AllOrdersView: View {
                         ) {
                             selectedTab = nil
                         }
+                        
                         
                         ForEach(BookingStatus.allCases, id: \.self) { status in
                             StatusFilter(
@@ -57,21 +67,29 @@ struct AllOrdersView: View {
                     .padding(.horizontal)
                 }
 
-                
+
                 ScrollView {
-                    VStack{
-                        ForEach(filteredBookings) { booking in
-                            
-                            NavigationLink(value: booking) {
-                                OrderCard(
-                                    booking: booking,
-                                    items: viewModel.itemsByBooking[booking.id] ?? []
-                                )
+                    if filteredBookings.isEmpty{
+                        BookingEmptyState()
+                            .padding(.top, 200)
+                    } else {
+                        VStack{
+                            ForEach(filteredBookings) { booking in
+                                
+                                NavigationLink(value: booking) {
+                                    OrderCard(
+                                        booking: booking,
+                                        items: viewModel.itemsByBooking[booking.id] ?? []
+                                    )
+                                }
                             }
                         }
+                        .padding(.vertical)
+                        
                     }
                     
                 }
+                .background(Color.gauribackground.ignoresSafeArea())
                 .task {
                     await viewModel.loadOrders()
                 }

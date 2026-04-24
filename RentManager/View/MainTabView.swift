@@ -12,7 +12,7 @@ struct MainTabView: View {
         TabView {
             AllOrdersView()
                 .tabItem {
-                    Label("Orders", systemImage: "list.bullet")
+                    Label("Bookings", systemImage: "list.bullet")
                 }
             
             CalendarView()
@@ -22,13 +22,14 @@ struct MainTabView: View {
             
             ProductsView()
                 .tabItem {
-                    Label("Products", systemImage: "square.grid.2x2")
+                    Label("Products", systemImage: "hanger")
                 }
             
-            ProfileView()
+            BusinessView()
                 .tabItem {
-                    Label("Profile", systemImage: "person.circle")
+                    Label("Business", systemImage: "storefront")
                 }
         }
+        .tint(Color.gauriprimary)
     }
 }

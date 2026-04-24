@@ -64,6 +64,7 @@ struct OrderCard: View {
                     Text(firstItem?.products?.name ?? "-")
                         .font(.body.bold())
                         .lineLimit(1)
+                        .foregroundColor(.gauriprimary)
                     
                     Spacer()
                     

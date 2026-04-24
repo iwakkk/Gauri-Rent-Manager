@@ -8,24 +8,61 @@
 import SwiftUI
 
 struct Title: View {
+    @EnvironmentObject var appState: AppState
+
     let title: String
-    let buttonAction: (() -> Void)?
-    let buttonIcon: String?
     
+    let actionIcon: String?
+    let actionTap: (() -> Void)?
+
     var body: some View {
         HStack {
             Text(title)
                 .font(.largeTitle.bold())
-            
+                .foregroundColor(.gauritext)
             Spacer()
-            
-            if let icon = buttonIcon, let action = buttonAction {
+
+            // Optional action per page
+            if let icon = actionIcon, let action = actionTap {
                 Button(action: action) {
                     Image(systemName: icon)
                         .font(.largeTitle)
                 }
             }
+
+            // Profile Menu (global)
+            Menu {
+                // Username (display only)
+                if let user = appState.currentUser {
+                    Button("\(user.email) (\(user.role))") {}
+                }
+
+                Divider()
+
+                Button(role: .destructive) {
+                    handleLogout()
+                } label: {
+                    Text("Log Out")
+                }
+
+            } label: {
+                Image(systemName: "person.circle")
+                    .font(.largeTitle)
+            }
         }
+        .foregroundColor(.gauriprimary)
         .padding()
     }
+
+    // GLOBAL LOGOUT
+    private func handleLogout() {
+        
+        appState.currentUser = nil
+        
+    }
+}
+
+#Preview {
+    ContentView()
+        .environmentObject(AppState())
 }

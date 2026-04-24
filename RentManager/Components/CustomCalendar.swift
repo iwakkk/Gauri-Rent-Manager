@@ -16,15 +16,12 @@ struct CustomCalendar: View {
     @State private var currentMonth: Date = Date()
     
     private let daysOfWeek = ["MIN","SEN","SEL","RAB","KAM","JUM","SAB"]
-    
-   
-    
     private let calendar = Calendar.current
     
     var body: some View {
         VStack {
             
-            // 🔥 MONTH NAVIGATION
+            // MARK: MONTH NAVIGATION
             HStack {
                 Button {
                     currentMonth = calendar.date(byAdding: .month, value: -1, to: currentMonth) ?? Date()
@@ -50,51 +47,57 @@ struct CustomCalendar: View {
             }
             .padding(.horizontal)
             
+            // MARK: DAYS OF WEEK
             HStack {
-                    ForEach(daysOfWeek, id: \.self) { day in
-                        Text(day)
-                            .font(.caption2)
-                            .frame(maxWidth: .infinity)
-                            .foregroundColor(.gray)
-                    }
+                ForEach(daysOfWeek, id: \.self) { day in
+                    Text(day)
+                        .font(.caption2)
+                        .frame(maxWidth: .infinity)
+                        .foregroundColor(.gray)
                 }
-                .padding(.horizontal)
-                .padding(.top, 4)
+            }
+            .padding(.horizontal)
+            .padding(.top, 4)
             
-            
-            // 🔥 GRID
+            // MARK: GRID
             LazyVGrid(
                 columns: Array(repeating: GridItem(.flexible()), count: 7),
                 spacing: 4
             ) {
                 ForEach(viewModel.generateDays(for: currentMonth), id: \.self) { date in
                     
-                    let count = viewModel.count(for: date)
-                    let position = viewModel.rangePosition(for: date)
+                    let normalized = viewModel.normalize(date)
+                    
+                    let isInMonth = calendar.isDate(date, equalTo: currentMonth, toGranularity: .month)
                     
                     DateCell(
                         date: date,
                         selectedDate: selectedDate,
-                        inCurrentMonth: calendar.isDate(date, equalTo: currentMonth, toGranularity: .month),
-                        count: count,
-                        position: position
-                    ) {
-                        selectedDate = date
-                    }
+                        inCurrentMonth: isInMonth,
+                        count: viewModel.count(for: date),
+                        position: viewModel.rangePosition(for: date),
+                        isStartDate: viewModel.isStartDate(date),
+                        isEndDate: viewModel.isEndDate(date),
+                        onTap: {
+                            selectedDate = date
+                        }
+                    )
                 }
             }
             .padding(.horizontal)
         }
         .onAppear {
             viewModel.bookings = bookings
-            viewModel.buildBookingMap()
         }
         .onChange(of: bookings) { newValue in
             viewModel.bookings = newValue
-            viewModel.buildBookingMap()
+        }
+        .onChange(of: currentMonth) { _ in
+            // optional: kalau nanti kamu mau preload data per month
         }
     }
     
+    // MARK: MONTH TITLE
     private func monthTitle() -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"

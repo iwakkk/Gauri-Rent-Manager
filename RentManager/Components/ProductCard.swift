@@ -46,7 +46,7 @@ struct ProductCard: View {
                     .font(.headline)
                     .lineLimit(1)
                 
-                Text("\(product.color) • \(product.size)")
+                Text("\(product.color)")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 

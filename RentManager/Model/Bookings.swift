@@ -62,9 +62,9 @@ enum BookingStatus: String, CaseIterable, Codable {
     
     var actionTitle: String {
         switch self {
-        case .unpaid: return "Konfirmasi Pembayaran"
-        case .toShip: return "Kirim Barang"
-        case .inUse: return "Selesaikan Pesanan"
+        case .unpaid: return "Confirm Payment"
+        case .toShip: return "Ship Item"
+        case .inUse: return "Complete Order"
         case .completed, .cancelled: return ""
         }
     }

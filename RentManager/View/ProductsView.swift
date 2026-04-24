@@ -15,26 +15,29 @@ struct ProductsView: View {
     @State private var selectedProduct: Products?
     
     var body: some View {
-//        NavigationStack{
             VStack {
                 Title(title: "Products",
-                      buttonAction: {showNewProductSheet = true},
-                      buttonIcon: "plus.circle.fill"
+                      actionIcon: "plus.circle.fill", actionTap: {showNewProductSheet = true}
                 )
-                ScrollView {
-                    
-                    LazyVStack(spacing: 12) {
+                
+                VStack {
+                    ScrollView {
                         
-                        ForEach(viewModel.products, id: \.id) { product in
-                            ProductCard(product: product)
-                                .padding(.horizontal)
-                                .onTapGesture {
-                                    selectedProduct = product
-                                }
+                        LazyVStack(spacing: 12) {
+                            
+                            ForEach(viewModel.products, id: \.id) { product in
+                                ProductCard(product: product)
+                                    .padding(.horizontal)
+                                    .onTapGesture {
+                                        selectedProduct = product
+                                    }
+                            }
                         }
                     }
+                    
                 }
-                
+                .padding(.vertical)
+                .background(Color.gauribackground.ignoresSafeArea())
             }
             .fullScreenCover(item: $selectedProduct) { product in
                 ProductDetailView(product: product, viewModel: viewModel)
@@ -45,12 +48,7 @@ struct ProductsView: View {
             .sheet(isPresented: $showNewProductSheet) {
                 NewProductView(viewModel: viewModel)
             }
-            
-//        }
     }
-}
-#Preview {
-    ProductsView()
 }
 
 #Preview {

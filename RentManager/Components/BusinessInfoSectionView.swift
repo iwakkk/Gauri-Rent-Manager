@@ -1,43 +1,51 @@
 //
-//  HeaderSection.swift
+//  BusinessInfoSectionView.swift
 //  RentManager
 //
-//  Created by Edward Suwandi on 06/03/26.
+//  Created by Edward Suwandi on 21/04/26.
 //
 
 import SwiftUI
 
-struct HeaderSectionView: View {
-
-    var invoiceNumber: String
-    let business : BusinessProfile?
+struct BusinessInfoSectionView: View {
+    
+    let business: BusinessProfile
+    
     var body: some View {
-
-        HStack {
-
-            VStack(alignment: .leading) {
-
-                Text(business!.businessName)
-                    .font(.title)
-                    .fontWeight(.bold)
-
-                Text("Dress Rental Service")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-            }
-
-            Spacer()
-
-            VStack(alignment: .trailing) {
-
-                Text("INVOICE")
-                    .font(.title2)
-                    .fontWeight(.bold)
-
-                Text("Invoice #\(invoiceNumber)")
-                    .font(.caption)
-            }
+        VStack(alignment: .leading, spacing: 6) {
+            
+            Text("Company Profile")
+                .font(.subheadline)
+                .padding(.bottom, 5)
+            
+            Text(business.businessName)
+                .font(.headline)
+                .fontWeight(.bold)
+            
+            Text(business.businessAddress)
+                   .lineLimit(nil)
+                   .fixedSize(horizontal: false, vertical: true)
+            
+            Text("Phone: \(business.businessPhone)")
+            
+            Text("Email: \(business.email)")
+            
+//            Divider()
+//                .padding(.vertical, 6)
+//            
+//            Text("Bank Info")
+//                .font(.caption)
+//                .foregroundColor(.secondary)
+//            
+//            Text(business.bankName)
+//                .font(.caption)
+//            
+//            Text(business.bankNumber)
+//                .font(.caption)
+//                .fontWeight(.medium)
         }
+        .font(.subheadline)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -93,4 +101,3 @@ struct HeaderSectionView: View {
     .scaleEffect(0.6)
         .frame(width: 595, height: 842)
 }
-

@@ -15,6 +15,7 @@ struct ProductsService {
         let products: [Products] = try await supabase
             .from("products")
             .select()
+            .is("deleted_at", value: nil)
             .execute()
             .value
         
@@ -42,7 +43,9 @@ struct ProductsService {
     func deleteProduct(id: UUID) async throws {
         try await supabase
             .from("products")
-            .delete()
+            .update([
+                "deleted_at": ISO8601DateFormatter().string(from: Date())
+            ])
             .eq("id", value: id)
             .execute()
     }

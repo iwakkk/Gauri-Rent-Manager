@@ -19,6 +19,7 @@ struct BookingDetailView: View {
     @State private var goToInvoicePage = false
     @State private var showValidationAlert = false
     @State private var viewModel = BookingDetailViewModel()
+    @State private var businessViewModel = BusinessProfileViewModel()
     
     var body: some View {
         ScrollView {
@@ -74,7 +75,8 @@ struct BookingDetailView: View {
                         let id = bookingId!
                         let invoiceView = InvoiceContentView(
                             draft: draft,
-                            bookingId: .constant(id)
+                            bookingId: id,
+                            business: businessViewModel.business
                         )
                         
                         let pdfURL = PDFGenerator.generate(from: invoiceView)
@@ -103,6 +105,7 @@ struct BookingDetailView: View {
             }
         }
         .task {
+            await businessViewModel.loadBusinessProfile()
             await viewModel.loadCustomers()
         }
     }

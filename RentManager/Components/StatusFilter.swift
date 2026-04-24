@@ -19,9 +19,14 @@ struct StatusFilter: View {
                 .font(.subheadline)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
-                .background(isSelected ? Color.blue : Color.gray.opacity(0.15))
-                .foregroundColor(isSelected ? .white : .primary)
+                .background(isSelected ? Color.gaurisecondary : Color.gray.opacity(0.15))
+                .foregroundColor(isSelected ? .white : .gauriprimary)
                 .cornerRadius(20)
         }
     }
+}
+
+#Preview {
+    ContentView()
+        .environmentObject(AppState())
 }

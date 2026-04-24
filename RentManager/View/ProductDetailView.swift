@@ -16,6 +16,7 @@ struct ProductDetailView: View {
     
     @State private var draft: ProductDraft
     @State private var hasChanges = false
+    @State private var showDeleteAlert = false
     
     init(product: Products, viewModel: ProductsViewModel) {
         self.product = product
@@ -36,11 +37,10 @@ struct ProductDetailView: View {
         NavigationStack {
             
             ScrollView {
-                VStack(spacing: 0) {
+                VStack(spacing: 20) {
                     
-                    // MARK: IMAGE HEADER
-                    ZStack {
-                        
+                    // MARK: IMAGE (small card, not full screen)
+                    VStack {
                         if let imageUrl = draft.imageUrl,
                            let url = URL(string: imageUrl) {
                             
@@ -51,16 +51,18 @@ struct ProductDetailView: View {
                             } placeholder: {
                                 Color.gray.opacity(0.2)
                             }
-                            
                         } else {
                             Color.gray.opacity(0.2)
                         }
                     }
-                    .frame(height: 260)
+                    .frame(width: UIScreen.main.bounds.width - 32)
+                    .frame(height: (UIScreen.main.bounds.width - 32) * 4 / 3)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
                     .clipped()
+                    .padding(.horizontal)
                     
                     
-                    // MARK: FORM SECTION
+                    // MARK: FORM CARD
                     VStack(spacing: 16) {
                         
                         FormFieldRow(title: "Product Name", text: $draft.name)
@@ -79,15 +81,17 @@ struct ProductDetailView: View {
                         )
                         .onChange(of: draft.price) { _ in checkChanges() }
                         
-                        Toggle("Is Rented", isOn: $draft.isRented)
-                            .onChange(of: draft.isRented) { _ in checkChanges() }
                     }
                     .padding()
                     .background(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .padding(.top, -20)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
+                    .padding(.horizontal)
+                    
                 }
+                .padding(.top, 16)
             }
+            .background(Color(.systemGroupedBackground))
             
             // MARK: NAV BAR
             .navigationTitle("Product Detail")
@@ -97,6 +101,14 @@ struct ProductDetailView: View {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Close") {
                         dismiss()
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(role: .destructive) {
+                        showDeleteAlert = true
+                    } label: {
+                        Image(systemName: "trash")
+                            .foregroundColor(Color.red)
                     }
                 }
                 
@@ -118,7 +130,21 @@ struct ProductDetailView: View {
                         }
                     }
                     .disabled(!hasChanges)
+                    
                 }
+            }
+            
+            // MARK: ALERT DELETE
+            .alert("Delete this product?", isPresented: $showDeleteAlert) {
+                Button("Delete", role: .destructive) {
+                    Task {
+                        await viewModel.deleteProduct(id: draft.id)
+                        dismiss()
+                    }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This action cannot be undone.")
             }
         }
     }
@@ -131,4 +157,8 @@ struct ProductDetailView: View {
             draft.price != product.price ||
             draft.isRented != product.isRented
     }
+}
+#Preview {
+    ContentView()
+        .environmentObject(AppState())
 }

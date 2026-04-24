@@ -12,10 +12,12 @@ struct BusinessProfile: Codable{
     let id: UUID
     let email: String
     let businessName: String
-    let businessPhone: Int
+    let businessPhone: String
     let businessAddress: String
     let bankName: String
-    let bankNumber: Int
+    let bankNumber: String
+    let bankAccountName: String
+    let businessImageURL: String
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
@@ -25,29 +27,7 @@ struct BusinessProfile: Codable{
         case businessAddress = "business_address"
         case bankName = "bank_name"
         case bankNumber = "bank_number"
-    }
-}
-
-struct BusinessProfileService {
-    
-    func fetchBusinessProfile() async throws -> [BusinessProfile] {
-        let businessProfile: [BusinessProfile] = try await supabase
-            .from("business_profile")
-            .select()
-            .execute()
-            .value
-            
-        print("Users from DB:")
-              for business in businessProfile {
-                  print("ID: \(business.id)")
-                  print("Email: \(business.email)")
-                  print("Business: \(business.businessName)")
-                  print("Phone: \(business.businessPhone)")
-                  print("Address: \(business.businessAddress)")
-                  print("Bank: \(business.bankName) - \(business.bankNumber)")
-                  print("--------")
-              }
-        
-        return businessProfile
+        case bankAccountName = "bank_account_name"
+        case businessImageURL = "business_image_url"
     }
 }
