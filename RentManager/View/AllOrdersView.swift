@@ -72,6 +72,7 @@ struct AllOrdersView: View {
                     if filteredBookings.isEmpty{
                         BookingEmptyState()
                             .padding(.top, 200)
+                            .frame(maxWidth: .infinity)
                     } else {
                         VStack{
                             ForEach(filteredBookings) { booking in

@@ -15,14 +15,28 @@ struct HeaderSectionView: View {
 
         HStack {
 
+            if business?.businessImageURL == nil {
+                
+                Text("No Logo Found")
+                
+            } else if
+                let url = URL(string: business?.businessImageURL ?? ""),
+                let imageData = try? Data(contentsOf: url),
+                let uiImage = UIImage(data: imageData) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 80, height: 80)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+            
             VStack(alignment: .leading) {
 
                 Text(business!.businessName)
-                    .font(.title)
-                    .fontWeight(.bold)
+                    .font(.system(size: 28, weight: .bold))
 
                 Text("Dress Rental Service")
-                    .font(.subheadline)
+                    .font(.system(size: 12, weight: .regular))
                     .foregroundColor(.gray)
             }
 
@@ -31,11 +45,10 @@ struct HeaderSectionView: View {
             VStack(alignment: .trailing) {
 
                 Text("INVOICE")
-                    .font(.title2)
-                    .fontWeight(.bold)
+                    .font(.system(size: 22, weight: .bold))
 
                 Text("Invoice #\(invoiceNumber)")
-                    .font(.caption)
+                    .font(.system(size: 12, weight: .regular))
             }
         }
     }

@@ -6,34 +6,98 @@
 //
 
 import Foundation
-import SwiftUI
+import Supabase
 
 @Observable
 class LoginViewModel {
     
-    private let userService = UsersService()
-    
+    // 🔐 LOGIN
     func login(email: String, password: String) async -> Users? {
         do {
+            let response = try await supabase.auth.signIn(
+                email: email,
+                password: password
+            )
             
-            let users = try await userService.fetchUsers()
+            let user = response.user
             
-            if let user = users.first(where: { $0.email.lowercased() == email.lowercased() }) {
-                if user.password == password {
-                    return user
-                } else {
-                    print("Password salah")
-                    return nil
-                }
-            }
-            else {
-                print("User tidak ditemukan")
-                return nil
-            }
-        }
-        catch {
-            print("Error fetch users: \(error.localizedDescription)")
+            let result: [Users] = try await supabase
+                .from("users")
+                .select()
+                .eq("id", value: user.id.uuidString)
+                .execute()
+                .value
+            
+            return result.first
+            
+        } catch {
+            print("Login gagal: \(error.localizedDescription)")
             return nil
         }
+    }
+    
+    // 📝 REGISTER
+    func register(email: String, password: String) async -> Bool {
+        do {
+            let response = try await supabase.auth.signUp(
+                email: email,
+                password: password
+            )
+            
+            let user = response.user
+            
+            try await supabase
+                .from("users")
+                .insert([
+                    "id": user.id.uuidString,
+                    "email": email
+                ])
+                .execute()
+            
+            return true
+            
+        } catch {
+            print("Register gagal: \(error.localizedDescription)")
+            return false
+        }
+    }
+    
+    // ✅ VALIDASI REGISTER
+    func validateRegister(
+        email: String,
+        password: String,
+        confirmPassword: String
+    ) -> String? {
+        
+        if email.trimmingCharacters(in: .whitespaces).isEmpty ||
+            password.isEmpty ||
+            confirmPassword.isEmpty {
+            return "All fields must be filled"
+        }
+        
+        if !email.contains("@") {
+            return "Invalid email format"
+        }
+        
+        if password.count < 6 {
+            return "Password must be at least 6 characters"
+        }
+        
+        if password != confirmPassword {
+            return "Password does not match"
+        }
+        
+        return nil
+    }
+    
+    // ✅ VALIDASI LOGIN
+    func validateLogin(email: String, password: String) -> String? {
+        
+        if email.trimmingCharacters(in: .whitespaces).isEmpty ||
+            password.isEmpty {
+            return "Email and password must be filled"
+        }
+        
+        return nil
     }
 }

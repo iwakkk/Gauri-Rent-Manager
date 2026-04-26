@@ -4,106 +4,117 @@
 //
 //  Created by Edward Suwandi on 13/04/26.
 //
+import SwiftUI
 
-//import SwiftUI
+struct EditBusinessView: View {
+    
+    @Environment(\.dismiss) private var dismiss
+    
+    @State var name: String = ""
+    @State var phone: String = ""
+    @State var address: String = ""
+    @State var email: String = ""
+    
+    @State var bankName: String = ""
+    @State var bankNumber: String = ""
+    @State var bankAccountName: String = ""
+    
+    var viewModel: BusinessProfileViewModel
+    
+    var body: some View {
+        NavigationStack {
+            
+            ScrollView {
+                VStack(spacing: 20) {
+                    
+                    VStack(spacing: 16) {
+                        FormFieldRow(title: "Business Name", text: $name)
+                        FormFieldRow(title: "Phone", text: $phone, keyboard: .phonePad)
+                        FormFieldRow(title: "Address", text: $address)
+                        FormFieldRow(title: "Email", text: $email, keyboard: .emailAddress)
+                    }
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color(.systemBackground))
+                    )
+                    .padding(.horizontal)
+                    
+                    VStack(spacing: 16) {
+                        FormFieldRow(title: "Bank Name", text: $bankName)
+                        FormFieldRow(title: "Account Number", text: $bankNumber, keyboard: .numberPad)
+                        FormFieldRow(title: "Account Name", text: $bankAccountName)
+                    }
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color(.systemBackground))
+                    )
+                    .padding(.horizontal)
+                }
+                .padding(.top)
+            }
+            .navigationTitle("Edit Business")
+            .navigationBarTitleDisplayMode(.inline)
+            
+            // MARK: Top bar buttons
+            .toolbar {
+                
+                // LEFT: Dismiss
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .foregroundStyle(.primary)
+                    }
+                }
+                
+                // RIGHT: Save
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        Task {
+                            let draft = BusinessProfileDraft(
+                                name: name,
+                                phone: phone,
+                                address: address,
+                                email: email,
+                                bankName: bankName,
+                                bankNumber: bankNumber,
+                                bankAccountName: bankAccountName
+                            )
+                           
+                            await viewModel.updateBusiness(with: draft)
+                            dismiss()
+                        }
+                    } label: {
+                        Text("Save")
+                            .fontWeight(.semibold)
+                    }
+                }
+            }
+        }
+        .onAppear {
+            loadData()
+        }
+    }
+    
+    // MARK: Load data
+    func loadData() {
+        let b = viewModel.business
+        
+        name = b?.businessName ?? ""
+        phone = b?.businessPhone ?? ""
+        address = b?.businessAddress ?? ""
+        email = b?.email ?? ""
+        
+        bankName = b?.bankName ?? ""
+        bankNumber = b?.bankNumber ?? ""
+        bankAccountName = b?.bankAccountName ?? ""
+    }
+}
 
-//struct EditBusinessView: View {
-//    let business: BusinessProfile
-//    @State private var email: String = ""
-//    @State private var password: String = ""
-//    @State private var businessName: String = ""
-//    @State private var businessPhone: String = ""
-//    @State private var businessAddress: String = ""
-//    @State private var showPasswordSheet: Bool = false
-//    
-//    @Environment(\.dismiss) var dismiss
-//    
-//    var body: some View {
-//        NavigationView {
-//            ScrollView {
-//                VStack(spacing: 24) {
-//                    
-//                    // MARK: Account Section
-//                    VStack(alignment: .leading, spacing: 12) {
-//                        Text("Account")
-//                            .font(.headline)
-//                            .foregroundColor(.gray)
-//                        
-//                        FormFieldRow(title: "Email", text: $email)
-//                        
-//                        Button{
-//                            showPasswordSheet = true
-//                        } label: {
-//                            Text("Change Password")
-//                        }
-//                    }
-//                    
-//                    // MARK: Business Section
-//                    VStack(alignment: .leading, spacing: 12) {
-//                        Text("Business Info")
-//                            .font(.headline)
-//                            .foregroundColor(.gray)
-//                        
-//                        FormFieldRow(title: "Business Name", text: $businessName)
-//                        
-//                        FormFieldRow(
-//                            title: "Business Phone",
-//                            text: $businessPhone,
-//                            keyboard: .numberPad
-//                        )
-//                        
-//                        FormFieldRow(title: "Business Address", text: $businessAddress)
-//                    }
-//                    
-//                    
-//                    Spacer()
-//                }
-//                .padding()
-//            }
-//            .sheet(isPresented: $showPasswordSheet){
-//                ChangePasswordView()
-//                    .presentationDetents([.medium])
-//            }
-//            .onAppear {
-//                email = business.email
-//                businessName = business.businessName
-//                businessPhone = String(business.businessPhone)
-//                businessAddress = business.businessAddress
-//            }
-//            .toolbar {
-//                
-//                ToolbarItem(placement: .navigationBarTrailing) {
-//                    Button {
-//                        // TO DO: save logic
-//                        print("Save tapped")
-//                    } label: {
-//                        Text("Save")
-//                            .foregroundColor(.white)
-//                            .frame(maxWidth: .infinity)
-//                    }
-//                    .buttonStyle(.borderedProminent)
-//                }
-//            }
-//            .navigationTitle("Edit Profile")
-//        }
-//    }
-//}
-//
-//
-//#Preview {
-//    EditBusinessView(
-//        business: BusinessProfile(
-//            id: UUID(),
-//            email: "test@mail.com",
-//            businessName: "My Business",
-//            businessPhone: 812345678,
-//            businessAddress: "Surabaya",
-//            bankName: "",
-//            bankNumber: 0
-//        )
-//    )
-//}
-//
-//#Preview {
-//    ContentView()
-//}
+#Preview {
+    ContentView()
+        .environmentObject(AppState())
+}

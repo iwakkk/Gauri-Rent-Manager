@@ -26,4 +26,20 @@ struct BusinessService {
         return response
     }
     
+    func updateBusinessProfile(_ business: BusinessProfile) async throws {
+        try await supabase
+            .from("business_profile")
+            .update([
+                "business_name": business.businessName,
+                "business_phone": business.businessPhone,
+                "business_address": business.businessAddress,
+                "email": business.email,
+                "bank_name": business.bankName,
+                "bank_number": business.bankNumber,
+                "bank_account_name": business.bankAccountName
+            ])
+            .eq("id", value: business.id)
+            .execute()
+    }
+    
 }

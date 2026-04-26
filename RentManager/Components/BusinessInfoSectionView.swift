@@ -15,12 +15,10 @@ struct BusinessInfoSectionView: View {
         VStack(alignment: .leading, spacing: 6) {
             
             Text("Company Profile")
-                .font(.subheadline)
-                .padding(.bottom, 5)
+                .font(.system(size: 13, weight: .bold))
+                .foregroundColor(.black)
             
             Text(business.businessName)
-                .font(.headline)
-                .fontWeight(.bold)
             
             Text(business.businessAddress)
                    .lineLimit(nil)
@@ -29,22 +27,9 @@ struct BusinessInfoSectionView: View {
             Text("Phone: \(business.businessPhone)")
             
             Text("Email: \(business.email)")
-            
-//            Divider()
-//                .padding(.vertical, 6)
-//            
-//            Text("Bank Info")
-//                .font(.caption)
-//                .foregroundColor(.secondary)
-//            
-//            Text(business.bankName)
-//                .font(.caption)
-//            
-//            Text(business.bankNumber)
-//                .font(.caption)
-//                .fontWeight(.medium)
         }
-        .font(.subheadline)
+        .font(.system(size: 12, weight: .semibold))
+        .foregroundColor(.black.opacity(0.6))
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

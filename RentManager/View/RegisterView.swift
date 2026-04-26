@@ -1,18 +1,19 @@
 //
-//  LoginView.swift
+//  RegisterView.swift
 //  RentManager
 //
-//  Created by Edward Suwandi on 09/02/26.
+//  Created by Edward Suwandi on 26/04/26.
 //
 
 import SwiftUI
 
-struct LoginView: View {
+struct RegisterView: View {
     
-    @EnvironmentObject var appState: AppState
+    @Environment(\.dismiss) var dismiss
     
     @State private var email = ""
     @State private var password = ""
+    @State private var confirmPassword = ""
     
     @State private var showError = false
     @State private var errorMessage = ""
@@ -20,18 +21,16 @@ struct LoginView: View {
     
     @State private var viewModel = LoginViewModel()
     
-    @State private var showRegister = false
-    
     var body: some View {
         
         ZStack {
             Color.gauribackground.ignoresSafeArea()
             
-            VStack(spacing: 24) {
+            VStack(spacing: 30) {
                 
                 Spacer()
                 
-                Text("Login")
+                Text("Create Account")
                     .font(.title.bold())
                 
                 VStack(spacing: 16) {
@@ -45,15 +44,21 @@ struct LoginView: View {
                         .padding()
                         .background(.white)
                         .cornerRadius(12)
+                    
+                    SecureField("Confirm Password", text: $confirmPassword)
+                        .padding()
+                        .background(.white)
+                        .cornerRadius(12)
                 }
                 .padding(.horizontal)
                 
                 Button {
                     
                     // 🔥 VALIDASI DARI VIEWMODEL
-                    if let error = viewModel.validateLogin(
+                    if let error = viewModel.validateRegister(
                         email: email,
-                        password: password
+                        password: password,
+                        confirmPassword: confirmPassword
                     ) {
                         errorMessage = error
                         showError = true
@@ -63,17 +68,17 @@ struct LoginView: View {
                     isLoading = true
                     
                     Task {
-                        let user = await viewModel.login(
+                        let success = await viewModel.register(
                             email: email,
                             password: password
                         )
                         
                         isLoading = false
                         
-                        if let user = user {
-                            appState.currentUser = user
+                        if success {
+                            dismiss()
                         } else {
-                            errorMessage = "Invalid email or password"
+                            errorMessage = "Failed to register"
                             showError = true
                         }
                     }
@@ -82,7 +87,7 @@ struct LoginView: View {
                     if isLoading {
                         ProgressView().tint(.white)
                     } else {
-                        Text("Login")
+                        Text("Register")
                             .fontWeight(.semibold)
                     }
                 }
@@ -94,17 +99,14 @@ struct LoginView: View {
                 .padding(.horizontal)
                 .disabled(isLoading)
                 
-                Button("Don't have an account? Register") {
-                    showRegister = true
+                Button("Back to Login") {
+                    dismiss()
                 }
                 .font(.footnote)
                 .foregroundStyle(Color.gauriprimary)
                 
                 Spacer()
             }
-        }
-        .sheet(isPresented: $showRegister) {
-            RegisterView()
         }
         .alert("Error", isPresented: $showError) {
             Button("OK", role: .cancel) {}
@@ -115,5 +117,5 @@ struct LoginView: View {
 }
 
 #Preview {
-    LoginView()
+    RegisterView()
 }

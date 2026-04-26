@@ -18,18 +18,17 @@ struct BilledToSectionView: View {
         VStack(alignment: .leading, spacing: 6) {
 
             Text("Billed To")
-                .font(.subheadline)
-                .padding(.bottom, 5)
+                .font(.system(size: 13, weight: .bold))
+                .foregroundColor(.black)
 
             Text(customerName)
-                .font(.headline)
-                .fontWeight(.bold)
 
             Text(customerPhone)
 
             Text(address)
         }
-        .font(.subheadline)
+        .font(.system(size: 12, weight: .semibold))
+        .foregroundColor(.black.opacity(0.6))
     }
 }
 

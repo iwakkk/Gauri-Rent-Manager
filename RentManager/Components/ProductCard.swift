@@ -39,6 +39,7 @@ struct ProductCard: View {
             .background(Color.gray.opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 12))
             
+            
             // MARK: - TEXT INFO
             VStack(alignment: .leading, spacing: 6) {
                 

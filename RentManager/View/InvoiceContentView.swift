@@ -23,10 +23,13 @@ struct InvoiceContentView: View {
     let bookingId: UUID
     let business: BusinessProfile?
     
+    
     var body: some View {
         if let business = business {
             
-        VStack(spacing: 20) {
+            VStack(spacing: 20) {
+                
+                Spacer()
                 
                 HeaderSectionView(
                     invoiceNumber: bookingId.uuidString
@@ -47,25 +50,10 @@ struct InvoiceContentView: View {
                         customerPhone: draft.customerPhone,
                         address: draft.customerAddress
                     )
-                    
-                    
-//                    PaymentInfoSection(
-//                        accountNumber: draft.customerBankAccount
-//                    )
-                }
-                
-                
-                HStack {
-                    DateInfoSectionView(
-                        startDate: draft.rentStartDate,
-                        endDate: draft.rentEndDate
-                    )
-                    
-                    Spacer()
+                    .frame(width: 265)
                     
                 }
-                
-                
+                .padding(.vertical)
                 
                 OrderItemsTableView(
                     items: draft.items.map {
@@ -81,20 +69,42 @@ struct InvoiceContentView: View {
                 
                 Spacer()
                 
-                
-                TotalSectionView(
-                    subtotal: draft.subtotalAmount,
-                    shipping: draft.shippingFee,
-                    total: draft.totalAmount
-                )
+                HStack(alignment: .bottom){
+                    VStack(alignment: .leading){
+                        
+                        DateInfoSectionView(
+                            startDate: draft.rentStartDate,
+                            endDate: draft.rentEndDate,
+                            accountNumber: draft.customerBankAccount
+                        )
+                        
+                       
+                        
+                        PaymentInfoSection(
+                            bankName: business.bankName, bankNumber: business.bankNumber, accountName: business.bankAccountName
+                        )
+                        
+                        
+                        
+                        
+                    }
+                    
+                    Spacer()
+                    TotalSectionView(
+                        subtotal: draft.subtotalAmount,
+                        shipping: draft.shippingFee,
+                        total: draft.totalAmount,
+                        deposit: draft.deposit
+                    ).frame(width: 265)
+                }
                 
                 
                 
             }
-                .padding(40)
-                .padding(.bottom,50)
-                .frame(width: 595, height: 842)
-                .background(Color.white)
+            .padding(40)
+            .padding(.bottom,50)
+            .frame(width: 595, height: 842)
+            .background(Color.white)
             
         }
     }

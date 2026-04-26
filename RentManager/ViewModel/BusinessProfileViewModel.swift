@@ -27,13 +27,26 @@ class BusinessProfileViewModel {
         }
     }
     
-//    func save() async {
-//        guard let profile else { return }
-//        
-//        do {
-//            try await service.updateBusinessProfile(profile)
-//        } catch {
-//            print("save error:", error)
-//        }
-//    }
+    func updateBusiness(with draft: BusinessProfileDraft) async {
+        guard let current = business else { return }
+        
+        let updated = BusinessProfile(
+            id: current.id,
+            email: draft.email, businessName: draft.name,
+            businessPhone: draft.phone,
+            businessAddress: draft.address,
+            bankName: draft.bankName,
+            bankNumber: draft.bankNumber,
+            bankAccountName: draft.bankAccountName,
+            businessImageURL: current.businessImageURL
+        )
+        print("📦 Prepared updated model:")
+           print("   id: \(updated.id)")
+        do {
+            try await service.updateBusinessProfile(updated)
+            business = try await service.fetchBusinessProfile()
+        } catch {
+            print("update error:", error)
+        }
+    }
 }

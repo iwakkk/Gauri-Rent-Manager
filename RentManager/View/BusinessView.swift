@@ -28,6 +28,7 @@ struct BusinessView: View {
                 if viewModel.isLoading {
                     Spacer()
                     ProgressView()
+                        .frame(maxWidth: .infinity)
                     Spacer()
                 } else {
                     List {
@@ -71,7 +72,7 @@ struct BusinessView: View {
                         
                         Section("Bank") {
                             InfoRow(icon: "building.columns", title: "Bank", value: viewModel.business?.bankName)
-                            InfoRow(icon: "creditcard",title: "Account", value: viewModel.business?.bankNumber)
+                            InfoRow(icon: "creditcard",title: "Number", value: viewModel.business?.bankNumber)
                             InfoRow(icon: "person.text.rectangle",title: "Account", value: viewModel.business?.bankAccountName)
                         }
                     }
@@ -86,7 +87,7 @@ struct BusinessView: View {
             await viewModel.loadBusinessProfile()
         }
         .sheet(isPresented: $showEditSheet) {
-            
+            EditBusinessView(viewModel: viewModel)
         }
     }
 }

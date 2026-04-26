@@ -53,7 +53,7 @@ struct OrderItemView: View {
             }
             .pickerStyle(.menu)
             
-            FormFieldRow(title: "Nama Produk", text: $item.productName)
+            FormFieldRow(title: "Product Name", text: $item.productName)
             
             FormFieldRow(
                 title: "Quantity",
