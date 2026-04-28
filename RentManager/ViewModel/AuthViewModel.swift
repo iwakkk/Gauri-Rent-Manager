@@ -1,5 +1,5 @@
 //
-//  LoginViewModel.swift
+//  AuthViewModel.swift
 //  RentManager
 //
 //  Created by Edward Suwandi on 09/02/26.
@@ -9,9 +9,9 @@ import Foundation
 import Supabase
 
 @Observable
-class LoginViewModel {
+class AuthViewModel {
     
-    // 🔐 LOGIN
+    // LOGIN
     func login(email: String, password: String) async -> Users? {
         do {
             let response = try await supabase.auth.signIn(
@@ -36,7 +36,7 @@ class LoginViewModel {
         }
     }
     
-    // 📝 REGISTER
+    // REGISTER
     func register(email: String, password: String) async -> Bool {
         do {
             let response = try await supabase.auth.signUp(
@@ -62,7 +62,7 @@ class LoginViewModel {
         }
     }
     
-    // ✅ VALIDASI REGISTER
+    // VALIDASI REGISTER
     func validateRegister(
         email: String,
         password: String,
@@ -90,7 +90,7 @@ class LoginViewModel {
         return nil
     }
     
-    // ✅ VALIDASI LOGIN
+    // VALIDASI LOGIN
     func validateLogin(email: String, password: String) -> String? {
         
         if email.trimmingCharacters(in: .whitespaces).isEmpty ||

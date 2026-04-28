@@ -34,7 +34,7 @@ class ShareViewController: UIViewController {
             
             print("🔍 PROVIDER:", provider.registeredTypeIdentifiers)
             
-            // 🔥 HANDLE TEXT
+            // HANDLE TEXT
             if provider.hasItemConformingToTypeIdentifier(UTType.text.identifier) {
                 
                 dispatchGroup.enter()

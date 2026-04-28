@@ -11,6 +11,7 @@ import UIKit
 
 struct ProductsService {
     
+    // FETCH PRODUCTS
     func fetchProducts() async throws -> [Products] {
         let products: [Products] = try await supabase
             .from("products")
@@ -22,7 +23,7 @@ struct ProductsService {
         return products
     }
     
-    // MARK: - INSERT PRODUCT
+    // INSERT PRODUCT
     func insertProduct(_ product: Products) async throws {
         try await supabase
             .from("products")
@@ -30,7 +31,7 @@ struct ProductsService {
             .execute()
     }
     
-    // MARK: - UPDATE PRODUCT
+    // UPDATE PRODUCT
     func updateProduct(_ product: Products) async throws {
         try await supabase
             .from("products")
@@ -39,7 +40,7 @@ struct ProductsService {
             .execute()
     }
     
-    // MARK: - DELETE PRODUCT
+    // DELETE PRODUCT
     func deleteProduct(id: UUID) async throws {
         try await supabase
             .from("products")
@@ -50,7 +51,7 @@ struct ProductsService {
             .execute()
     }
 
-    
+    // UPLOAD PRODUCT IMAGE
     func uploadImage(_ data: Data) async throws -> String {
         
         guard let image = UIImage(data: data),

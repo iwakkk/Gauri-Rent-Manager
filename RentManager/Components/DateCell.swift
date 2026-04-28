@@ -58,13 +58,13 @@ struct DateCell: View {
         .buttonStyle(.plain)
     }
     
-    // MARK: BACKGROUND
+    // BACKGROUND
     private var backgroundColor: Color {
         if isSelected {
             return .blue
             
         } else if isStartDate {
-            return .green.opacity(0.85)   // START
+            return .green.opacity(0.85)
             
         } else if isEndDate {
             return .blue.opacity(0.10)
@@ -80,7 +80,7 @@ struct DateCell: View {
         }
     }
     
-    // MARK: STATES
+    // STATES
     private var isSelected: Bool {
         calendar.isDate(date, inSameDayAs: selectedDate)
     }

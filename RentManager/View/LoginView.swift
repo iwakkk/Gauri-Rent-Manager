@@ -18,7 +18,7 @@ struct LoginView: View {
     @State private var errorMessage = ""
     @State private var isLoading = false
     
-    @State private var viewModel = LoginViewModel()
+    @State private var viewModel = AuthViewModel()
     
     @State private var showRegister = false
     
@@ -27,12 +27,19 @@ struct LoginView: View {
         ZStack {
             Color.gauribackground.ignoresSafeArea()
             
+            
             VStack(spacing: 24) {
                 
                 Spacer()
-                
-                Text("Login")
-                    .font(.title.bold())
+                VStack(spacing: 8) {
+                    
+                    Text("Gauri Rent Manager")
+                        .font(.title.bold())
+                        .foregroundStyle(Color.gauriprimary)
+                    
+                    Text("Login to continue")
+                        .font(.title2.bold())
+                }
                 
                 VStack(spacing: 16) {
                     
@@ -50,7 +57,6 @@ struct LoginView: View {
                 
                 Button {
                     
-                    // 🔥 VALIDASI DARI VIEWMODEL
                     if let error = viewModel.validateLogin(
                         email: email,
                         password: password
@@ -103,7 +109,7 @@ struct LoginView: View {
                 Spacer()
             }
         }
-        .sheet(isPresented: $showRegister) {
+        .fullScreenCover(isPresented: $showRegister) {
             RegisterView()
         }
         .alert("Error", isPresented: $showError) {

@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Observation
 
 @Observable
 class ProductsViewModel {
@@ -16,6 +15,7 @@ class ProductsViewModel {
     
     private let service = ProductsService()
     
+    // VALIDASI PRODUCT
     func isValid(draft: ProductDraft) -> Bool {
         guard !draft.name.trimmingCharacters(in: .whitespaces).isEmpty else { return false }
         guard !draft.color.trimmingCharacters(in: .whitespaces).isEmpty else { return false }
@@ -24,6 +24,7 @@ class ProductsViewModel {
         return true
     }
     
+    // CREATE PRODUCT
     func createProduct(from draft: ProductDraft, imageData: Data?) async {
         do {
             var imageUrl: String? = nil
@@ -51,7 +52,7 @@ class ProductsViewModel {
         }
     }
     
-    // MARK: Fetch
+    // LOAD PRODUCTS
     func loadProducts() async {
         isLoading = true
         defer { isLoading = false }
@@ -64,7 +65,7 @@ class ProductsViewModel {
     }
     
     
-    // MARK: Update
+    // UPDATE PRODUCT
     func updateProduct(_ product: Products) async {
         do {
             try await service.updateProduct(product)
@@ -74,7 +75,7 @@ class ProductsViewModel {
         }
     }
     
-    // MARK: Delete
+    // DELETE PRODUCT
     func deleteProduct(id: UUID) async {
         do {
             try await service.deleteProduct(id: id)

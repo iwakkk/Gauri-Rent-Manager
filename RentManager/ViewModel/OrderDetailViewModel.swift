@@ -18,8 +18,6 @@ class OrderDetailViewModel {
     var isLoading = false
     var isUpdating = false
     
-    var showToast = false
-    var toastMessage = ""
     
     private let service = BookingsService()
     
@@ -27,7 +25,7 @@ class OrderDetailViewModel {
         self.booking = booking
     }
     
-    // func to load single booking details
+    // LOAG SINGLE BOOKING DETAILS
     func loadBookingItems() async {
         isLoading = true
         do {
@@ -39,7 +37,7 @@ class OrderDetailViewModel {
         isLoading = false
     }
     
-    // func to update status
+    // UPDATE STATUS
     func updateStatus(to status: BookingStatus) async {
         isUpdating = true
         do {
@@ -48,8 +46,6 @@ class OrderDetailViewModel {
                 status: status
             )
             
-            toastMessage = "Status berhasil diupdate"
-            showToast = true
             
             booking.status = status
             
@@ -59,7 +55,7 @@ class OrderDetailViewModel {
         isUpdating = false
     }
     
-    // func to cancel the booking
+    // CANCEL BOOKING
     func cancelBooking() async {
         isUpdating = true
         do {
@@ -67,9 +63,6 @@ class OrderDetailViewModel {
                 bookingId: booking.id,
                 status: .cancelled
             )
-            
-            toastMessage = "Pesanan dibatalkan"
-            showToast = true
             
             booking.status = .cancelled
             

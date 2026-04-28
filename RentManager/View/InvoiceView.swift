@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct InvoiceView: View {
     
     let bookingId: UUID

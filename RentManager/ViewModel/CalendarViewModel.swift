@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SwiftUI
 
 enum RangePosition {
     case none
@@ -23,7 +22,7 @@ class CalendarViewModel {
     
     private let calendar = Calendar.current
     
-    // MARK: Generate Calendar Days
+    // GENERATE CALENDAR DAYS
     func generateDays(for month: Date) -> [Date] {
         guard let monthInterval = calendar.dateInterval(of: .month, for: month),
               let firstWeek = calendar.dateInterval(of: .weekOfMonth, for: monthInterval.start),
@@ -41,12 +40,12 @@ class CalendarViewModel {
         return days
     }
     
-    // MARK: Normalize
+    // NORMALIZE DATE
     func normalize(_ date: Date) -> Date {
         calendar.startOfDay(for: date)
     }
     
-    // MARK: Count booking per day
+    // COUNT BOOKINGS PER DAY
     func count(for date: Date) -> Int {
         let d = normalize(date)
         
@@ -61,7 +60,7 @@ class CalendarViewModel {
         }.count
     }
     
-    // MARK: START detection
+    // DETECT START DATE
     func isStartDate(_ date: Date) -> Bool {
         let d = normalize(date)
         
@@ -71,7 +70,7 @@ class CalendarViewModel {
         }
     }
     
-    // MARK: END detection
+    // DETECT END DATE
     func isEndDate(_ date: Date) -> Bool {
         let d = normalize(date)
         
@@ -81,7 +80,7 @@ class CalendarViewModel {
         }
     }
     
-    // MARK: Range Position (optional UI highlight)
+    // RANGE POSITION
     func rangePosition(for date: Date) -> RangePosition {
         let d = normalize(date)
         

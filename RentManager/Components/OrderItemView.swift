@@ -14,11 +14,13 @@ struct OrderItemView: View {
     var onDelete: () -> Void
     var canDelete: Bool
     
+    @State private var showNewProduct = false
+    
     var body: some View {
-        
         
         VStack(spacing: 14) {
             
+            // MARK: HEADER
             HStack {
                 Text("Product")
                     .fontWeight(.semibold)
@@ -35,26 +37,40 @@ struct OrderItemView: View {
                 }
             }
             
+            // MARK: PRODUCT PICKER
             Picker("Product", selection: $item.selectedProduct) {
-                Text("Select From Catalog").tag(Products?.none)
+                
+                Text("Select Product")
+                    .tag(Optional<Products>.none)
                 
                 ForEach(allProducts, id: \.id) { product in
-                    Text("\(product.name) - \(product.color)")
+                    Text("\(product.name ?? "") - \(product.color ?? "")")
                         .tag(Optional(product))
                 }
             }
-            .onChange(of: item.selectedProduct) { newValue in
-                if let product = newValue {
-                    item.productName = product.name
-                    item.color = product.color
-                    item.size = ""
-                    item.price = product.price
-                }
-            }
             .pickerStyle(.menu)
+            .onChange(of: item.selectedProduct) { newValue in
+                guard let product = newValue else { return }
+                
+                // auto isi dari catalog
+                item.productName = product.name ?? ""
+                item.color = product.color ?? ""
+                item.price = product.price ?? 0
+                item.size = ""
+            }
             
-            FormFieldRow(title: "Product Name", text: $item.productName)
+            // MARK: ADD NEW PRODUCT
+            Button {
+                showNewProduct = true
+            } label: {
+                HStack {
+                    Image(systemName: "plus.circle.fill")
+                    Text("Add New Product")
+                }
+                .font(.subheadline)
+            }
             
+            // MARK: QUANTITY (SATU-SATUNYA INPUT)
             FormFieldRow(
                 title: "Quantity",
                 text: Binding(
@@ -63,51 +79,70 @@ struct OrderItemView: View {
                 ),
                 keyboard: .numberPad
             )
+            .disabled(item.selectedProduct == nil)
+            .opacity(item.selectedProduct == nil ? 0.5 : 1)
             
-            FormFieldRow(title: "Color", text: $item.color)
+            // MARK: COLOR (READ ONLY)
+            FormFieldRow(
+                title: "Color",
+                text: Binding(
+                    get: { item.color },
+                    set: { _ in }
+                )
+            )
+            .disabled(true)
+            .opacity(item.selectedProduct == nil ? 0.5 : 1)
             
-            
+            // MARK: PRICE (READ ONLY)
             FormFieldRow(
                 title: "Price",
                 text: Binding(
                     get: { String(Int(item.price)) },
-                    set: { item.price = Double($0) ?? 0 }
+                    set: { _ in }
                 ),
                 keyboard: .numberPad
             )
+            .disabled(true)
+            .opacity(item.selectedProduct == nil ? 0.5 : 1)
             
-            Text("Size")
-                .fontWeight(.semibold)
-            
+            // MARK: SIZE (SELECT ONLY)
             if let product = item.selectedProduct {
                 
+                let sizes = product.size ?? []
                 
-                
-                HStack(spacing: 12) {
+                if !sizes.isEmpty {
+                    Text("Size")
+                        .fontWeight(.semibold)
                     
-                    let sizes = product.size ?? []
-                    
-                    ForEach(sizes, id: \.self) { size in
-                        Button {
-                            item.size = size
-                        } label: {
-                            HStack(spacing: 6) {
-                                
-                                Text(size)
-                                    .foregroundColor(.primary)
-                                
-                                Image(systemName: item.size == size
-                                      ? "largecircle.fill.circle"
-                                      : "circle")
-                                    .foregroundColor(.blue)
+                    HStack(spacing: 12) {
+                        
+                        ForEach(sizes, id: \.self) { size in
+                            
+                            Button {
+                                item.size = size
+                            } label: {
+                                HStack(spacing: 6) {
+                                    
+                                    Text(size)
+                                    
+                                    Image(systemName: item.size == size
+                                          ? "largecircle.fill.circle"
+                                          : "circle")
+                                        .foregroundColor(.blue)
+                                }
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 6)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.gray.opacity(0.2))
+                                )
                             }
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
                         }
                     }
                 }
             }
             
+            // MARK: SUBTOTAL
             HStack {
                 Spacer()
                 Text("Subtotal: Rp \(Int(item.subtotal))")
@@ -115,6 +150,11 @@ struct OrderItemView: View {
             }
             
             Divider()
+        }
+        .sheet(isPresented: $showNewProduct) {
+            NewProductView(
+                viewModel: ProductsViewModel()
+            )
         }
     }
 }

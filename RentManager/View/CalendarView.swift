@@ -26,7 +26,7 @@ struct CalendarView: View {
             VStack {
                 
                 let visibleBookings = viewModel.bookings.filter {
-                    $0.status != .unpaid
+                    $0.status != .unpaid && $0.status != .cancelled
                 }
                 
                 CustomCalendar(

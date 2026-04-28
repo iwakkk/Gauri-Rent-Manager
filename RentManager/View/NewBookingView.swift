@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct NewBookingView: View {
     
     @Environment(\.dismiss) var dismiss
@@ -44,7 +43,7 @@ struct NewBookingView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        let parsedDraft = viewModel.parseBookingText(bookingFormText)
+                        let parsedDraft = viewModel.parseBookingText(bookingFormText,  products: viewModel.allProducts)
                         viewModel.parsedDraft = parsedDraft
                         goToNextPage = true
                     } label: {
@@ -92,7 +91,11 @@ struct NewBookingView: View {
         
         // optional: parse di background
         DispatchQueue.global(qos: .userInitiated).async {
-            let parsed = viewModel.parseBookingText(text)
+            
+            let parsed = viewModel.parseBookingText(
+                text,
+                products: viewModel.allProducts
+            )
             
             DispatchQueue.main.async {
                 viewModel.parsedDraft = parsed

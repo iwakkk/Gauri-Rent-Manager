@@ -118,7 +118,7 @@ struct OrderDetailView: View {
                                 // MARK: INFO SECTION
                                 VStack(alignment: .leading, spacing: 6) {
                                     
-                                    Text(item.products?.name ?? "-")
+                                    Text("\(item.products?.name ?? "-") - \(item.products?.color ?? "-")")
                                         .font(.body.weight(.semibold))
                                     
                                     Text("Qty: \(item.quantity)")
@@ -276,24 +276,6 @@ struct OrderDetailView: View {
         } message: {
             Text("Are you sure you want to continue?")
         }
-        .overlay(alignment: .top) {
-            if viewModel.showToast {
-                Text(viewModel.toastMessage)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(Color.green.opacity(0.8))
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
-                    .padding(.top, 60)
-                    .transition(.move(edge: .top).combined(with: .opacity))
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-                            viewModel.showToast = false
-                        }
-                    }
-            }
-        }
-        .animation(.easeInOut, value: viewModel.showToast)
         .sheet(isPresented: $showInvoiceSheet) {
             NavigationStack{
                 if let urlString = viewModel.booking.invoiceURL,

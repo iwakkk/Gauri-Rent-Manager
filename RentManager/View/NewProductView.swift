@@ -46,7 +46,7 @@ struct NewProductView: View {
                             title: "Price",
                             text: Binding(
                                 get: {
-                                    String(draft.price)
+                                    String(draft.price).replacingOccurrences(of: ".0", with: "")
                                 },
                                 set: { newValue in
                                     draft.price = Double(newValue) ?? 0

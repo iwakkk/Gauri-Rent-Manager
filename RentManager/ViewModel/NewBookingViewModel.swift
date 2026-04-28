@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SwiftUI
 
 @Observable
 class NewBookingViewModel {
@@ -15,6 +14,7 @@ class NewBookingViewModel {
     var allProducts: [Products] = []
     var isLoading = false
     
+    // MONTH NORMALIZER
     func normalizeMonth(_ text: String) -> String {
         
         var result = text.lowercased()
@@ -41,61 +41,103 @@ class NewBookingViewModel {
         return result
     }
     
+    // PRODUCT MATCH
+    func matchProduct(from text: String, products: [Products]) -> Products? {
+        
+        let query = text
+            .lowercased()
+            .replacingOccurrences(of: "-", with: " ")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        let words = query.components(separatedBy: " ")
+        
+        let scoredProducts = products.map { product -> (product: Products, score: Int) in
+            
+            let name = product.name.lowercased()
+            let color = product.color.lowercased()
+            
+            var score = 0
+            
+            for word in words {
+                if name.contains(word) {
+                    score += 2
+                }
+                if color.contains(word) {
+                    score += 3
+                }
+            }
+            
+            return (product, score)
+        }
+        
+        return scoredProducts
+            .sorted { $0.score > $1.score }
+            .first?
+            .product
+    }
+    
+    // DATE EXTRACTION
     func extractDates(from text: String) -> (Date?, Date?) {
         
-        // supaya 6oct -> 6 oct
-        let normalized = text.replacingOccurrences(
-            of: #"(\d)([a-zA-Z]{3,})"#,
-            with: "$1 $2",
-            options: .regularExpression
-        ).lowercased()
+        let normalizedText = normalizeMonth(text.lowercased())
+        let year = Calendar.current.component(.year, from: Date())
         
-        let pattern = #"(\d{1,2})\s*([a-z]{3,})?\s*-\s*(\d{1,2})\s*([a-z]{3,})"#
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "d MMMM yyyy"
+        
+        let lines = normalizedText.components(separatedBy: .newlines)
+        
+        guard let line = lines.first(where: { $0.contains("periode sewa") }) else {
+            return (nil, nil)
+        }
+        
+        let pattern = #"(\d{1,2})(?:\s*([a-z]+))?\s*-\s*(\d{1,2})(?:\s*([a-z]+))?"#
         
         guard let regex = try? NSRegularExpression(pattern: pattern) else {
             return (nil, nil)
         }
         
-        let range = NSRange(normalized.startIndex..., in: normalized)
+        let range = NSRange(line.startIndex..., in: line)
         
-        guard let match = regex.firstMatch(in: normalized, options: [], range: range) else {
+        guard let match = regex.firstMatch(in: line, range: range) else {
             return (nil, nil)
         }
         
-        func value(_ i: Int) -> String? {
-            guard let r = Range(match.range(at: i), in: normalized) else { return nil }
-            return String(normalized[r])
+        func get(_ i: Int) -> String? {
+            guard let r = Range(match.range(at: i), in: line) else { return nil }
+            let val = String(line[r]).trimmingCharacters(in: .whitespaces)
+            return val.isEmpty ? nil : val
         }
         
-        guard let startDay = value(1),
-              let endDay = value(3) else { return (nil, nil) }
+        let startDay = Int(get(1) ?? "") ?? 0
+        let startMonth = get(2)
         
-        let startMonth = value(2)
-        let endMonth = value(4) ?? startMonth
+        let endDay = Int(get(3) ?? "") ?? 0
+        let endMonth = get(4)
         
-        guard let month = endMonth else { return (nil, nil) }
+        let sm = startMonth ?? endMonth
+        let em = endMonth ?? startMonth ?? startMonth
         
-        let year = Calendar.current.component(.year, from: Date())
+        guard let finalStartMonth = sm,
+              let finalEndMonth = em else { return (nil, nil) }
         
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "d MMM yyyy"
-        
-        let startDate = formatter.date(from: "\(startDay) \(startMonth ?? month) \(year)")
-        let endDate = formatter.date(from: "\(endDay) \(month) \(year)")
+        let startDate = formatter.date(from: "\(startDay) \(finalStartMonth) \(year)")
+        let endDate = formatter.date(from: "\(endDay) \(finalEndMonth) \(year)")
         
         return (startDate, endDate)
     }
     
     
-    // MARK: Function to parse text form to fields
-    func parseBookingText(_ text: String) -> BookingDraft {
+    // MAIN PARSER
+    func parseBookingText(_ text: String, products: [Products]) -> BookingDraft {
         
         var draft = BookingDraft()
         var result: [String: String] = [:]
         
         let lines = text.components(separatedBy: .newlines)
         
+        // PARSE KEY : VALUE
         for line in lines {
             if line.contains(":") {
                 let parts = line.components(separatedBy: ":")
@@ -108,37 +150,50 @@ class NewBookingViewModel {
             }
         }
         
+        // CUSTOMER
         draft.customerName = result["Nama"] ?? ""
         draft.customerAddress = result["Alamat"] ?? ""
         draft.customerPhone = result["No Hp"] ?? ""
         draft.customerBankAccount = result["No rekening pengembalian deposit"] ?? ""
         
-        if result["Dress"] != nil {
+        // PRODUCT
+        let dressText = result["Dress"] ?? ""
+        let sizeText = result["Size"] ?? ""
+        
+        if !dressText.isEmpty {
+            
             var item = BookingItemDraft()
-            item.selectedProduct = nil
+            
+            if let matched = matchProduct(from: dressText, products: products) {
+                item.selectedProduct = matched
+                item.productName = matched.name
+                item.color = matched.color
+                item.price = matched.price
+            }
+            
+            if !sizeText.isEmpty {
+                item.size = sizeText
+            }
+            
             draft.items = [item]
         }
         
-        // Extract date automatically
-        let (startDate, endDate) = extractDates(from: text)
-
-        draft.rentStartDate = startDate ?? Date()
-        draft.rentEndDate = endDate ?? Date()
-
+        // DATE
+        let (start, end) = extractDates(from: text)
+        draft.rentStartDate = start ?? Date()
+        draft.rentEndDate = end ?? Date()
+        
         return draft
     }
     
-    // MARK: Function to load all products
+    // LOAD PRODUCTS
     func loadProducts() async {
         isLoading = true
         do {
             allProducts = try await ProductsService().fetchProducts()
-            print("Products loaded:", allProducts.count)
         } catch {
             print("Error fetch products:", error)
         }
         isLoading = false
     }
-    
-    
 }

@@ -19,7 +19,7 @@ struct RegisterView: View {
     @State private var errorMessage = ""
     @State private var isLoading = false
     
-    @State private var viewModel = LoginViewModel()
+    @State private var viewModel = AuthViewModel()
     
     var body: some View {
         
@@ -30,8 +30,17 @@ struct RegisterView: View {
                 
                 Spacer()
                 
-                Text("Create Account")
-                    .font(.title.bold())
+                
+                
+                VStack(spacing: 8) {
+                    
+                    Text("Gauri Rent Manager")
+                        .font(.title.bold())
+                        .foregroundStyle(Color.gauriprimary)
+                    
+                    Text("Register")
+                        .font(.title2.bold())
+                }
                 
                 VStack(spacing: 16) {
                     
