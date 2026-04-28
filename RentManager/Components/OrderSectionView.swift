@@ -10,8 +10,8 @@ import SwiftUI
 struct OrderSectionView: View {
     
     @Binding var draft: BookingDraft
-    var allProducts: [Products]
-    
+//    var allProducts: [Products]
+    var viewModel: ProductsViewModel
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             
@@ -22,7 +22,7 @@ struct OrderSectionView: View {
             ForEach(draft.items.indices, id: \.self) { index in
                 OrderItemView(
                     item: $draft.items[index],
-                    allProducts: allProducts,
+                    viewModel: viewModel,
                     onDelete: {
                         draft.items.remove(at: index)
                     },

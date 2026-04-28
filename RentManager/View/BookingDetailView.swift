@@ -10,7 +10,7 @@ import SwiftUI
 struct BookingDetailView: View {
     
     @State var draft: BookingDraft
-    var allProducts: [Products]
+//    var allProducts: [Products]
     
     @Binding var bookingId: UUID?
     @Binding var showOrderSheet: Bool
@@ -19,6 +19,7 @@ struct BookingDetailView: View {
     @State private var goToInvoicePage = false
     @State private var showValidationAlert = false
     @State private var viewModel = BookingDetailViewModel()
+    @State private var productsViewModel = ProductsViewModel()
     @State private var businessViewModel = BusinessProfileViewModel()
     
     var body: some View {
@@ -32,7 +33,7 @@ struct BookingDetailView: View {
                 
                 OrderSectionView(
                     draft: $draft,
-                    allProducts: allProducts
+                    viewModel: productsViewModel
                 )
                 
                 RentPeriodSectionView(draft: $draft)
@@ -107,6 +108,7 @@ struct BookingDetailView: View {
         .task {
             await businessViewModel.loadBusinessProfile()
             await viewModel.loadCustomers()
+            await productsViewModel.loadProducts()
         }
     }
 }

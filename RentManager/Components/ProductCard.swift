@@ -40,7 +40,7 @@ struct ProductCard: View {
             .clipShape(RoundedRectangle(cornerRadius: 12))
             
             
-            // MARK: - TEXT INFO
+            // TEXT INFO
             VStack(alignment: .leading, spacing: 6) {
                 
                 Text(product.name)
@@ -58,9 +58,16 @@ struct ProductCard: View {
                     
                     Spacer()
                     
-//                    Text("Stock: \(product.stock)")
-//                        .font(.caption)
-//                        .foregroundColor(product.stock > 0 ? .green : .red)
+                     Text(product.isRented ? "Rented" : "Available")
+                        .font(.caption2)
+                        .fontWeight(.semibold)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            product.isRented ? Color.red.opacity(0.15) : Color.green.opacity(0.15)
+                        )
+                        .foregroundColor(product.isRented ? .red : .green)
+                        .clipShape(Capsule())
                 }
             }
         }

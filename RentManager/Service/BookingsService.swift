@@ -67,14 +67,14 @@ struct BookingsService {
         return bookingId
     }
 
-    // MARK: update booking with the same booking id
+    // UPDATE BOOKING WITH THE SAME BOOKING ID
     func updateBooking(id: UUID, draft: BookingDraft) async throws {
 
 
-        // 1. FIND / UPDATE CUSTOMER (SAMA SEPERTI CREATE)
+        // 1. FIND / UPDATE CUSTOMER
         let customerId = try await findCustomer(draft: draft)
 
-        // 2. UPDATE BOOKING HEADER (LENGKAP seperti create)
+        // 2. UPDATE BOOKING HEADER
         let data = BookingUpdate(
             rent_start_date: draft.rentStartDate,
             rent_end_date: draft.rentEndDate,
@@ -93,7 +93,7 @@ struct BookingsService {
             .eq("id", value: id)
             .execute()
 
-        // 3. REPLACE ITEMS (clean & consistent)
+        // 3. REPLACE ITEMS
         try await supabase
             .from("booking_items")
             .delete()
@@ -117,7 +117,7 @@ struct BookingsService {
             .execute()
     }
 
-    // MARK: create invoice file and upload to supabase
+    // CREATE INVOICE AND UPLOAD TO SUPABASE
     func uploadInvoice(fileURL: URL, bookingId: UUID) async throws -> String {
 
         let fileName = "invoice-\(bookingId).pdf"
@@ -150,7 +150,7 @@ struct BookingsService {
         return urlString
     }
     
-    // MARK: - FETCH ALL BOOKINGS
+    // FETCH ALL BOOKINGS
     func fetchBookings() async throws -> [Bookings] {
 
         return try await supabase
@@ -161,7 +161,7 @@ struct BookingsService {
             .value
     }
     
-    // MARK: FETCH SINGLE BOOKING
+    // FETCH SINGLE BOOKING
     func fetchBooking(by id: UUID) async throws -> Bookings {
         
         let response: Bookings = try await supabase
@@ -177,7 +177,7 @@ struct BookingsService {
     
     
 
-    // MARK: - FETCH ITEMS
+    // FETCH ITEMS
     func fetchItems(for bookingId: UUID) async throws -> [BookingItems] {
 
         return try await supabase
@@ -199,7 +199,7 @@ struct BookingsService {
             .value
     }
 
-    // MARK: - UPDATE STATUS
+    // UPDATE STATUS
     func updateStatus(bookingId: UUID, status: BookingStatus) async throws {
 
         try await supabase
@@ -211,7 +211,53 @@ struct BookingsService {
             .execute()
     }
 
-    // MARK: - CUSTOMER
+    // UPDATE PRODUCT STATUS TO RENTED
+    func markProductsAsRented(bookingId: UUID) async throws {
+
+        let items: [BookingItems] = try await supabase
+            .from("booking_items")
+            .select()
+            .eq("booking_id", value: bookingId)
+            .execute()
+            .value
+
+        let productIds = items.map { $0.productId }
+
+        guard !productIds.isEmpty else { return }
+
+        try await supabase
+            .from("products")
+            .update([
+                "is_rented": true
+            ])
+            .in("id", values: productIds)
+            .execute()
+    }
+    
+    // UPDATE PRODUCT STATUS TO NOT RENTED
+    func releaseProducts(bookingId: UUID) async throws {
+
+        let items: [BookingItems] = try await supabase
+            .from("booking_items")
+            .select()
+            .eq("booking_id", value: bookingId)
+            .execute()
+            .value
+
+        let productIds = items.map { $0.productId }
+
+        guard !productIds.isEmpty else { return }
+
+        try await supabase
+            .from("products")
+            .update([
+                "is_rented": false
+            ])
+            .in("id", values: productIds)
+            .execute()
+    }
+    
+    // CUSTOMER
     func findCustomer(draft: BookingDraft) async throws -> UUID {
 
         let existing: [Customers] = try await supabase
@@ -242,5 +288,5 @@ struct BookingsService {
         return id
     }
 
-
+    
 }

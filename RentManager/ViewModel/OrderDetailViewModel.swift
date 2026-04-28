@@ -41,11 +41,19 @@ class OrderDetailViewModel {
     func updateStatus(to status: BookingStatus) async {
         isUpdating = true
         do {
+            let currentStatus = booking.status
             try await service.updateStatus(
                 bookingId: booking.id,
                 status: status
             )
             
+            if status == .toShip {
+                try await service.markProductsAsRented(bookingId: booking.id)
+            }
+                   
+            if status == .completed {
+                try await service.releaseProducts(bookingId: booking.id)
+            }
             
             booking.status = status
             

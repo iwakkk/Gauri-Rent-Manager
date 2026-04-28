@@ -13,7 +13,7 @@ class AppState: ObservableObject {
     
     @Published var currentUser: Users?
     
-    private let isDevMode = true
+    private let isDevMode = false
         
         init() {
             if isDevMode {
@@ -25,7 +25,6 @@ class AppState: ObservableObject {
             self.currentUser = Users(
                 id: UUID(),
                 email: "Edward@gmail.com",
-                password: "Edward123",
                 role: "Staff"
             )
         }

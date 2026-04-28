@@ -58,7 +58,6 @@ import Supabase
 struct Users: Codable, Identifiable, Hashable {
     let id: UUID
     let email: String
-    let password: String
     let role: String
 }
 
@@ -75,7 +74,6 @@ struct UsersService {
               for user in users {
                   print("ID: \(user.id)")
                   print("Email: \(user.email)")
-                  print("Password: \(user.password)")
                   print("--------")
               }
 

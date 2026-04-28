@@ -12,26 +12,65 @@ import Supabase
 class AuthViewModel {
     
     // LOGIN
+//    func login(email: String, password: String) async -> Users? {
+//        do {
+//            let response = try await supabase.auth.signIn(
+//                email: email,
+//                password: password
+//            )
+//            
+//            let user = response.user
+//            
+//            let result: [Users] = try await supabase
+//                .from("users")
+//                .select()
+//                .eq("id", value: user.id.uuidString)
+//                .execute()
+//                .value
+//            
+//            return result.first
+//            
+//        } catch {
+//            print("Login gagal: \(error.localizedDescription)")
+//            return nil
+//        }
+//    }
+    // LOGIN
     func login(email: String, password: String) async -> Users? {
         do {
+            print("🔐 TRY LOGIN")
+            print("Email:", email)
+            print("Password:", password)
+
             let response = try await supabase.auth.signIn(
                 email: email,
                 password: password
             )
-            
-            let user = response.user
-            
+
+            print("🟢 AUTH RESPONSE RAW:", response)
+            print("🟢 USER ID:", response.user.id)
+
+            let userId = response.user.id.uuidString
+            print("🟡 QUERY USERS TABLE WITH ID:", userId)
+
             let result: [Users] = try await supabase
                 .from("users")
                 .select()
-                .eq("id", value: user.id.uuidString)
+                .eq("id", value: userId)
                 .execute()
                 .value
-            
+
+            print("🟢 USERS TABLE RESULT:", result)
+
+            if result.isEmpty {
+                print("⚠️ USER FOUND IN AUTH BUT NOT IN TABLE")
+            }
+
             return result.first
-            
+
         } catch {
-            print("Login gagal: \(error.localizedDescription)")
+            print("❌ LOGIN ERROR RAW:", error)
+            print("❌ LOGIN ERROR LOCALIZED:", error.localizedDescription)
             return nil
         }
     }

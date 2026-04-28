@@ -25,7 +25,7 @@ struct ProductsView: View {
                         
                         LazyVStack(spacing: 12) {
                             
-                            ForEach(viewModel.products, id: \.id) { product in
+                            ForEach(viewModel.products.sorted { $0.name < $1.name }, id: \.id) { product in
                                 ProductCard(product: product)
                                     .padding(.horizontal)
                                     .onTapGesture {

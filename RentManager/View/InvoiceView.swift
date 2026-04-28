@@ -57,9 +57,6 @@ struct InvoiceView: View {
                 }
             }
         }
-        .task {
-            await viewModel.loadBooking(currentId: bookingId)
-        }
     }
     
     

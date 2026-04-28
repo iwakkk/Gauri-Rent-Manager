@@ -17,8 +17,6 @@ class NewBookingViewModel {
     // MONTH NORMALIZER
     func normalizeMonth(_ text: String) -> String {
         
-        var result = text.lowercased()
-        
         let monthMap: [String: String] = [
             "januari": "january", "jan": "january",
             "februari": "february", "feb": "february",
@@ -29,18 +27,19 @@ class NewBookingViewModel {
             "juli": "july", "jul": "july",
             "agustus": "august", "agu": "august", "aug": "august",
             "september": "september", "sep": "september",
-            "oktober": "october", "okt": "october", "oct": "october",
+            "oktober": "october", "okt": "october",
             "november": "november", "nov": "november",
-            "desember": "december", "des": "december", "dec": "december"
+            "desember": "december", "des": "december"
         ]
         
-        for (indo, eng) in monthMap {
-            result = result.replacingOccurrences(of: indo, with: eng)
-        }
-        
-        return result
+        return text
+            .lowercased()
+            .components(separatedBy: " ")
+            .map { word in
+                return monthMap[word] ?? word
+            }
+            .joined(separator: " ")
     }
-    
     // PRODUCT MATCH
     func matchProduct(from text: String, products: [Products]) -> Products? {
         
@@ -79,7 +78,9 @@ class NewBookingViewModel {
     // DATE EXTRACTION
     func extractDates(from text: String) -> (Date?, Date?) {
         
+        
         let normalizedText = normalizeMonth(text.lowercased())
+        
         let year = Calendar.current.component(.year, from: Date())
         
         let formatter = DateFormatter()
@@ -92,15 +93,18 @@ class NewBookingViewModel {
             return (nil, nil)
         }
         
+        
         let pattern = #"(\d{1,2})(?:\s*([a-z]+))?\s*-\s*(\d{1,2})(?:\s*([a-z]+))?"#
         
         guard let regex = try? NSRegularExpression(pattern: pattern) else {
+            print("REGEX INVALID")
             return (nil, nil)
         }
         
         let range = NSRange(line.startIndex..., in: line)
         
         guard let match = regex.firstMatch(in: line, range: range) else {
+            print("NO MATCH FROM REGEX")
             return (nil, nil)
         }
         
@@ -111,16 +115,17 @@ class NewBookingViewModel {
         }
         
         let startDay = Int(get(1) ?? "") ?? 0
-        let startMonth = get(2)
-        
         let endDay = Int(get(3) ?? "") ?? 0
+        let startMonth = get(2)
         let endMonth = get(4)
         
         let sm = startMonth ?? endMonth
-        let em = endMonth ?? startMonth ?? startMonth
+        let em = endMonth ?? startMonth
         
         guard let finalStartMonth = sm,
-              let finalEndMonth = em else { return (nil, nil) }
+              let finalEndMonth = em else {
+            return (nil, nil)
+        }
         
         let startDate = formatter.date(from: "\(startDay) \(finalStartMonth) \(year)")
         let endDate = formatter.date(from: "\(endDay) \(finalEndMonth) \(year)")
@@ -128,57 +133,83 @@ class NewBookingViewModel {
         return (startDate, endDate)
     }
     
-    
     // MAIN PARSER
     func parseBookingText(_ text: String, products: [Products]) -> BookingDraft {
         
         var draft = BookingDraft()
-        var result: [String: String] = [:]
+        
+        var items: [BookingItemDraft] = []
+        var currentItem: BookingItemDraft? = nil
         
         let lines = text.components(separatedBy: .newlines)
         
-        // PARSE KEY : VALUE
-        for line in lines {
-            if line.contains(":") {
-                let parts = line.components(separatedBy: ":")
+        for rawLine in lines {
+            
+            let line = rawLine.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !line.isEmpty else { continue }
+            
+            let parts = line.components(separatedBy: ":")
+            
+            // KEY : VALUE PARSING
+            if parts.count >= 2 {
                 
-                if parts.count >= 2 {
-                    let key = parts[0].trimmingCharacters(in: .whitespaces)
-                    let value = parts[1].trimmingCharacters(in: .whitespaces)
-                    result[key] = value
+                let key = parts[0].trimmingCharacters(in: .whitespaces)
+                let value = parts[1].trimmingCharacters(in: .whitespaces)
+                
+                switch key {
+                    
+                // CUSTOMER
+                case "Nama":
+                    draft.customerName = value
+                    
+                case "Alamat":
+                    draft.customerAddress = value
+                    
+                case "No Hp":
+                    draft.customerPhone = value
+                    
+                case "No rekening pengembalian deposit":
+                    draft.customerBankAccount = value
+                    
+                // NEW ITEM START
+                case "Dress":
+                    
+                    // simpan item sebelumnya
+                    if let item = currentItem {
+                        items.append(item)
+                    }
+                    
+                    var newItem = BookingItemDraft()
+                    
+                    if let matched = matchProduct(from: value, products: products),
+                       !matched.isRented {
+                        newItem.selectedProduct = matched
+                        newItem.productName = matched.name
+                        newItem.color = matched.color
+                        newItem.price = matched.price
+                    }
+                    
+                    currentItem = newItem
+                    
+                // SIZE
+                case "Size":
+                    currentItem?.size = value
+                    
+                default:
+                    break
                 }
+                
             }
         }
         
-        // CUSTOMER
-        draft.customerName = result["Nama"] ?? ""
-        draft.customerAddress = result["Alamat"] ?? ""
-        draft.customerPhone = result["No Hp"] ?? ""
-        draft.customerBankAccount = result["No rekening pengembalian deposit"] ?? ""
-        
-        // PRODUCT
-        let dressText = result["Dress"] ?? ""
-        let sizeText = result["Size"] ?? ""
-        
-        if !dressText.isEmpty {
-            
-            var item = BookingItemDraft()
-            
-            if let matched = matchProduct(from: dressText, products: products) {
-                item.selectedProduct = matched
-                item.productName = matched.name
-                item.color = matched.color
-                item.price = matched.price
-            }
-            
-            if !sizeText.isEmpty {
-                item.size = sizeText
-            }
-            
-            draft.items = [item]
+        // push last item
+        if let item = currentItem {
+            items.append(item)
         }
         
-        // DATE
+        draft.items = items
+        
+        // DATE PARSING
         let (start, end) = extractDates(from: text)
         draft.rentStartDate = start ?? Date()
         draft.rentEndDate = end ?? Date()

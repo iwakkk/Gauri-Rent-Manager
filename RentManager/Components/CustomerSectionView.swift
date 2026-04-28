@@ -24,8 +24,8 @@ struct CustomerSectionView: View {
                 Text("Select Customer")
                     .tag(UUID?.none)
 
-                ForEach(customers, id: \.id) { customer in
-                    Text(customer.name)
+                ForEach(customers.sorted(by: { $0.name < $1.name }), id: \.id) { customer in
+                    Text("\(customer.name) - \(customer.phone)")
                         .tag(Optional(customer.id))
                 }
             }

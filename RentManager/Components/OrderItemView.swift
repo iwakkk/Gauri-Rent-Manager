@@ -10,7 +10,8 @@ import SwiftUI
 struct OrderItemView: View {
     
     @Binding var item: BookingItemDraft
-    var allProducts: [Products]
+    
+    var viewModel: ProductsViewModel
     var onDelete: () -> Void
     var canDelete: Bool
     
@@ -20,9 +21,9 @@ struct OrderItemView: View {
         
         VStack(spacing: 14) {
             
-            // MARK: HEADER
+            // HEADER
             HStack {
-                Text("Product")
+                Text("Dress")
                     .fontWeight(.semibold)
                 
                 Spacer()
@@ -36,41 +37,80 @@ struct OrderItemView: View {
                     }
                 }
             }
-            
-            // MARK: PRODUCT PICKER
-            Picker("Product", selection: $item.selectedProduct) {
+            HStack {
+                // PRODUCT PICKER
+                Menu {
+                    ForEach(viewModel.products.sorted(by: { $0.name < $1.name }), id: \.id) { product in
+                        Button {
+                            item.selectedProduct = product
+                        } label: {
+                            Text("\(product.name) - \(product.color) \(product.isRented ? "(Rented)" : "")")
+                        }
+                        .disabled(product.isRented)
+                    }
+                }  label: {
+                    HStack {
+                        Text(
+                            item.selectedProduct == nil
+                            ? "Select Product"
+                            : "\(item.selectedProduct!.name) - \(item.selectedProduct!.color)"
+                        )
+                        
+                        
+                        Image(systemName: "chevron.up.chevron.down")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                }
+                .onChange(of: item.selectedProduct) { newValue in
+                    guard let product = newValue else { return }
+                    
+                    // auto isi dari catalog
+                    item.productName = product.name
+                    item.color = product.color
+                    item.price = product.price
+                    item.size = ""
+                }
                 
-                Text("Select Product")
-                    .tag(Optional<Products>.none)
+                Spacer()
                 
-                ForEach(allProducts, id: \.id) { product in
-                    Text("\(product.name ?? "") - \(product.color ?? "")")
-                        .tag(Optional(product))
+                // ADD NEW PRODUCT
+                Button {
+                    showNewProduct = true
+                } label: {
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                        Text("Add New Product")
+                    }
+                    .font(.subheadline)
                 }
             }
-            .pickerStyle(.menu)
-            .onChange(of: item.selectedProduct) { newValue in
-                guard let product = newValue else { return }
-                
-                // auto isi dari catalog
-                item.productName = product.name ?? ""
-                item.color = product.color ?? ""
-                item.price = product.price ?? 0
-                item.size = ""
-            }
             
-            // MARK: ADD NEW PRODUCT
-            Button {
-                showNewProduct = true
-            } label: {
-                HStack {
-                    Image(systemName: "plus.circle.fill")
-                    Text("Add New Product")
-                }
-                .font(.subheadline)
-            }
             
-            // MARK: QUANTITY (SATU-SATUNYA INPUT)
+            
+            // NAME (READ ONLY)
+            FormFieldRow(
+                title: "Dress",
+                text: Binding(
+                    get: { item.productName },
+                    set: { _ in }
+                )
+            )
+            .disabled(true)
+            .opacity(0.5)
+            
+            // COLOR (READ ONLY)
+            FormFieldRow(
+                title: "Color",
+                text: Binding(
+                    get: { item.color },
+                    set: { _ in }
+                )
+            )
+            .disabled(true)
+            .opacity(0.5)
+            
+            // QUANTITY (SATU-SATUNYA INPUT)
             FormFieldRow(
                 title: "Quantity",
                 text: Binding(
@@ -82,37 +122,14 @@ struct OrderItemView: View {
             .disabled(item.selectedProduct == nil)
             .opacity(item.selectedProduct == nil ? 0.5 : 1)
             
-            // MARK: COLOR (READ ONLY)
-            FormFieldRow(
-                title: "Color",
-                text: Binding(
-                    get: { item.color },
-                    set: { _ in }
-                )
-            )
-            .disabled(true)
-            .opacity(item.selectedProduct == nil ? 0.5 : 1)
-            
-            // MARK: PRICE (READ ONLY)
-            FormFieldRow(
-                title: "Price",
-                text: Binding(
-                    get: { String(Int(item.price)) },
-                    set: { _ in }
-                ),
-                keyboard: .numberPad
-            )
-            .disabled(true)
-            .opacity(item.selectedProduct == nil ? 0.5 : 1)
-            
-            // MARK: SIZE (SELECT ONLY)
+            // SIZE (SELECT ONLY)
             if let product = item.selectedProduct {
                 
-                let sizes = product.size ?? []
+                let sizes = product.size
                 
                 if !sizes.isEmpty {
                     Text("Size")
-                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     
                     HStack(spacing: 12) {
                         
@@ -142,7 +159,21 @@ struct OrderItemView: View {
                 }
             }
             
-            // MARK: SUBTOTAL
+            // PRICE (READ ONLY)
+            FormFieldRow(
+                title: "Price",
+                text: Binding(
+                    get: { String(Int(item.price)) },
+                    set: { _ in }
+                ),
+                keyboard: .numberPad
+            )
+            .disabled(true)
+            .opacity(0.5)
+            
+            
+            
+            // SUBTOTAL
             HStack {
                 Spacer()
                 Text("Subtotal: Rp \(Int(item.subtotal))")
@@ -151,9 +182,13 @@ struct OrderItemView: View {
             
             Divider()
         }
-        .sheet(isPresented: $showNewProduct) {
+        .sheet(isPresented: $showNewProduct, onDismiss: {
+            Task {
+                await viewModel.loadProducts()
+            }
+        }) {
             NewProductView(
-                viewModel: ProductsViewModel()
+                viewModel: viewModel
             )
         }
     }

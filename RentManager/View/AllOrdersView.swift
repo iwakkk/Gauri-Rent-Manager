@@ -94,7 +94,11 @@ struct AllOrdersView: View {
                 .task {
                     await viewModel.loadOrders()
                 }
-                .fullScreenCover(isPresented: $showOrderSheet) {
+                .fullScreenCover(isPresented: $showOrderSheet, onDismiss: {
+                    Task {
+                        await viewModel.loadOrders()
+                    }
+                }) {
                     NewBookingView(showOrderSheet: $showOrderSheet)
                 }
                 .navigationDestination(for: Bookings.self) { booking in

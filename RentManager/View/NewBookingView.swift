@@ -56,7 +56,6 @@ struct NewBookingView: View {
                 if let draft = viewModel.parsedDraft {
                     BookingDetailView(
                         draft: draft,
-                        allProducts: viewModel.allProducts,
                         bookingId: $bookingId,
                         showOrderSheet: $showOrderSheet)
                 }
