@@ -29,7 +29,7 @@ struct OrderDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 
-                // MARK: Customer Info
+                // Customer Info
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Customer Info")
                         .font(.title3.weight(.bold))
@@ -51,7 +51,7 @@ struct OrderDetailView: View {
                     Text("Rent Details")
                         .font(.title3.weight(.bold))
                     
-                    // MARK: Rent Period & Status
+                    // Rent Period & Status
                     HStack {
                         VStack(alignment: .leading) {
                             RowField(title: "Rent Period", value: rentPeriod)
@@ -355,7 +355,7 @@ struct OrderDetailView: View {
                 }
             }
         }
-        .navigationTitle("Booking Detail")
+        .navigationTitle("Order Detail")
         .navigationBarTitleDisplayMode(.inline)
         .task {
             await viewModel.loadBookingItems()

@@ -1,5 +1,5 @@
 //
-//  BookingDetailViewModel.swift
+//  OrderConfirmationViewModel.swift
 //  RentManager
 //
 //  Created by Edward Suwandi on 27/02/26.
@@ -8,7 +8,7 @@
 import Foundation
 
 @Observable
-class BookingDetailViewModel {
+class OrderConfirmationViewModel {
     
     var customers: [Customers] = []
     

@@ -13,13 +13,10 @@ struct LoginView: View {
     
     @State private var email = ""
     @State private var password = ""
-    
     @State private var showError = false
     @State private var errorMessage = ""
     @State private var isLoading = false
-    
     @State private var viewModel = AuthViewModel()
-    
     @State private var showRegister = false
     
     var body: some View {

@@ -18,7 +18,7 @@ struct ContentView: View {
             if appState.currentUser != nil {
                 MainTabView()
                     .navigationDestination(isPresented: $goToNewBooking) {
-                        NewBookingView(showOrderSheet: .constant(false))
+                        NewOrderView(showOrderSheet: .constant(false))
                     }
             } else {
                 LoginView()

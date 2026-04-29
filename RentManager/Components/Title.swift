@@ -17,12 +17,12 @@ struct Title: View {
 
     var body: some View {
         HStack {
+            
             Text(title)
                 .font(.largeTitle.bold())
                 .foregroundColor(.gauritext)
             Spacer()
 
-            // Optional action per page
             if let icon = actionIcon, let action = actionTap {
                 Button(action: action) {
                     Image(systemName: icon)
@@ -30,9 +30,9 @@ struct Title: View {
                 }
             }
 
-            // Profile Menu (global)
+            // Profile Menu
             Menu {
-                // Username (display only)
+                // Username
                 if let user = appState.currentUser {
                     Button("\(user.email) (\(user.role))") {}
                 }

@@ -15,6 +15,8 @@ struct OrderItemView: View {
     var onDelete: () -> Void
     var canDelete: Bool
     
+    let count: Int
+    
     @State private var showNewProduct = false
     
     var body: some View {
@@ -23,7 +25,7 @@ struct OrderItemView: View {
             
             // HEADER
             HStack {
-                Text("Dress")
+                Text("Item(s) \(count)")
                     .fontWeight(.semibold)
                 
                 Spacer()
@@ -37,7 +39,7 @@ struct OrderItemView: View {
                     }
                 }
             }
-            HStack {
+            HStack{
                 // PRODUCT PICKER
                 Menu {
                     ForEach(viewModel.products.sorted(by: { $0.name < $1.name }), id: \.id) { product in
@@ -54,11 +56,11 @@ struct OrderItemView: View {
                             item.selectedProduct == nil
                             ? "Select Product"
                             : "\(item.selectedProduct!.name) - \(item.selectedProduct!.color)"
-                        )
+                        ).font(.caption)
                         
                         
                         Image(systemName: "chevron.up.chevron.down")
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundColor(.gray)
                     }
                 }
@@ -82,7 +84,11 @@ struct OrderItemView: View {
                         Image(systemName: "plus.circle.fill")
                         Text("Add New Product")
                     }
-                    .font(.subheadline)
+                    .font(.caption)
+                    .padding(5)
+                    .background(Color.gauriprimary)
+                    .foregroundStyle(Color.white)
+                    .cornerRadius(30)
                 }
             }
             
@@ -140,23 +146,27 @@ struct OrderItemView: View {
                         HStack(spacing: 6) {
                             
                             Text(size)
+                                .font(.caption)
                             
                             Image(systemName: item.size == size
                                   ? "checkmark.circle.fill"
                                   : "circle")
-                                .foregroundColor(item.size == size ? .blue : .gray.opacity(0.4))
+                                .foregroundColor(item.size == size ? .gauriprimary : .gray.opacity(0.4))
                         }
+                        
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
                         .background(
                             RoundedRectangle(cornerRadius: 8)
                                 .stroke(
                                     item.size == size
-                                    ? Color.blue.opacity(0.5)
+                                    ? Color.gauriprimary.opacity(0.5)
                                     : Color.gray.opacity(0.2)
                                 )
                         )
                     }
+                    .disabled(item.selectedProduct == nil)
+                    .opacity(item.selectedProduct == nil ? 0.5 : 1)
                     .buttonStyle(.plain)
                 }
             }

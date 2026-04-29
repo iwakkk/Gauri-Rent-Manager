@@ -1,5 +1,5 @@
 //
-//  BookingDetailView.swift
+//  OrderConfirmationView.swift
 //  RentManager
 //
 //  Created by Edward Suwandi on 19/02/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct BookingDetailView: View {
+struct OrderConfirmationView: View {
     
     @State var draft: BookingDraft
     
@@ -17,7 +17,7 @@ struct BookingDetailView: View {
     @State private var showConfirmation = false
     @State private var goToInvoicePage = false
     @State private var showValidationAlert = false
-    @State private var viewModel = BookingDetailViewModel()
+    @State private var viewModel = OrderConfirmationViewModel()
     @State private var productsViewModel = ProductsViewModel()
     @State private var businessViewModel = BusinessProfileViewModel()
     
@@ -29,18 +29,37 @@ struct BookingDetailView: View {
                     draft: $draft,
                     customers: viewModel.customers
                 )
+                .padding()
+                .background(Color(.white))
+                        .cornerRadius(16)
+                        .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+                        
                 
                 OrderSectionView(
                     draft: $draft,
                     viewModel: productsViewModel
                 )
-                
+                .padding()
+                .background(Color(.white))
+                        .cornerRadius(16)
+                        .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+                        
                 RentPeriodSectionView(draft: $draft)
-                
+                    .padding()
+                    .background(Color(.white))
+                            .cornerRadius(16)
+                            .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+                            
                 CostSectionView(draft: $draft)
+                    .padding()
+                    .background(Color(.white))
+                    .cornerRadius(16)
+                    .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+                    
             }
             .padding()
         }
+        .background(Color.gauribackground.ignoresSafeArea())
         .navigationTitle("Rent Details")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -58,38 +77,6 @@ struct BookingDetailView: View {
         }
         .alert("Confirmation", isPresented: $showConfirmation) {
             Button("Cancel", role: .cancel) { }
-            
-//            Button("Next to Invoice") {
-//                
-//                Task {
-//                    do {
-//                        if let id = bookingId {
-//                            try await viewModel.updateBooking(id, draft)
-//                            
-//                        } else {
-//                            let newId = try await viewModel.createBooking(draft)
-//                            bookingId = newId
-//                        }
-//                        
-//                        
-//                        let id = bookingId!
-//                        let invoiceView = InvoiceContentView(
-//                            draft: draft,
-//                            bookingId: id,
-//                            business: businessViewModel.business
-//                        )
-//                        
-//                        let pdfURL = PDFGenerator.generate(from: invoiceView)
-//                        
-//                        try await viewModel.uploadInvoice(fileURL: pdfURL!, bookingId: id)
-//                        
-//                        goToInvoicePage = true
-//                        
-//                    } catch {
-//                        print("❌ error:", error)
-//                    }
-//                }
-//            }
             Button("Next to Invoice") {
                 
                 Task {

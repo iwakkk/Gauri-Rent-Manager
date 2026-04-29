@@ -39,7 +39,7 @@ struct ProductDetailView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     
-                    // MARK: IMAGE (small card, not full screen)
+                    // IMAGE
                     VStack {
                         if let imageUrl = draft.imageUrl,
                            let url = URL(string: imageUrl) {
@@ -62,7 +62,7 @@ struct ProductDetailView: View {
                     .padding(.horizontal)
                     
                     
-                    // MARK: FORM CARD
+                    // FORM CARD
                     VStack(spacing: 16) {
                         
                         FormFieldRow(title: "Product Name", text: $draft.name)
@@ -92,8 +92,6 @@ struct ProductDetailView: View {
                 .padding(.top, 16)
             }
             .background(Color(.systemGroupedBackground))
-            
-            // MARK: NAV BAR
             .navigationTitle("Product Detail")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -134,7 +132,7 @@ struct ProductDetailView: View {
                 }
             }
             
-            // MARK: ALERT DELETE
+            // ALERT DELETE
             .alert("Delete this product?", isPresented: $showDeleteAlert) {
                 Button("Delete", role: .destructive) {
                     Task {
@@ -149,7 +147,7 @@ struct ProductDetailView: View {
         }
     }
     
-    // MARK: CHANGE DETECTION
+    // CHANGE DETECTION
     private func checkChanges() {
         hasChanges =
             draft.name != product.name ||

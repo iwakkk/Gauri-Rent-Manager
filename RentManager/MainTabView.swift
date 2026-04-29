@@ -12,7 +12,7 @@ struct MainTabView: View {
         TabView {
             AllOrdersView()
                 .tabItem {
-                    Label("Bookings", systemImage: "list.bullet")
+                    Label("Orders", systemImage: "list.bullet")
                 }
             
             CalendarView()

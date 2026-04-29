@@ -15,7 +15,7 @@ struct OrderSectionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             
-            Text("Order Details")
+            Text("Product Details")
                 .font(.title3)
                 .fontWeight(.bold)
             
@@ -26,14 +26,15 @@ struct OrderSectionView: View {
                     onDelete: {
                         draft.items.remove(at: index)
                     },
-                    canDelete: draft.items.count > 1
+                    canDelete: draft.items.count > 1,
+                    count: index + 1
                 )
             }
             
             Button {
                 draft.items.append(BookingItemDraft())
             } label: {
-                Label("Add Product", systemImage: "plus.circle.fill")
+                Label("Add Item", systemImage: "plus.circle.fill")
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

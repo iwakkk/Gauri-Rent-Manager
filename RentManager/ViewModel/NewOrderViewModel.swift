@@ -8,7 +8,7 @@
 import Foundation
 
 @Observable
-class NewBookingViewModel {
+class NewOrderViewModel {
     
     var parsedDraft: BookingDraft?
     var allProducts: [Products] = []

@@ -38,7 +38,7 @@ struct OrderCard: View {
             
             VStack(alignment: .leading, spacing: 8) {
                 
-                // MARK: Row 1 — Customer + Status
+                // Customer + Status
                 HStack {
                     
                     Text(booking.customer?.name ?? "Unknown Customer")
@@ -58,7 +58,7 @@ struct OrderCard: View {
                         .clipShape(Capsule())
                 }
                 
-                // MARK: Row 2 — Product + Rent Period
+                // Product + Rent Period
                 HStack {
                     if let firstItem = firstItem {
                         Text(firstItem.products?.name ?? "-")
@@ -79,7 +79,7 @@ struct OrderCard: View {
                         .foregroundColor(.secondary)
                 }
                 
-                // MARK: Additional Items
+                // Additional Items
                 if remainingCount > 0 {
                     Text("+ \(remainingCount) item lainnya")
                         .font(.caption2)

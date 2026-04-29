@@ -14,7 +14,7 @@ struct ProductCard: View {
     var body: some View {
         HStack(spacing: 12) {
             
-            // MARK: - IMAGE
+            // IMAGE
             ZStack {
                 if let urlString = product.imageUrl,
                    let url = URL(string: urlString) {

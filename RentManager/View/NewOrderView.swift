@@ -1,5 +1,5 @@
 //
-//  NewBookingView.swift
+//  NewOrderView.swift
 //  RentManager
 //
 //  Created by Edward Suwandi on 19/02/26.
@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-struct NewBookingView: View {
+struct NewOrderView: View {
     
     @Environment(\.dismiss) var dismiss
     @State private var goToNextPage = false
     @State private var bookingFormText = ""
-    @State private var viewModel = NewBookingViewModel()
+    @State private var viewModel = NewOrderViewModel()
     @Binding var showOrderSheet : Bool
     
     @State var bookingId: UUID? = nil
@@ -21,7 +21,7 @@ struct NewBookingView: View {
         NavigationStack{
             VStack(alignment: .leading) {
                 
-                Text("Paste Customer Booking Form")
+                Text("Enter or paste order form here.")
                     .font(.headline)
                 
                 TextEditor(text: $bookingFormText)
@@ -33,7 +33,7 @@ struct NewBookingView: View {
                 Spacer()
             }
             .padding()
-            .navigationTitle("New Booking")
+            .navigationTitle("New Order")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -54,7 +54,7 @@ struct NewBookingView: View {
             }
             .navigationDestination(isPresented: $goToNextPage) {
                 if let draft = viewModel.parsedDraft {
-                    BookingDetailView(
+                    OrderConfirmationView(
                         draft: draft,
                         bookingId: $bookingId,
                         showOrderSheet: $showOrderSheet)
@@ -73,22 +73,22 @@ struct NewBookingView: View {
     }
     
     func loadSharedText() {
-        print("🔍 TRY LOAD SHARED TEXT")
+        print("TRY LOAD SHARED TEXT")
         
         let defaults = UserDefaults(suiteName: "group.rentmanager")
         
         guard let text = defaults?.string(forKey: "sharedText") else {
-            print("❌ NO TEXT FOUND")
+            print("NO TEXT FOUND")
             return
         }
         
-        print("✅ TEXT FOUND:", text)
+        print("TEXT FOUND:", text)
         
         DispatchQueue.main.async {
             bookingFormText = text
         }
         
-        // optional: parse di background
+    
         DispatchQueue.global(qos: .userInitiated).async {
             
             let parsed = viewModel.parseBookingText(
@@ -100,6 +100,7 @@ struct NewBookingView: View {
                 viewModel.parsedDraft = parsed
             }
         }
+        
         defaults?.removeObject(forKey: "sharedText")
     }
 }

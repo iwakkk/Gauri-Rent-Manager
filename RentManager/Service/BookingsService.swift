@@ -71,10 +71,10 @@ struct BookingsService {
     func updateBooking(id: UUID, draft: BookingDraft) async throws {
 
 
-        // 1. FIND / UPDATE CUSTOMER
+        // FIND / UPDATE CUSTOMER
         let customerId = try await findCustomer(draft: draft)
 
-        // 2. UPDATE BOOKING HEADER
+        // UPDATE BOOKING HEADER
         let data = BookingUpdate(
             rent_start_date: draft.rentStartDate,
             rent_end_date: draft.rentEndDate,
@@ -93,7 +93,7 @@ struct BookingsService {
             .eq("id", value: id)
             .execute()
 
-        // 3. REPLACE ITEMS
+        // REPLACE ITEMS
         try await supabase
             .from("booking_items")
             .delete()

@@ -63,7 +63,7 @@ struct RegisterView: View {
                 
                 Button {
                     
-                    // 🔥 VALIDASI DARI VIEWMODEL
+                    // VALIDASI VIEWMODEL
                     if let error = viewModel.validateRegister(
                         email: email,
                         password: password,

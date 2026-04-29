@@ -34,7 +34,7 @@ class InvoiceViewModel {
             
         } catch {
             errorMessage = error.localizedDescription
-            print("❌ error loading booking:", error)
+            print("error loading booking:", error)
         }
     }
 }

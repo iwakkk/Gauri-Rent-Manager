@@ -40,8 +40,6 @@ class BusinessProfileViewModel {
             bankAccountName: draft.bankAccountName,
             businessImageURL: current.businessImageURL
         )
-        print("📦 Prepared updated model:")
-           print("   id: \(updated.id)")
         do {
             try await service.updateBusinessProfile(updated)
             business = try await service.fetchBusinessProfile()

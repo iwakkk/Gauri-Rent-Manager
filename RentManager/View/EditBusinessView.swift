@@ -56,11 +56,9 @@ struct EditBusinessView: View {
             }
             .navigationTitle("Edit Business")
             .navigationBarTitleDisplayMode(.inline)
-            
-            // MARK: Top bar buttons
             .toolbar {
                 
-                // LEFT: Dismiss
+                // Dismiss
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
                         dismiss()
@@ -70,7 +68,7 @@ struct EditBusinessView: View {
                     }
                 }
                 
-                // RIGHT: Save
+                // Save
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         Task {
@@ -99,7 +97,7 @@ struct EditBusinessView: View {
         }
     }
     
-    // MARK: Load data
+    // Load data
     func loadData() {
         let b = viewModel.business
         

@@ -38,7 +38,7 @@ struct AllOrdersView: View {
                 
                 // Title
                 Title(
-                    title: "Bookings",
+                    title: "Orders",
                     actionIcon: "plus.circle.fill",
                     actionTap: {
                         showOrderSheet = true
@@ -108,7 +108,7 @@ struct AllOrdersView: View {
                         await viewModel.loadOrders()
                     }
                 }) {
-                    NewBookingView(showOrderSheet: $showOrderSheet)
+                    NewOrderView(showOrderSheet: $showOrderSheet)
                 }
                 .navigationDestination(for: Bookings.self) { booking in
                     OrderDetailView(viewModel: OrderDetailViewModel(booking: booking), selectedTab: $selectedTab)

@@ -21,7 +21,7 @@ struct CustomCalendar: View {
     var body: some View {
         VStack {
             
-            // MARK: MONTH NAVIGATION
+            // MONTH NAVIGATION
             HStack {
                 Button {
                     currentMonth = calendar.date(byAdding: .month, value: -1, to: currentMonth) ?? Date()
@@ -47,7 +47,7 @@ struct CustomCalendar: View {
             }
             .padding(.horizontal)
             
-            // MARK: DAYS OF WEEK
+            // DAYS OF WEEK
             HStack {
                 ForEach(daysOfWeek, id: \.self) { day in
                     Text(day)
@@ -59,7 +59,7 @@ struct CustomCalendar: View {
             .padding(.horizontal)
             .padding(.top, 4)
             
-            // MARK: GRID
+            // GRID
             LazyVGrid(
                 columns: Array(repeating: GridItem(.flexible()), count: 7),
                 spacing: 4
@@ -91,9 +91,6 @@ struct CustomCalendar: View {
         }
         .onChange(of: bookings) { newValue in
             viewModel.bookings = newValue
-        }
-        .onChange(of: currentMonth) { _ in
-            // optional: kalau nanti kamu mau preload data per month
         }
     }
     

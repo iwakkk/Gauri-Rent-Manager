@@ -19,6 +19,7 @@ struct RentPeriodSectionView: View {
                 .fontWeight(.bold)
             
             DatePicker("Start Date", selection: $draft.rentStartDate, displayedComponents: .date)
+            
             DatePicker("End Date", selection: $draft.rentEndDate, displayedComponents: .date)
         }
     }

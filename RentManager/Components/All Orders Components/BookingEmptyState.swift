@@ -14,11 +14,11 @@ struct BookingEmptyState : View {
                     .font(.system(size: 40))
                     .foregroundColor(.gray)
 
-                Text("No bookings found")
+                Text("No orders found")
                     .font(.headline)
                     .foregroundColor(.gray)
 
-                Text("Try changing your filter or add a new booking.")
+                Text("Try changing your filter or add a new order.")
                     .font(.subheadline)
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)

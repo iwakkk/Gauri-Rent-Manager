@@ -25,7 +25,6 @@ struct NewProductView: View {
 
     )
     
-    // MARK: IMAGE (OPTIONAL)
     @State private var selectedImage: PhotosPickerItem?
     @State private var imageData: Data? = nil
     
@@ -37,7 +36,7 @@ struct NewProductView: View {
                 VStack(alignment: .leading, spacing: 24) {
 
                     
-                    // MARK: FORM FIELDS (CONSISTENT STYLE)
+                    // FORM FIELDS (CONSISTENT STYLE)
                     VStack(spacing: 14) {
                         
                         FormFieldRow(title: "Product Name", text: $draft.name)
