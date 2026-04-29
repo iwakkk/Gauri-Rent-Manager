@@ -25,7 +25,7 @@ class OrderDetailViewModel {
         self.booking = booking
     }
     
-    // LOAG SINGLE BOOKING DETAILS
+    // LOAD SINGLE BOOKING DETAILS
     func loadBookingItems() async {
         isLoading = true
         do {
@@ -35,6 +35,18 @@ class OrderDetailViewModel {
             items = []
         }
         isLoading = false
+    }
+    
+    // CHECK PRODUCT AVAILIBILITY WHEN UPDATE STATUS
+    func hasRentedProductConflict() -> Bool {
+        
+        for item in items {
+            if item.products?.isRented == true {
+                return true
+            }
+        }
+        
+        return false
     }
     
     // UPDATE STATUS

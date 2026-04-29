@@ -7,9 +7,11 @@
 
 import SwiftUI
 
+
 struct InvoiceView: View {
     
     let bookingId: UUID
+    
     @Binding var showOrderSheet: Bool
     
     @State private var viewModel = InvoiceViewModel()
@@ -21,14 +23,26 @@ struct InvoiceView: View {
             if viewModel.isLoading {
                 ProgressView("Loading Invoice...")
             }
-            else if let urlString = viewModel.booking?.invoiceURL,
-                    let url = URL(string: urlString) {
+            else {
                 
-                PDFKitView(url: url)
-                
-            } else {
-                Text("No Invoice Found")
-                    .foregroundColor(.secondary)
+                // CHECK LOCAL FILE
+                if let localURL = InvoiceStorage.get(bookingId: bookingId) {
+                    
+                    PDFKitView(url: localURL)
+                    
+                }
+                // FALLBACK: LOAD SUPABASE
+                else if let urlString = viewModel.booking?.invoiceURL,
+                        let url = URL(string: urlString) {
+                    
+                    PDFKitView(url: url)
+                    
+                }
+
+                else {
+                    Text("No Invoice Found")
+                        .foregroundColor(.secondary)
+                }
             }
             
             Button("Done") {
@@ -40,24 +54,25 @@ struct InvoiceView: View {
         .navigationTitle("Invoice")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            
             ToolbarItem(placement: .topBarTrailing) {
-                if let urlString = viewModel.booking?.invoiceURL,
-                   let url = URL(string: urlString) {
+                
+                if let localURL = InvoiceStorage.get(bookingId: bookingId) {
+                    
+                    ShareLink(item: localURL) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                    
+                } else if let urlString = viewModel.booking?.invoiceURL,
+                          let url = URL(string: urlString) {
                     
                     ShareLink(item: url) {
                         Image(systemName: "square.and.arrow.up")
                     }
                 }
             }
-            
-            ToolbarItem(placement: .topBarLeading) {
-                Button("Done") {
-                    showOrderSheet = false
-                }
-            }
+        }
+        .task {
+            await viewModel.loadBooking(currentId: bookingId)
         }
     }
-    
-    
 }

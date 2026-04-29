@@ -9,13 +9,15 @@ import SwiftUI
 
 struct AllOrdersView: View {
     
-    @State var showOrderSheet = false
     @Environment(\.dismiss) var dismiss
+    
+    @State var showOrderSheet = false
     @State var bookings: [Bookings] = []
-    
     @State private var viewModel = AllOrdersViewModel()
-    
     @State private var selectedTab: BookingStatus? = nil
+    
+    @State private var invoiceCount = 0
+    @State private var invoiceSize = 0.0
     
     var filteredBookings: [Bookings] {
         let result: [Bookings]
@@ -89,6 +91,13 @@ struct AllOrdersView: View {
                         
                     }
                     
+                }
+                .onAppear {
+                    invoiceCount = InvoiceStorage.getInvoiceFileCount()
+                    invoiceSize = InvoiceStorage.getInvoiceTotalSize()
+                       
+                       print("📦 Total invoice:", invoiceCount)
+                       print("💾 Total size: \(invoiceSize) MB")
                 }
                 .background(Color.gauribackground.ignoresSafeArea())
                 .task {

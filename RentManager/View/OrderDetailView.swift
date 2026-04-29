@@ -13,6 +13,7 @@ struct OrderDetailView: View {
     @State private var showInvoiceSheet = false
     @State private var showCancelAlert = false
     @State private var showConfirmAlert = false
+    @State private var showRentedAlert = false
     
     @Binding var selectedTab: BookingStatus?
     @Environment(\.dismiss) var dismiss
@@ -80,7 +81,7 @@ struct OrderDetailView: View {
                 .background(Color(.systemBackground))
                 .cornerRadius(10)
                 
-                // MARK: Items
+                // Items
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Ordered Item(s)")
                         .font(.title3.weight(.bold))
@@ -95,7 +96,7 @@ struct OrderDetailView: View {
                             
                             HStack(alignment: .top, spacing: 12) {
                                 
-                                // MARK: PRODUCT IMAGE (BIGGER)
+                                // PRODUCT IMAGE
                                 if let urlString = item.products?.imageUrl,
                                    let url = URL(string: urlString) {
                                     
@@ -115,7 +116,7 @@ struct OrderDetailView: View {
                                         .clipShape(RoundedRectangle(cornerRadius: 12))
                                 }
                                 
-                                // MARK: INFO SECTION
+                                // INFO SECTION
                                 VStack(alignment: .leading, spacing: 6) {
                                     
                                     Text("\(item.products?.name ?? "-") - \(item.products?.color ?? "-")")
@@ -148,7 +149,7 @@ struct OrderDetailView: View {
                 .background(Color(.systemBackground))
                 .cornerRadius(10)
                 
-                // MARK: Summary
+                // Summary
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Summary")
                         .font(.title3.weight(.bold))
@@ -183,9 +184,8 @@ struct OrderDetailView: View {
                 .background(Color(.systemBackground))
                 .cornerRadius(10)
                 
-                // MARK: Invoice
-                if let urlString = viewModel.booking.invoiceURL,
-                   let url = URL(string: urlString) {
+                // Invoice
+                if viewModel.booking.invoiceURL != nil {
                     
                     Button {
                         showInvoiceSheet = true
@@ -215,7 +215,7 @@ struct OrderDetailView: View {
         .background(Color.gauribackground.ignoresSafeArea())
         .toolbar {
             
-            // tombol cancel (HANYA kalau unpaid)
+            // Tombol cancel (HANYA kalau unpaid)
             if viewModel.booking.status == .unpaid {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -259,42 +259,99 @@ struct OrderDetailView: View {
                 .padding(.horizontal)
             }
         }
+        // RENTED ALERT
+        .alert("Product Already Rented", isPresented: $showRentedAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("One or more dresses are currently rented.")
+        }
+        
+        // CONFIRM ALERT
         .alert("Confirmation", isPresented: $showConfirmAlert) {
-            
             Button("Yes") {
                 Task {
                     if let next = viewModel.booking.status.nextStatus {
+                        
+                        // VALIDASI SEBELUM TO SHIP
+                        if next == .toShip {
+                            let hasConflict = viewModel.items.contains {
+                                $0.products?.isRented == true
+                            }
+                            
+                            if hasConflict {
+                                showRentedAlert = true
+                                return
+                            }
+                        }
+                        
                         await viewModel.updateStatus(to: next)
                         selectedTab = viewModel.booking.status
                         dismiss()
                     }
                 }
             }
-            
             Button("Cancel", role: .cancel) {}
-            
         } message: {
             Text("Are you sure you want to continue?")
         }
         .sheet(isPresented: $showInvoiceSheet) {
-            NavigationStack{
-                if let urlString = viewModel.booking.invoiceURL,
-                   let url = URL(string: urlString) {
-                    PDFKitView(url: url)
-                        .navigationTitle("Invoice")
-                        .navigationBarTitleDisplayMode(.inline)
-                        .toolbar {
-                            ToolbarItem(placement: .topBarTrailing) {
-                                ShareLink(item: url) {
-                                    Image(systemName: "square.and.arrow.up")
-                                }
+            NavigationStack {
+                VStack {
+                    // PRIORITAS LOCAL
+                    if let localURL = InvoiceStorage.get(bookingId: viewModel.booking.id) {
+                        
+                        PDFKitView(url: localURL)
+                            .onAppear {
+                                print("📄 Using LOCAL invoice")
                             }
-                            ToolbarItem(placement: .topBarLeading) {
-                                Button("Done") {
-                                    showInvoiceSheet = false
-                                }
+                        
+                    }
+                    
+                    // FALLBACK REMOTE
+                    else if let urlString = viewModel.booking.invoiceURL,
+                            let remoteURL = URL(string: urlString) {
+                        
+                        PDFKitView(url: remoteURL)
+                            .onAppear {
+                                print("🌐 Using REMOTE invoice")
+                            }
+                        
+                    }
+                    
+                    // INVOICE UNAVAILABLE
+                    else {
+                        Text("Invoice not available")
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .navigationTitle("Invoice")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    
+                    // SHARE
+                    ToolbarItem(placement: .topBarTrailing) {
+                        
+                        if let localURL = InvoiceStorage.get(bookingId: viewModel.booking.id) {
+                            
+                            ShareLink(item: localURL) {
+                                Image(systemName: "square.and.arrow.up")
+                            }
+                            
+                        } else if let urlString = viewModel.booking.invoiceURL,
+                                  let remoteURL = URL(string: urlString) {
+                            
+                            ShareLink(item: remoteURL) {
+                                Image(systemName: "square.and.arrow.up")
                             }
                         }
+                    }
+                    
+                    //  CLOSE
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("Done") {
+                            showInvoiceSheet = false
+                        }
+                    }
                 }
             }
         }
@@ -304,8 +361,6 @@ struct OrderDetailView: View {
             await viewModel.loadBookingItems()
         }
     }
-    
-  
 }
 
 #Preview {

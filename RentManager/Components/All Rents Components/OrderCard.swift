@@ -10,14 +10,14 @@ import SwiftUI
 struct OrderCard: View {
     
     let booking: Bookings
-    let items: [BookingItems]
+    let items: [BookingItems]?
     
     var firstItem: BookingItems? {
-        items.first
+        items?.first
     }
     
     var remainingCount: Int {
-        max(items.count - 1, 0)
+        max(items!.count - 1, 0)
     }
     
     var rentPeriod: String {
@@ -60,11 +60,17 @@ struct OrderCard: View {
                 
                 // MARK: Row 2 — Product + Rent Period
                 HStack {
-                    
-                    Text(firstItem?.products?.name ?? "-")
-                        .font(.body.bold())
-                        .lineLimit(1)
-                        .foregroundColor(.gauriprimary)
+                    if let firstItem = firstItem {
+                        Text(firstItem.products?.name ?? "-")
+                            .font(.body.bold())
+                            .lineLimit(1)
+                            .foregroundColor(.gauriprimary)
+                    }
+                    else {
+                        Text("Loading...")
+                            .font(.body)
+                            .foregroundColor(.gray)
+                    }
                     
                     Spacer()
                     

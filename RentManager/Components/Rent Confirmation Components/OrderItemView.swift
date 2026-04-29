@@ -122,40 +122,42 @@ struct OrderItemView: View {
             .disabled(item.selectedProduct == nil)
             .opacity(item.selectedProduct == nil ? 0.5 : 1)
             
-            // SIZE (SELECT ONLY)
-            if let product = item.selectedProduct {
+            
+            // SIZE (SELECTABLE)
+            Text("Size")
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            HStack(spacing: 12) {
                 
-                let sizes = product.size
+                let sizes = ["XS", "S", "M", "L", "XL"]
                 
-                if !sizes.isEmpty {
-                    Text("Size")
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                ForEach(sizes, id: \.self) { size in
                     
-                    HStack(spacing: 12) {
+                    Button {
+                        item.size = size
+                    } label: {
                         
-                        ForEach(sizes, id: \.self) { size in
+                        HStack(spacing: 6) {
                             
-                            Button {
-                                item.size = size
-                            } label: {
-                                HStack(spacing: 6) {
-                                    
-                                    Text(size)
-                                    
-                                    Image(systemName: item.size == size
-                                          ? "largecircle.fill.circle"
-                                          : "circle")
-                                        .foregroundColor(.blue)
-                                }
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 6)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color.gray.opacity(0.2))
-                                )
-                            }
+                            Text(size)
+                            
+                            Image(systemName: item.size == size
+                                  ? "checkmark.circle.fill"
+                                  : "circle")
+                                .foregroundColor(item.size == size ? .blue : .gray.opacity(0.4))
                         }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(
+                                    item.size == size
+                                    ? Color.blue.opacity(0.5)
+                                    : Color.gray.opacity(0.2)
+                                )
+                        )
                     }
+                    .buttonStyle(.plain)
                 }
             }
             

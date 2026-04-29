@@ -13,7 +13,7 @@ class AppState: ObservableObject {
     
     @Published var currentUser: Users?
     
-    private let isDevMode = false
+    private let isDevMode = true
         
         init() {
             if isDevMode {

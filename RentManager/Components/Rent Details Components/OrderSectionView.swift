@@ -10,8 +10,8 @@ import SwiftUI
 struct OrderSectionView: View {
     
     @Binding var draft: BookingDraft
-//    var allProducts: [Products]
     var viewModel: ProductsViewModel
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             
@@ -36,5 +36,6 @@ struct OrderSectionView: View {
                 Label("Add Product", systemImage: "plus.circle.fill")
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

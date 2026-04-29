@@ -40,6 +40,7 @@ class NewBookingViewModel {
             }
             .joined(separator: " ")
     }
+    
     // PRODUCT MATCH
     func matchProduct(from text: String, products: [Products]) -> Products? {
         

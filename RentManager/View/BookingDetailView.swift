@@ -10,7 +10,6 @@ import SwiftUI
 struct BookingDetailView: View {
     
     @State var draft: BookingDraft
-//    var allProducts: [Products]
     
     @Binding var bookingId: UUID?
     @Binding var showOrderSheet: Bool
@@ -60,6 +59,37 @@ struct BookingDetailView: View {
         .alert("Confirmation", isPresented: $showConfirmation) {
             Button("Cancel", role: .cancel) { }
             
+//            Button("Next to Invoice") {
+//                
+//                Task {
+//                    do {
+//                        if let id = bookingId {
+//                            try await viewModel.updateBooking(id, draft)
+//                            
+//                        } else {
+//                            let newId = try await viewModel.createBooking(draft)
+//                            bookingId = newId
+//                        }
+//                        
+//                        
+//                        let id = bookingId!
+//                        let invoiceView = InvoiceContentView(
+//                            draft: draft,
+//                            bookingId: id,
+//                            business: businessViewModel.business
+//                        )
+//                        
+//                        let pdfURL = PDFGenerator.generate(from: invoiceView)
+//                        
+//                        try await viewModel.uploadInvoice(fileURL: pdfURL!, bookingId: id)
+//                        
+//                        goToInvoicePage = true
+//                        
+//                    } catch {
+//                        print("❌ error:", error)
+//                    }
+//                }
+//            }
             Button("Next to Invoice") {
                 
                 Task {
@@ -72,18 +102,35 @@ struct BookingDetailView: View {
                             bookingId = newId
                         }
                         
-                        
                         let id = bookingId!
+                        
                         let invoiceView = InvoiceContentView(
                             draft: draft,
                             bookingId: id,
                             business: businessViewModel.business
                         )
                         
-                        let pdfURL = PDFGenerator.generate(from: invoiceView)
+                        // 1. GENERATE PDF
+                        guard let pdfURL = PDFGenerator.generate(from: invoiceView) else {
+                            print("❌ Failed generate PDF")
+                            return
+                        }
                         
-                        try await viewModel.uploadInvoice(fileURL: pdfURL!, bookingId: id)
+                        // 2. SAVE KE LOCAL
+                        let localURL = try InvoiceStorage.save(fileURL: pdfURL, bookingId: id)
+                        print("✅ Saved local:", localURL)
                         
+                        // 3. UPLOAD KE SUPABASE (BACKGROUND)
+                        Task {
+                            do {
+                                try await viewModel.uploadInvoice(fileURL: pdfURL, bookingId: id)
+                                print("☁️ Uploaded to Supabase")
+                            } catch {
+                                print("⚠️ Upload failed:", error)
+                            }
+                        }
+                        
+                        // 4. NAVIGATE
                         goToInvoicePage = true
                         
                     } catch {
