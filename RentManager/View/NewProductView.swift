@@ -34,8 +34,6 @@ struct NewProductView: View {
                 
                 VStack(alignment: .leading, spacing: 24) {
 
-                    
-                    // FORM FIELDS (CONSISTENT STYLE)
                     VStack(spacing: 14) {
                         
                         FormFieldRow(title: "Product Name", text: $draft.name)
@@ -116,6 +114,7 @@ struct NewProductView: View {
                 }
                 .padding()
             }
+            .background(Color.gauribackground.ignoresSafeArea())
             .onTapGesture {
                 hideKeyboard()
             }

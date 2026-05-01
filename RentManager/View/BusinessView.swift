@@ -13,9 +13,7 @@ struct BusinessView: View {
     @State private var showEditSheet = false
     
     var body: some View {
-        
         VStack {
-            
             Title(
                 title: "Business",
                 actionIcon: "square.and.pencil",
@@ -92,21 +90,6 @@ struct BusinessView: View {
     }
 }
 
-struct InfoRow: View {
-    let icon: String
-    let title: String
-    let value: String?
-    var body: some View {
-        HStack {
-            Label(title, systemImage: icon)
-            Spacer()
-            Text(value ?? "-")
-                
-                .foregroundStyle(.secondary)
-        }
-        
-    }
-}
 
 #Preview {
     ContentView()

@@ -96,8 +96,10 @@ struct ProductDetailView: View {
                 }
                 .padding(.top, 16)
             }
-            .scrollDismissesKeyboard(.interactively)
-            .background(Color(.systemGroupedBackground))
+            .background(Color.gauribackground.ignoresSafeArea())
+            .onTapGesture {
+                hideKeyboard()
+            }
             .navigationTitle("Product Detail")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

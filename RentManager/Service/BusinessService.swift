@@ -19,7 +19,7 @@ struct BusinessService {
             .execute()
             .value
         
-        print("✅ Success fetch business profile:")
+        print(" Success fetch business profile:")
               print(response)
               
         

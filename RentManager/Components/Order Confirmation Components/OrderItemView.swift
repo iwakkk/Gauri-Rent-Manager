@@ -14,7 +14,6 @@ struct OrderItemView: View {
     var viewModel: ProductsViewModel
     var onDelete: () -> Void
     var canDelete: Bool
-    
     let count: Int
     
     @State private var showNewProduct = false
@@ -185,7 +184,7 @@ struct OrderItemView: View {
                             
                             Text(size)
                                 .font(.caption)
-                                
+                            
                             Image(systemName: item.size == size
                                   ? "checkmark.circle.fill"
                                   : "circle")

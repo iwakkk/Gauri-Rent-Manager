@@ -43,7 +43,7 @@ struct AllOrdersView: View {
         NavigationStack{
             VStack{
                 
-                // Title
+                // TITLE
                 Title(
                     title: "Orders",
                     actionIcon: "plus.circle.fill",
@@ -52,7 +52,7 @@ struct AllOrdersView: View {
                     }
                 )
               
-                // Order List
+                // ORDER LIST
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
                         

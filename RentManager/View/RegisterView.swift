@@ -14,11 +14,9 @@ struct RegisterView: View {
     @State private var email = ""
     @State private var password = ""
     @State private var confirmPassword = ""
-    
     @State private var showError = false
     @State private var errorMessage = ""
     @State private var isLoading = false
-    
     @State private var viewModel = AuthViewModel()
     
     var body: some View {
@@ -29,8 +27,6 @@ struct RegisterView: View {
             VStack(spacing: 30) {
                 
                 Spacer()
-                
-                
                 
                 VStack(spacing: 8) {
                     

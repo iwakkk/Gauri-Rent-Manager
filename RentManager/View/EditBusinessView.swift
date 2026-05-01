@@ -54,6 +54,7 @@ struct EditBusinessView: View {
                 }
                 .padding(.top)
             }
+            .background(Color.gauribackground.ignoresSafeArea())
             .onTapGesture {
                 hideKeyboard()
             }

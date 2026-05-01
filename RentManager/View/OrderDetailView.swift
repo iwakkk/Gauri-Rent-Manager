@@ -31,7 +31,7 @@ struct OrderDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 
-                // Customer Info
+                // CUSTOMER INFO
                 CustomerInfoSection(order: viewModel.order)
                 
                 RentDetailSection(
@@ -46,7 +46,7 @@ struct OrderDetailView: View {
                    
                    SummarySection(order: viewModel.order)
                 
-                // Invoice
+                // INVOICE
                 if viewModel.order.invoiceURL != nil {
                     
                     Button {
@@ -77,7 +77,7 @@ struct OrderDetailView: View {
         .background(Color.gauribackground.ignoresSafeArea())
         .toolbar {
             
-            // Tombol cancel (HANYA kalau unpaid)
+            // CANCEL BUTTON
             if viewModel.order.status == .unpaid {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -192,7 +192,7 @@ struct OrderDetailView: View {
         .sheet(isPresented: $showInvoiceSheet) {
             NavigationStack {
                 VStack {
-                    // PRIORITAS LOCAL
+                    // CHECK LOCAL
                     if let localURL = InvoiceStorage.get(orderId: viewModel.order.id) {
                         
                         PDFKitView(url: localURL)
@@ -201,8 +201,7 @@ struct OrderDetailView: View {
                             }
                         
                     }
-                    
-                    // FALLBACK REMOTE
+                    // CHECK SUPABASE
                     else if let urlString = viewModel.order.invoiceURL,
                             let remoteURL = URL(string: urlString) {
                         
@@ -212,7 +211,6 @@ struct OrderDetailView: View {
                             }
                         
                     }
-                    
                     // INVOICE UNAVAILABLE
                     else {
                         Text("Invoice not available")

@@ -8,15 +8,6 @@
 
 import SwiftUI
 
-struct DisplayOrderItem: Identifiable {
-    let id = UUID()
-    let name: String
-    let color: String
-    let size: String
-    let quantity: Int
-    let subtotal: Double
-}
-
 struct InvoiceContentView: View {
     
     var draft: OrderDraft
