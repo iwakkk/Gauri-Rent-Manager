@@ -54,6 +54,9 @@ struct EditBusinessView: View {
                 }
                 .padding(.top)
             }
+            .onTapGesture {
+                hideKeyboard()
+            }
             .navigationTitle("Edit Business")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

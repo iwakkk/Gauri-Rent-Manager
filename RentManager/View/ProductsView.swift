@@ -25,8 +25,11 @@ struct ProductsView: View {
                         
                         LazyVStack(spacing: 12) {
                             
-                            ForEach(viewModel.products.sorted { $0.name < $1.name }, id: \.id) { product in
-                                ProductCard(product: product)
+                            ForEach(viewModel.products.sorted(by: { $0.name < $1.name }), id: \.id) { product in
+                                
+                                let ranges = viewModel.bookedRanges[product.id] ?? []
+                                
+                                ProductCard(product: product, bookedRanges: ranges)
                                     .padding(.horizontal)
                                     .onTapGesture {
                                         selectedProduct = product

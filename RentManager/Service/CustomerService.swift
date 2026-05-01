@@ -10,6 +10,7 @@ import Supabase
 
 struct CustomerService {
     
+    // FETCH CUSTOMERS
     func fetchCustomers() async throws -> [Customers] {
         let response: [Customers] = try await supabase
             .from("customers")

@@ -12,24 +12,31 @@ struct AllOrdersView: View {
     @Environment(\.dismiss) var dismiss
     
     @State var showOrderSheet = false
-    @State var bookings: [Bookings] = []
+    @State var orders: [Orders] = []
     @State private var viewModel = AllOrdersViewModel()
-    @State private var selectedTab: BookingStatus? = nil
+    @State private var selectedTab: OrderStatus? = nil
     
     @State private var invoiceCount = 0
     @State private var invoiceSize = 0.0
     
-    var filteredBookings: [Bookings] {
-        let result: [Bookings]
+    var filteredOrders: [Orders] {
+        let result: [Orders]
            
         if let selectedTab {
-            result =  viewModel.bookings.filter { $0.status == selectedTab }
+            result =  viewModel.orders.filter { $0.status == selectedTab }
         } else {
-            result = viewModel.bookings
+            result = viewModel.orders
         }
         return result.sorted {
-            $0.rentStartDate ?? .distantFuture < $1.rentStartDate ?? .distantFuture
+            let aIsInactive = $0.status == .completed || $0.status == .cancelled
+            let bIsInactive = $1.status == .completed || $1.status == .cancelled
+            
+            if aIsInactive != bIsInactive {
+                return !aIsInactive
             }
+            
+            return ($0.rentStartDate ?? .distantFuture) < ($1.rentStartDate ?? .distantFuture)
+        }
     }
     
     var body: some View {
@@ -57,7 +64,7 @@ struct AllOrdersView: View {
                         }
                         
                         
-                        ForEach(BookingStatus.allCases, id: \.self) { status in
+                        ForEach(OrderStatus.allCases, id: \.self) { status in
                             StatusFilter(
                                 title: status.displayName,
                                 isSelected: selectedTab == status
@@ -71,18 +78,18 @@ struct AllOrdersView: View {
 
 
                 ScrollView {
-                    if filteredBookings.isEmpty{
-                        BookingEmptyState()
+                    if filteredOrders.isEmpty{
+                        OrderEmptyState()
                             .padding(.top, 200)
                             .frame(maxWidth: .infinity)
                     } else {
                         VStack{
-                            ForEach(filteredBookings) { booking in
+                            ForEach(filteredOrders) { booking in
                                 
                                 NavigationLink(value: booking) {
                                     OrderCard(
-                                        booking: booking,
-                                        items: viewModel.itemsByBooking[booking.id] ?? []
+                                        order: booking,
+                                        items: viewModel.itemsByOrder[booking.id] ?? []
                                     )
                                 }
                             }
@@ -96,8 +103,8 @@ struct AllOrdersView: View {
                     invoiceCount = InvoiceStorage.getInvoiceFileCount()
                     invoiceSize = InvoiceStorage.getInvoiceTotalSize()
                        
-                       print("📦 Total invoice:", invoiceCount)
-                       print("💾 Total size: \(invoiceSize) MB")
+                       print("Total invoice:", invoiceCount)
+                       print("Total size: \(invoiceSize) MB")
                 }
                 .background(Color.gauribackground.ignoresSafeArea())
                 .task {
@@ -110,8 +117,8 @@ struct AllOrdersView: View {
                 }) {
                     NewOrderView(showOrderSheet: $showOrderSheet)
                 }
-                .navigationDestination(for: Bookings.self) { booking in
-                    OrderDetailView(viewModel: OrderDetailViewModel(booking: booking), selectedTab: $selectedTab)
+                .navigationDestination(for: Orders.self) { order in
+                    OrderDetailView(viewModel: OrderDetailViewModel(order: order), selectedTab: $selectedTab)
                 }
             }
             

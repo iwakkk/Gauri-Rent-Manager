@@ -1,5 +1,5 @@
 //
-//  BookingItems.swift
+//  OrderItems.swift
 //  RentManager
 //
 //  Created by Edward Suwandi on 09/02/26.
@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct BookingItems: Codable, Identifiable{
+struct OrderItems: Codable, Identifiable{
     let id: UUID
-    let bookingId: UUID
+    let orderId: UUID
     let productId: UUID
     let quantity: Int
     let subtotal: Double
@@ -19,7 +19,7 @@ struct BookingItems: Codable, Identifiable{
     
     enum CodingKeys: String, CodingKey {
         case id
-        case bookingId = "booking_id"
+        case orderId = "order_id"
         case productId = "product_id"
         case quantity
         case subtotal

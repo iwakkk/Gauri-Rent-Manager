@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CustomerSectionView: View {
     
-    @Binding var draft: BookingDraft
+    @Binding var draft: OrderDraft
     var customers: [Customers]
     
     var body: some View {
@@ -19,15 +19,51 @@ struct CustomerSectionView: View {
                 .font(.title3)
                 .fontWeight(.bold)
             
-            Picker("Select Customer", selection: $draft.customerId) {
-
-                Text("Select Customer")
-                    .tag(UUID?.none)
+            Menu {
+                Button {
+                    draft.customerId = nil
+                } label: {
+                    Text("Select Customer")
+                        .foregroundColor(.white)
+                }
 
                 ForEach(customers.sorted(by: { $0.name < $1.name }), id: \.id) { customer in
-                    Text("\(customer.name) - \(customer.phone)")
-                        .tag(Optional(customer.id))
+                    Button {
+                        draft.customerId = customer.id
+                    } label: {
+                        Text("\(customer.name) - \(customer.phone)")
+                    }
                 }
+            } label: {
+                HStack(spacing: 8) {
+                    
+                    Image(systemName: "person.fill")
+                        .font(.caption)
+                        .foregroundColor(.white)
+                    
+                    Text(
+                        draft.customerId.flatMap { id in
+                            customers.first(where: { $0.id == id })
+                        }
+                        .map { "\($0.name) - \($0.phone)" }
+                        ?? "Select Customer"
+                    )
+                    .font(.caption)
+                    .foregroundColor(.white)
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.down")
+                        .font(.caption2)
+                        .foregroundColor(.gray)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 10)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.gauriprimary)
+                )
+                .foregroundColor(.white)
             }
             .onChange(of: draft.customerId) {
                 
@@ -41,9 +77,9 @@ struct CustomerSectionView: View {
             
             VStack(spacing: 14) {
                 FormFieldRow(title: "Customer Name", text: $draft.customerName)
-                FormFieldRow(title: "Address", text: $draft.customerAddress)
                 FormFieldRow(title: "Phone Number", text: $draft.customerPhone, keyboard: .numberPad)
                 FormFieldRow(title: "Bank Account", text: $draft.customerBankAccount, keyboard: .numberPad)
+                FormFieldRow(title: "Address", text: $draft.customerAddress)
             }
         }
     }

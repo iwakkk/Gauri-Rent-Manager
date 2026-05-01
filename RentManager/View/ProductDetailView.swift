@@ -28,7 +28,6 @@ struct ProductDetailView: View {
             color: product.color,
             size: product.size,
             price: product.price,
-            isRented: product.isRented,
             imageUrl: product.imageUrl
         ))
     }
@@ -74,10 +73,16 @@ struct ProductDetailView: View {
                         FormFieldRow(
                             title: "Price",
                             text: Binding(
-                                get: { String(draft.price) },
-                                set: { draft.price = Double($0) ?? 0 }
+                                get: {
+                                    draft.price == 0 ? "" :
+                                    "Rp \(Int(draft.price).formatted(.number.grouping(.automatic)))"
+                                },
+                                set: { newValue in
+                                    let numbers = newValue.filter { $0.isNumber }
+                                    draft.price = Double(numbers) ?? 0
+                                }
                             ),
-                            keyboard: .decimalPad
+                            keyboard: .numberPad
                         )
                         .onChange(of: draft.price) { _ in checkChanges() }
                         
@@ -91,6 +96,7 @@ struct ProductDetailView: View {
                 }
                 .padding(.top, 16)
             }
+            .scrollDismissesKeyboard(.interactively)
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Product Detail")
             .navigationBarTitleDisplayMode(.inline)
@@ -120,7 +126,6 @@ struct ProductDetailView: View {
                                     color: draft.color,
                                     size: draft.size,
                                     price: draft.price,
-                                    isRented: draft.isRented,
                                     imageUrl: draft.imageUrl
                                 )
                             )
@@ -152,8 +157,7 @@ struct ProductDetailView: View {
         hasChanges =
             draft.name != product.name ||
             draft.color != product.color ||
-            draft.price != product.price ||
-            draft.isRented != product.isRented
+            draft.price != product.price
     }
 }
 #Preview {

@@ -12,8 +12,10 @@ class ProductsViewModel {
     
     var products: [Products] = []
     var isLoading = false
+    var bookedRanges: [UUID: [(Date, Date)]] = [:]
     
     private let service = ProductsService()
+    private let orderService = OrderService()
     
     // VALIDASI PRODUCT
     func isValid(draft: ProductDraft) -> Bool {
@@ -40,7 +42,6 @@ class ProductsViewModel {
                 color: draft.color,
                 size: draft.size,
                 price: draft.price,
-                isRented: draft.isRented,
                 imageUrl: imageUrl
             )
             
@@ -59,6 +60,11 @@ class ProductsViewModel {
         
         do {
             products = try await service.fetchProducts()
+            
+            for product in products {
+                await loadBookedRanges(for: product.id)
+            }
+            
         } catch {
             print("❌ fetch error:", error)
         }
@@ -82,6 +88,24 @@ class ProductsViewModel {
             await loadProducts()
         } catch {
             print("❌ delete error:", error)
+        }
+    }
+    
+    // LOAD BOOKED PRODUCT DATE RANGE
+    func loadBookedRanges(for productId: UUID) async {
+        do {
+            let result = try await orderService.fetchProductBookings(productId: productId)
+            
+            bookedRanges[productId] = result.compactMap { item in
+                guard let start = item.rentStartDate,
+                      let end = item.rentEndDate else {
+                    return nil
+                }
+                return (start, end)
+            }
+            
+        } catch {
+            print("❌ error:", error)
         }
     }
 }

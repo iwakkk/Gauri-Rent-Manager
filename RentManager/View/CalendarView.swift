@@ -25,23 +25,49 @@ struct CalendarView: View {
             
             VStack {
                 
-                let visibleBookings = viewModel.bookings.filter {
+                let visibleOrders = viewModel.orders.filter {
                     $0.status != .unpaid && $0.status != .cancelled
                 }
                 
                 CustomCalendar(
                     selectedDate: $selectedDate,
-                    bookings: visibleBookings
+                    orders: visibleOrders
                 )
                 .padding()
+                
                 Divider()
+                
+                HStack(spacing: 16) {
+                    
+                    HStack(spacing: 6) {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(Color.green)
+                            .frame(width: 14, height: 14)
+                        
+                        Text("Start Date")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                    
+                    HStack(spacing: 6) {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(Color.blue.opacity(0.4))
+                            .frame(width: 14, height: 14)
+                        
+                        Text("Ongoing Days")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.top, 8)
                 
                 ScrollView {
                     VStack(spacing: 12) {
                         
                         let calendar = Calendar.current
                         
-                        let filteredBookings = visibleBookings.filter { booking in
+                        let filteredOrders = visibleOrders.filter { booking in
                             
                             guard let start = booking.rentStartDate,
                                   let end = booking.rentEndDate else { return false }
@@ -50,17 +76,17 @@ struct CalendarView: View {
                             Calendar.current.compare(selectedDate, to: end, toGranularity: .day) != .orderedDescending
                         }
                         
-                        if filteredBookings.isEmpty {
-                            BookingEmptyState()
+                        if filteredOrders.isEmpty {
+                            OrderEmptyState()
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 .padding(.top, 100)
                         } else {
-                            ForEach(filteredBookings) { booking in
+                            ForEach(filteredOrders) { booking in
                                 
                                 NavigationLink(value: booking) {
                                     OrderCard(
-                                        booking: booking,
-                                        items: viewModel.itemsByBooking[booking.id] ?? []
+                                        order: booking,
+                                        items: viewModel.itemsByOrder[booking.id] ?? []
                                     )
                                 }
                             }

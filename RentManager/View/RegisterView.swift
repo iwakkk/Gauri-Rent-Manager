@@ -117,6 +117,9 @@ struct RegisterView: View {
                 Spacer()
             }
         }
+        .onTapGesture {
+            hideKeyboard()
+        }
         .alert("Error", isPresented: $showError) {
             Button("OK", role: .cancel) {}
         } message: {

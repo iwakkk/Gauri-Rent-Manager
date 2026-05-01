@@ -10,7 +10,7 @@ import Supabase
 
 struct BusinessService {
     
-    // fetch business profile
+    // FETCH BUSINESS PROFILE
     func fetchBusinessProfile() async throws -> BusinessProfile {
         let response: BusinessProfile = try await supabase
             .from("business_profile")
@@ -26,6 +26,7 @@ struct BusinessService {
         return response
     }
     
+    // UPDATE BUSINESS PROFILE
     func updateBusinessProfile(_ business: BusinessProfile) async throws {
         try await supabase
             .from("business_profile")

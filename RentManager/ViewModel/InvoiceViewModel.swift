@@ -12,29 +12,29 @@ import SwiftUI
 @Observable
 class InvoiceViewModel {
     
-    var booking: Bookings?
+    var order: Orders?
     var isLoading = true
     var errorMessage: String?
     
-    private let service = BookingsService()
+    private let service = OrderService()
     
-    // MARK: - Load single booking
-    func loadBooking(currentId: UUID) async {
+    // LOAD SINGLE ORDER
+    func loadOrder(currentId: UUID) async {
         isLoading = true
         errorMessage = nil
         
         defer { isLoading = false }
         
         do {
-            self.booking = try await service.fetchBooking(by: currentId)
+            self.order = try await service.fetchOrder(by: currentId)
             
-            if booking == nil {
-                errorMessage = "Booking tidak ditemukan"
+            if order == nil {
+                errorMessage = "Order not found"
             }
             
         } catch {
             errorMessage = error.localizedDescription
-            print("error loading booking:", error)
+            print("error loading order:", error)
         }
     }
 }

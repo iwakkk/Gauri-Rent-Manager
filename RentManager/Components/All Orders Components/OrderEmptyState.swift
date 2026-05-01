@@ -1,5 +1,5 @@
 //
-//  BookingEmptyState.swift
+//  OrderEmptyState.swift
 //  RentManager
 //
 //  Created by Edward Suwandi on 23/04/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct BookingEmptyState : View {
+struct OrderEmptyState : View {
     var body: some View {
         VStack(spacing: 12) {
                 Image(systemName: "tray")

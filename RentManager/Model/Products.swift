@@ -14,7 +14,6 @@ struct Products: Codable, Hashable, Identifiable {
     let color: String
     let size: [String]
     let price: Double
-    let isRented: Bool
     let imageUrl: String?
     
     enum CodingKeys: String, CodingKey {
@@ -23,7 +22,6 @@ struct Products: Codable, Hashable, Identifiable {
         case color
         case size
         case price
-        case isRented = "is_rented"
         case imageUrl = "image_url"
     }
 }

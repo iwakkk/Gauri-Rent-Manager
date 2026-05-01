@@ -1,5 +1,5 @@
 //
-//  Bookings.swift
+//  Orders.swift
 //  RentManager
 //
 //  Created by Edward Suwandi on 09/02/26.
@@ -8,7 +8,7 @@
 import SwiftUI
 import Foundation
 
-struct Bookings: Codable, Identifiable, Hashable{
+struct Orders: Codable, Identifiable, Hashable{
     
     let id: UUID
     
@@ -20,7 +20,7 @@ struct Bookings: Codable, Identifiable, Hashable{
     let depositAmount: Double?
     let totalAmount: Double?
     
-    var status: BookingStatus
+    var status: OrderStatus
     let invoiceURL: String?
     let customerId: UUID
     let address: String?
@@ -43,7 +43,7 @@ struct Bookings: Codable, Identifiable, Hashable{
     }
 }
 
-enum BookingStatus: String, CaseIterable, Codable {
+enum OrderStatus: String, CaseIterable, Codable {
     case unpaid = "unpaid"
     case toShip = "to_ship"
     case inUse = "in_use"
@@ -78,7 +78,7 @@ enum BookingStatus: String, CaseIterable, Codable {
         }
     }
     
-    var nextStatus: BookingStatus? {
+    var nextStatus: OrderStatus? {
         switch self {
         case .unpaid: return .toShip
         case .toShip: return .inUse

@@ -24,86 +24,91 @@ struct LoginView: View {
         ZStack {
             Color.gauribackground.ignoresSafeArea()
             
-            
-            VStack(spacing: 24) {
+            ScrollView{
                 
-                Spacer()
-                VStack(spacing: 8) {
+                VStack(spacing: 24) {
                     
-                    Text("Gauri Rent Manager")
-                        .font(.title.bold())
-                        .foregroundStyle(Color.gauriprimary)
-                    
-                    Text("Login to continue")
-                        .font(.title2.bold())
-                }
-                
-                VStack(spacing: 16) {
-                    
-                    TextField("Email", text: $email)
-                        .padding()
-                        .background(.white)
-                        .cornerRadius(12)
-                    
-                    SecureField("Password", text: $password)
-                        .padding()
-                        .background(.white)
-                        .cornerRadius(12)
-                }
-                .padding(.horizontal)
-                
-                Button {
-                    
-                    if let error = viewModel.validateLogin(
-                        email: email,
-                        password: password
-                    ) {
-                        errorMessage = error
-                        showError = true
-                        return
+                    Spacer()
+                    VStack(spacing: 8) {
+                        
+                        Text("Gauri Rent Manager")
+                            .font(.title.bold())
+                            .foregroundStyle(Color.gauriprimary)
+                        
+                        Text("Login to continue")
+                            .font(.title2.bold())
                     }
                     
-                    isLoading = true
+                    VStack(spacing: 16) {
+                        
+                        TextField("Email", text: $email)
+                            .padding()
+                            .background(.white)
+                            .cornerRadius(12)
+                        
+                        SecureField("Password", text: $password)
+                            .padding()
+                            .background(.white)
+                            .cornerRadius(12)
+                    }
+                    .padding(.horizontal)
                     
-                    Task {
-                        let user = await viewModel.login(
+                    Button {
+                        
+                        if let error = viewModel.validateLogin(
                             email: email,
                             password: password
-                        )
-                        
-                        isLoading = false
-                        
-                        if let user = user {
-                            appState.currentUser = user
-                        } else {
-                            errorMessage = "Invalid email or password"
+                        ) {
+                            errorMessage = error
                             showError = true
+                            return
+                        }
+                        
+                        isLoading = true
+                        
+                        Task {
+                            let user = await viewModel.login(
+                                email: email,
+                                password: password
+                            )
+                            
+                            isLoading = false
+                            
+                            if let user = user {
+                                appState.currentUser = user
+                            } else {
+                                errorMessage = "Invalid email or password"
+                                showError = true
+                            }
+                        }
+                        
+                    } label: {
+                        if isLoading {
+                            ProgressView().tint(.white)
+                        } else {
+                            Text("Login")
+                                .fontWeight(.semibold)
                         }
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.gauriprimary)
+                    .foregroundColor(.white)
+                    .cornerRadius(12)
+                    .padding(.horizontal)
+                    .disabled(isLoading)
                     
-                } label: {
-                    if isLoading {
-                        ProgressView().tint(.white)
-                    } else {
-                        Text("Login")
-                            .fontWeight(.semibold)
+                    Button("Don't have an account? Register") {
+                        showRegister = true
                     }
+                    .font(.footnote)
+                    .foregroundStyle(Color.gauriprimary)
+                    
+                    Spacer()
                 }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.gauriprimary)
-                .foregroundColor(.white)
-                .cornerRadius(12)
-                .padding(.horizontal)
-                .disabled(isLoading)
-                
-                Button("Don't have an account? Register") {
-                    showRegister = true
-                }
-                .font(.footnote)
-                .foregroundStyle(Color.gauriprimary)
-                
-                Spacer()
+            }
+            .onTapGesture {
+                hideKeyboard()
             }
         }
         .fullScreenCover(isPresented: $showRegister) {

@@ -13,7 +13,6 @@ struct ProductDraft: Codable, Identifiable {
     var color: String
     var size: [String]
     var price: Double = 0
-    var isRented: Bool
     var imageUrl: String?
     
     enum CodingKeys: String, CodingKey {
@@ -22,7 +21,6 @@ struct ProductDraft: Codable, Identifiable {
         case color
         case size
         case price
-        case isRented = "is_rented"
         case imageUrl = "image_url"
     }
 }

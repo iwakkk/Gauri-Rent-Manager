@@ -66,14 +66,14 @@ struct TotalSectionView: View {
 #Preview {
 
     let dummyItems = [
-        BookingItemDraft(
+        OrderItemDraft(
             productName: "Evening Dress",
             color: "Red",
             size: "M",
             quantity: 2
 //            subtotal: 200_000
         ),
-        BookingItemDraft(
+        OrderItemDraft(
             productName: "Wedding Gown",
             color: "White",
             size: "L",
@@ -82,7 +82,7 @@ struct TotalSectionView: View {
         )
     ]
 
-    let draft = BookingDraft(
+    let draft = OrderDraft(
         customerName: "Siti Aisyah",
         customerPhone: "08123456789",
         customerAddress: "Surabaya, Indonesia",

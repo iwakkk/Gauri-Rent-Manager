@@ -9,7 +9,7 @@ import SwiftUI
 
 struct OrderSectionView: View {
     
-    @Binding var draft: BookingDraft
+    @Binding var draft: OrderDraft
     var viewModel: ProductsViewModel
     
     var body: some View {
@@ -32,7 +32,7 @@ struct OrderSectionView: View {
             }
             
             Button {
-                draft.items.append(BookingItemDraft())
+                draft.items.append(OrderItemDraft())
             } label: {
                 Label("Add Item", systemImage: "plus.circle.fill")
             }

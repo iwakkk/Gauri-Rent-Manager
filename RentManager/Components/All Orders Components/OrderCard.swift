@@ -9,10 +9,10 @@ import SwiftUI
 
 struct OrderCard: View {
     
-    let booking: Bookings
-    let items: [BookingItems]?
+    let order: Orders
+    let items: [OrderItems]?
     
-    var firstItem: BookingItems? {
+    var firstItem: OrderItems? {
         items?.first
     }
     
@@ -22,8 +22,8 @@ struct OrderCard: View {
     
     var rentPeriod: String {
         guard
-            let start = booking.rentStartDate,
-            let end = booking.rentEndDate
+            let start = order.rentStartDate,
+            let end = order.rentEndDate
         else { return "-" }
         
         let formatter = DateFormatter()
@@ -41,19 +41,19 @@ struct OrderCard: View {
                 // Customer + Status
                 HStack {
                     
-                    Text(booking.customer?.name ?? "Unknown Customer")
+                    Text(order.customer?.name ?? "Unknown Customer")
                         .font(.subheadline)
                         .foregroundColor(.primary)
                     
                     Spacer()
                     
-                    Text(booking.status.displayName)
+                    Text(order.status.displayName)
                         .font(.caption.bold())
-                        .foregroundColor(booking.status.color)
+                        .foregroundColor(order.status.color)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
                         .background(
-                            booking.status.color.opacity(0.15)
+                            order.status.color.opacity(0.15)
                         )
                         .clipShape(Capsule())
                 }
@@ -61,7 +61,7 @@ struct OrderCard: View {
                 // Product + Rent Period
                 HStack {
                     if let firstItem = firstItem {
-                        Text(firstItem.products?.name ?? "-")
+                        Text("\(firstItem.products?.name ?? "-") - \(firstItem.products?.color ?? "-")")
                             .font(.body.bold())
                             .lineLimit(1)
                             .foregroundColor(.gauriprimary)
@@ -101,7 +101,7 @@ struct OrderCard: View {
 }
 #Preview {
 
-    let dummyBooking = Bookings(
+    let dummyBooking = Orders(
         id: UUID(),
         rentStartDate: Date(),
         rentEndDate: Calendar.current.date(byAdding: .day, value: 3, to: Date()),
@@ -109,7 +109,7 @@ struct OrderCard: View {
         shippingFee: 20000,
         depositAmount: 100000,
         totalAmount: 620000,
-        status: BookingStatus.unpaid,
+        status: OrderStatus.unpaid,
         invoiceURL: nil,
         customerId: UUID(uuidString: "6729608b-4829-458b-a710-bd846ad442c0") ?? UUID(),
         address: "kalianyar"
@@ -121,23 +121,22 @@ struct OrderCard: View {
         color: "Pink",
         size: ["M"],
         price: 250000,
-        isRented: false,
         imageUrl: ""
     )
 
     let dummyItems = [
-        BookingItems(
+        OrderItems(
             id: UUID(),
-            bookingId: dummyBooking.id,
+            orderId: dummyBooking.id,
             productId: UUID(),
             quantity: 1,
             subtotal: 250000,
             size: "M",
             products: dummyProduct
         ),
-        BookingItems(
+        OrderItems(
             id: UUID(),
-            bookingId: dummyBooking.id,
+            orderId: dummyBooking.id,
             productId: UUID(),
             quantity: 1,
             subtotal: 250000,
@@ -147,7 +146,7 @@ struct OrderCard: View {
     ]
 
     OrderCard(
-        booking: dummyBooking,
+        order: dummyBooking,
         items: dummyItems
     )
 }

@@ -19,7 +19,7 @@ struct DisplayOrderItem: Identifiable {
 
 struct InvoiceContentView: View {
     
-    var draft: BookingDraft
+    var draft: OrderDraft
     let bookingId: UUID
     let business: BusinessProfile?
     
@@ -28,8 +28,6 @@ struct InvoiceContentView: View {
         if let business = business {
             
             VStack(spacing: 20) {
-                
-                Spacer()
                 
                 HeaderSectionView(
                     invoiceNumber: bookingId.uuidString
@@ -113,14 +111,14 @@ struct InvoiceContentView: View {
 #Preview {
 
     let dummyItems = [
-        BookingItemDraft(
+        OrderItemDraft(
             productName: "Evening Dress",
             color: "Red",
             size: "M",
             quantity: 2
 //            subtotal: 200_000
         ),
-        BookingItemDraft(
+        OrderItemDraft(
             productName: "Wedding Gown",
             color: "White",
             size: "L",
@@ -129,7 +127,7 @@ struct InvoiceContentView: View {
         )
     ]
 
-    let draft = BookingDraft(
+    let draft = OrderDraft(
         customerName: "Siti Aisyah",
         customerPhone: "08123456789",
         customerAddress: "Surabaya, Indonesia",

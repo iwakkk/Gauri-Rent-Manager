@@ -1,5 +1,5 @@
 //
-//  BookingDraft.swift
+//  OrderDraft.swift
 //  RentManager
 //
 //  Created by Edward Suwandi on 25/02/26.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct BookingDraft {
+struct OrderDraft {
     
     var customerId: UUID?
     
@@ -19,7 +19,7 @@ struct BookingDraft {
     var rentStartDate: Date = Date()
     var rentEndDate: Date = Date()
     
-    var items: [BookingItemDraft] = [BookingItemDraft()]
+    var items: [OrderItemDraft] = [OrderItemDraft()]
     
     var shippingFee: Double = 0
     var deposit: Double = 0

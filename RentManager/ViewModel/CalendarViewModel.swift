@@ -18,7 +18,7 @@ enum RangePosition {
 @Observable
 class CalendarViewModel {
     
-    var bookings: [Bookings] = []
+    var orders: [Orders] = []
     
     private let calendar = Calendar.current
     
@@ -45,11 +45,11 @@ class CalendarViewModel {
         calendar.startOfDay(for: date)
     }
     
-    // COUNT BOOKINGS PER DAY
+    // COUNT ORDERS PER DAY
     func count(for date: Date) -> Int {
         let d = normalize(date)
         
-        return bookings.filter {
+        return orders.filter {
             guard let start = $0.rentStartDate,
                   let end = $0.rentEndDate else { return false }
             
@@ -64,8 +64,8 @@ class CalendarViewModel {
     func isStartDate(_ date: Date) -> Bool {
         let d = normalize(date)
         
-        return bookings.contains { booking in
-            guard let start = booking.rentStartDate else { return false }
+        return orders.contains { order in
+            guard let start = order.rentStartDate else { return false }
             return normalize(start) == d
         }
     }
@@ -74,8 +74,8 @@ class CalendarViewModel {
     func isEndDate(_ date: Date) -> Bool {
         let d = normalize(date)
         
-        return bookings.contains { booking in
-            guard let end = booking.rentEndDate else { return false }
+        return orders.contains { order in
+            guard let end = order.rentEndDate else { return false }
             return normalize(end) == d
         }
     }
@@ -84,9 +84,9 @@ class CalendarViewModel {
     func rangePosition(for date: Date) -> RangePosition {
         let d = normalize(date)
         
-        let hasBooking = bookings.contains { booking in
-            guard let start = booking.rentStartDate,
-                  let end = booking.rentEndDate else { return false }
+        let hasOrder = orders.contains { order in
+            guard let start = order.rentStartDate,
+                  let end = order.rentEndDate else { return false }
             
             let s = normalize(start)
             let e = normalize(end)
@@ -94,20 +94,20 @@ class CalendarViewModel {
             return d >= s && d <= e
         }
         
-        if !hasBooking { return .none }
+        if !hasOrder { return .none }
         
         let prev = calendar.date(byAdding: .day, value: -1, to: d) ?? Date()
         let next = calendar.date(byAdding: .day, value: 1, to: d) ?? Date()
         
-        let hasPrev = bookings.contains { booking in
-            guard let start = booking.rentStartDate,
-                  let end = booking.rentEndDate else { return false }
+        let hasPrev = orders.contains { order in
+            guard let start = order.rentStartDate,
+                  let end = order.rentEndDate else { return false }
             return prev >= normalize(start) && prev <= normalize(end)
         }
         
-        let hasNext = bookings.contains { booking in
-            guard let start = booking.rentStartDate,
-                  let end = booking.rentEndDate else { return false }
+        let hasNext = orders.contains { order in
+            guard let start = order.rentStartDate,
+                  let end = order.rentEndDate else { return false }
             return next >= normalize(start) && next <= normalize(end)
         }
         

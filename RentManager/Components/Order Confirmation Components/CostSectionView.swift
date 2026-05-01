@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CostSectionView: View {
     
-    @Binding var draft: BookingDraft
+    @Binding var draft: OrderDraft
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -27,8 +27,14 @@ struct CostSectionView: View {
             FormFieldRow(
                 title: "Deposit",
                 text: Binding(
-                    get: { String(draft.deposit) },
-                    set: { draft.deposit = Double($0) ?? 0 }
+                    get: {
+                        draft.deposit == 0 ? "" :
+                        "Rp \(Int(draft.deposit).formatted(.number.grouping(.automatic)))"
+                    },
+                    set: { newValue in
+                        let numbers = newValue.filter { $0.isNumber }
+                        draft.deposit = Double(numbers) ?? 0
+                    }
                 ),
                 keyboard: .numberPad
             )
@@ -36,8 +42,14 @@ struct CostSectionView: View {
             FormFieldRow(
                 title: "Shipping Fee",
                 text: Binding(
-                    get: { String(draft.shippingFee) },
-                    set: { draft.shippingFee = Double($0) ?? 0 }
+                    get: {
+                        draft.shippingFee == 0 ? "" :
+                        "Rp \(Int(draft.shippingFee).formatted(.number.grouping(.automatic)))"
+                    },
+                    set: { newValue in
+                        let numbers = newValue.filter { $0.isNumber }
+                        draft.shippingFee = Double(numbers) ?? 0
+                    }
                 ),
                 keyboard: .numberPad
             )

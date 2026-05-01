@@ -10,8 +10,8 @@ import Foundation
 @Observable
 class OrderDetailViewModel {
     
-    var booking: Bookings
-    var items: [BookingItems] = []
+    var order: Orders
+    var items: [OrderItems] = []
     var customers: [Customers] = []
     var selectedCustomer: Customers? = nil
     
@@ -19,17 +19,17 @@ class OrderDetailViewModel {
     var isUpdating = false
     
     
-    private let service = BookingsService()
+    private let service = OrderService()
     
-    init(booking: Bookings) {
-        self.booking = booking
+    init(order: Orders) {
+        self.order = order
     }
     
-    // LOAD SINGLE BOOKING DETAILS
-    func loadBookingItems() async {
+    // LOAD SINGLE ORDER DETAILS
+    func loadOrderItems() async {
         isLoading = true
         do {
-            items = try await service.fetchItems(for: booking.id)
+            items = try await service.fetchItems(for: order.id)
         } catch {
             print("❌ Failed:", error)
             items = []
@@ -37,37 +37,18 @@ class OrderDetailViewModel {
         isLoading = false
     }
     
-    // CHECK PRODUCT AVAILIBILITY WHEN UPDATE STATUS
-    func hasRentedProductConflict() -> Bool {
-        
-        for item in items {
-            if item.products?.isRented == true {
-                return true
-            }
-        }
-        
-        return false
-    }
     
     // UPDATE STATUS
-    func updateStatus(to status: BookingStatus) async {
+    func updateStatus(to status: OrderStatus) async {
         isUpdating = true
         do {
-            let currentStatus = booking.status
+            let currentStatus = order.status
             try await service.updateStatus(
-                bookingId: booking.id,
+                orderId: order.id,
                 status: status
             )
             
-            if status == .toShip {
-                try await service.markProductsAsRented(bookingId: booking.id)
-            }
-                   
-            if status == .completed {
-                try await service.releaseProducts(bookingId: booking.id)
-            }
-            
-            booking.status = status
+            order.status = status
             
         } catch {
             print(error)
@@ -75,16 +56,16 @@ class OrderDetailViewModel {
         isUpdating = false
     }
     
-    // CANCEL BOOKING
-    func cancelBooking() async {
+    // CANCEL ORDER
+    func cancelOrder() async {
         isUpdating = true
         do {
             try await service.updateStatus(
-                bookingId: booking.id,
+                orderId: order.id,
                 status: .cancelled
             )
             
-            booking.status = .cancelled
+            order.status = .cancelled
             
         } catch {
             print(error)

@@ -10,16 +10,18 @@ import SwiftUI
 struct OrderDetailView: View {
     
     @State var viewModel: OrderDetailViewModel
+    @State var productsViewModel = ProductsViewModel()
     @State private var showInvoiceSheet = false
     @State private var showCancelAlert = false
     @State private var showConfirmAlert = false
     @State private var showRentedAlert = false
+    @State private var rentedMessage = ""
     
-    @Binding var selectedTab: BookingStatus?
+    @Binding var selectedTab: OrderStatus?
     @Environment(\.dismiss) var dismiss
     
     var rentPeriod: String {
-        guard let start = viewModel.booking.rentStartDate, let end = viewModel.booking.rentEndDate else { return "-" }
+        guard let start = viewModel.order.rentStartDate, let end = viewModel.order.rentEndDate else { return "-" }
         let formatter = DateFormatter()
         formatter.dateFormat = "dd MMM yyyy"
         return "\(formatter.string(from: start)) - \(formatter.string(from: end))"
@@ -30,162 +32,22 @@ struct OrderDetailView: View {
             VStack(alignment: .leading, spacing: 16) {
                 
                 // Customer Info
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Customer Info")
-                        .font(.title3.weight(.bold))
-                    
-                    RowField(title: "Name: ", value: viewModel.booking.customer?.name ?? "-")
-                    
-                    RowField(title: "Phone: ", value: viewModel.booking.customer?.phone ?? "-")
-                    
-                    RowField(title: "Address: ", value: viewModel.booking.address ?? "-")
-                    
-                    RowField(title: "Bank Account: ", value: viewModel.booking.customer?.bankAccount ?? "-")
-                    
-                }
-                .padding()
-                .background(Color(.systemBackground))
-                .cornerRadius(10)
+                CustomerInfoSection(order: viewModel.order)
                 
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Rent Details")
-                        .font(.title3.weight(.bold))
-                    
-                    // Rent Period & Status
-                    HStack {
-                        VStack(alignment: .leading) {
-                            RowField(title: "Rent Period", value: rentPeriod)
-                        }
-                        
-                        Spacer()
-                        
-                        VStack(alignment: .trailing) {
-                            Text("Status")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            
-                            Text(viewModel.booking.status.displayName)
-                                .font(.caption.bold())
-                                .foregroundColor(viewModel.booking.status.color)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(
-                                    viewModel.booking.status.color.opacity(0.15)
-                                )
-                                .clipShape(Capsule())
-                        }
-                    }
-                    
-                }
-                .padding()
-                .background(Color(.systemBackground))
-                .cornerRadius(10)
-                
-                // Items
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Ordered Item(s)")
-                        .font(.title3.weight(.bold))
-                    
-                    if viewModel.isLoading {
-                        ProgressView()
-                    } else if viewModel.items.isEmpty {
-                        Text("No items found")
-                            .foregroundColor(.secondary)
-                    } else {
-                        ForEach(viewModel.items) { item in
-                            
-                            HStack(alignment: .top, spacing: 12) {
-                                
-                                // PRODUCT IMAGE
-                                if let urlString = item.products?.imageUrl,
-                                   let url = URL(string: urlString) {
-                                    
-                                    AsyncImage(url: url) { image in
-                                        image
-                                            .resizable()
-                                            .scaledToFill()
-                                    } placeholder: {
-                                        Color.gray.opacity(0.2)
-                                    }
-                                    .frame(width: 70, height: 70)
-                                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                                    
-                                } else {
-                                    Color.gray.opacity(0.2)
-                                        .frame(width: 70, height: 70)
-                                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                                }
-                                
-                                // INFO SECTION
-                                VStack(alignment: .leading, spacing: 6) {
-                                    
-                                    Text("\(item.products?.name ?? "-") - \(item.products?.color ?? "-")")
-                                        .font(.body.weight(.semibold))
-                                    
-                                    Text("Qty: \(item.quantity)")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                    
-                                    Text("Size: \(item.size)")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                    
-                                    Text("Subtotal: Rp \(Int(item.subtotal))")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                                
-                                Spacer()
-                            }
-                            .padding(10)
-                            .background(Color(.systemBackground))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                        }
-                    }
-                    
-                    
-                }
-                .padding()
-                .background(Color(.systemBackground))
-                .cornerRadius(10)
-                
-                // Summary
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Summary")
-                        .font(.title3.weight(.bold))
-                    
-                    HStack {
-                        Text("Subtotal")
-                        Spacer()
-                        Text("Rp \(Int(viewModel.booking.subtotalAmount ?? 0))")
-                    }
-                    HStack {
-                        Text("Shipping Fee")
-                        Spacer()
-                        Text("Rp \(Int(viewModel.booking.shippingFee ?? 0))")
-                    }
-                    HStack {
-                        Text("Deposit")
-                        Spacer()
-                        Text("Rp \(Int(viewModel.booking.depositAmount ?? 0))")
-                    }
-                    
-                    Divider()
-                        .padding(.vertical)
-                    HStack {
-                        Text("Total")
-                            .font(.body.bold())
-                        Spacer()
-                        Text("Rp \(Int(viewModel.booking.totalAmount ?? 0))")
-                            .font(.body.bold())
-                    }
-                }
-                .padding()
-                .background(Color(.systemBackground))
-                .cornerRadius(10)
+                RentDetailSection(
+                       order: viewModel.order,
+                       rentPeriod: rentPeriod
+                   )
+                   
+                   OrderItemsSection(
+                       items: viewModel.items,
+                       isLoading: viewModel.isLoading
+                   )
+                   
+                   SummarySection(order: viewModel.order)
                 
                 // Invoice
-                if viewModel.booking.invoiceURL != nil {
+                if viewModel.order.invoiceURL != nil {
                     
                     Button {
                         showInvoiceSheet = true
@@ -216,7 +78,7 @@ struct OrderDetailView: View {
         .toolbar {
             
             // Tombol cancel (HANYA kalau unpaid)
-            if viewModel.booking.status == .unpaid {
+            if viewModel.order.status == .unpaid {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         showCancelAlert = true
@@ -231,8 +93,8 @@ struct OrderDetailView: View {
             
             Button("Yes, Cancel", role: .destructive) {
                 Task {
-                    await viewModel.cancelBooking()
-                    selectedTab = viewModel.booking.status
+                    await viewModel.cancelOrder()
+                    selectedTab = viewModel.order.status
                     dismiss()
                 }
             }
@@ -243,13 +105,13 @@ struct OrderDetailView: View {
             Text("This order will be canceled")
         }
         .safeAreaInset(edge: .bottom) {
-            if viewModel.booking.status.hasAction,
-               let next = viewModel.booking.status.nextStatus {
+            if viewModel.order.status.hasAction,
+               let next = viewModel.order.status.nextStatus {
                 
                 Button {
                     showConfirmAlert = true
                 } label: {
-                    Text(viewModel.booking.status.actionTitle)
+                    Text(viewModel.order.status.actionTitle)
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color.gauriprimary)
@@ -270,22 +132,55 @@ struct OrderDetailView: View {
         .alert("Confirmation", isPresented: $showConfirmAlert) {
             Button("Yes") {
                 Task {
-                    if let next = viewModel.booking.status.nextStatus {
+                    if let next = viewModel.order.status.nextStatus {
                         
-                        // VALIDASI SEBELUM TO SHIP
+                        // CHECK ONLY WHEN GOING TO SHIP
                         if next == .toShip {
-                            let hasConflict = viewModel.items.contains {
-                                $0.products?.isRented == true
+                            
+                            var conflicts: [String] = []
+                            
+                            let formatter = DateFormatter()
+                            formatter.dateFormat = "d MMM"
+                            formatter.locale = Locale(identifier: "id_ID")
+                            
+                            for item in viewModel.items {
+                                guard let product = item.products else { continue }
+                                
+                                let ranges = productsViewModel.bookedRanges[product.id] ?? []
+                                
+                                let hasConflict = ranges.contains { range in
+                                    let (start, end) = range
+                                    
+                                    return viewModel.order.rentStartDate! <= end &&
+                                           viewModel.order.rentEndDate! >= start
+                                }
+                                
+                                if hasConflict {
+                                    
+                                    let text = ranges.map {
+                                        "• \(formatter.string(from: $0.0)) - \(formatter.string(from: $0.1))"
+                                    }.joined(separator: "\n")
+                                    
+                                    conflicts.append("""
+                                    \(product.name):
+                                    \(text)
+                                    """)
+                                }
                             }
                             
-                            if hasConflict {
+                            if !conflicts.isEmpty {
+                                rentedMessage = """
+                                Cannot proceed to ship.
+
+                                \(conflicts.joined(separator: "\n\n"))
+                                """
                                 showRentedAlert = true
                                 return
                             }
                         }
                         
                         await viewModel.updateStatus(to: next)
-                        selectedTab = viewModel.booking.status
+                        selectedTab = viewModel.order.status
                         dismiss()
                     }
                 }
@@ -298,7 +193,7 @@ struct OrderDetailView: View {
             NavigationStack {
                 VStack {
                     // PRIORITAS LOCAL
-                    if let localURL = InvoiceStorage.get(bookingId: viewModel.booking.id) {
+                    if let localURL = InvoiceStorage.get(orderId: viewModel.order.id) {
                         
                         PDFKitView(url: localURL)
                             .onAppear {
@@ -308,7 +203,7 @@ struct OrderDetailView: View {
                     }
                     
                     // FALLBACK REMOTE
-                    else if let urlString = viewModel.booking.invoiceURL,
+                    else if let urlString = viewModel.order.invoiceURL,
                             let remoteURL = URL(string: urlString) {
                         
                         PDFKitView(url: remoteURL)
@@ -331,13 +226,13 @@ struct OrderDetailView: View {
                     // SHARE
                     ToolbarItem(placement: .topBarTrailing) {
                         
-                        if let localURL = InvoiceStorage.get(bookingId: viewModel.booking.id) {
+                        if let localURL = InvoiceStorage.get(orderId: viewModel.order.id) {
                             
                             ShareLink(item: localURL) {
                                 Image(systemName: "square.and.arrow.up")
                             }
                             
-                        } else if let urlString = viewModel.booking.invoiceURL,
+                        } else if let urlString = viewModel.order.invoiceURL,
                                   let remoteURL = URL(string: urlString) {
                             
                             ShareLink(item: remoteURL) {
@@ -358,7 +253,12 @@ struct OrderDetailView: View {
         .navigationTitle("Order Detail")
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            await viewModel.loadBookingItems()
+            await viewModel.loadOrderItems()
+            for item in viewModel.items {
+                if let productId = item.products?.id {
+                    await productsViewModel.loadBookedRanges(for: productId)
+                }
+            }
         }
     }
 }

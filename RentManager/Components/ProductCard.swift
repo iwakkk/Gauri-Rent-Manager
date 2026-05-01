@@ -10,6 +10,14 @@ import SwiftUI
 struct ProductCard: View {
     
     let product: Products
+    let bookedRanges: [(Date, Date)]
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMM"
+        formatter.locale = Locale(identifier: "id_ID")
+        return formatter.string(from: date)
+    }
     
     var body: some View {
         HStack(spacing: 12) {
@@ -27,7 +35,6 @@ struct ProductCard: View {
                         ProgressView()
                     }
                 } else {
-                    // Fallback kalau tidak ada image
                     Image(systemName: "photo")
                         .resizable()
                         .scaledToFit()
@@ -39,35 +46,61 @@ struct ProductCard: View {
             .background(Color.gray.opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 12))
             
-            
-            // TEXT INFO
-            VStack(alignment: .leading, spacing: 6) {
+            // INFO
+            VStack(alignment: .leading, spacing: 4) {
                 
                 Text(product.name)
                     .font(.headline)
                     .lineLimit(1)
                 
-                Text("\(product.color)")
+                Text(product.color)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 
-                HStack {
-                    Text("Rp \(product.price, specifier: "%.0f")")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
+                Text("Rp \(product.price, specifier: "%.0f")")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+            }
+            
+            Spacer()
+            
+            // MARK: - STATUS (RIGHT SIDE)
+            VStack(alignment: .trailing, spacing: 4) {
+                
+                if bookedRanges.isEmpty {
                     
-                    Spacer()
-                    
-                     Text(product.isRented ? "Rented" : "Available")
+                    Text("Available")
                         .font(.caption2)
                         .fontWeight(.semibold)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(
-                            product.isRented ? Color.red.opacity(0.15) : Color.green.opacity(0.15)
-                        )
-                        .foregroundColor(product.isRented ? .red : .green)
+                        .background(Color.green.opacity(0.15))
+                        .foregroundColor(.green)
                         .clipShape(Capsule())
+                    
+                } else {
+                    
+                    ScrollView(.vertical, showsIndicators: false) {
+                        
+                        VStack(alignment: .trailing, spacing: 4) {
+                            
+                            ForEach(Array(bookedRanges.enumerated()), id: \.offset) { _, range in
+                                
+                                let start = formatDate(range.0)
+                                let end = formatDate(range.1)
+                                
+                                Text("\(start) - \(end)")
+                                    .font(.caption2)
+                                    .fontWeight(.semibold)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(Color.red.opacity(0.15))
+                                    .foregroundColor(.red)
+                                    .clipShape(Capsule())
+                            }
+                        }
+                    }
+                    .frame(maxHeight: 80) // penting supaya card tidak ikut memanjang
                 }
             }
         }
@@ -76,36 +109,4 @@ struct ProductCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
     }
-}
-
-#Preview("With Image") {
-    ProductCard(
-        product: Products(
-            id: UUID(),
-            name: "Elegant Dress",
-            color: "Black",
-            size: ["M"],
-            price: 250000,
-            isRented: false,
-            imageUrl: "https://via.placeholder.com/150"
-        )
-    )
-    .padding()
-    .previewLayout(.sizeThatFits)
-}
-
-#Preview("No Image") {
-    ProductCard(
-        product: Products(
-            id: UUID(),
-            name: "Casual Shirt",
-            color: "White",
-            size: ["L"],
-            price: 150000,
-            isRented: false,
-            imageUrl: nil
-        )
-    )
-    .padding()
-    .previewLayout(.sizeThatFits)
 }

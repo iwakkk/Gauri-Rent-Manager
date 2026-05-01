@@ -13,26 +13,26 @@ class OrderConfirmationViewModel {
     var customers: [Customers] = []
     
     private let customerService = CustomerService()
-    private let bookingService = BookingsService()
+    private let orderService = OrderService()
     
-    // CREATE BOOKING
-    func createBooking(_ draft: BookingDraft) async throws -> UUID {
-        let bookingId = try await bookingService.createBooking(draft)
+    // CREATE ORDER
+    func createOrder(_ draft: OrderDraft) async throws -> UUID {
+        let orderId = try await orderService.createOrder(draft)
         
-        return bookingId
+        return orderId
     }
 
-    // UPDATE BOOKING
-    func updateBooking(_ id: UUID, _ draft: BookingDraft) async throws {
-        try await bookingService.updateBooking(id: id, draft: draft)
+    // UPDATE ORDER
+    func updateOrder(_ id: UUID, _ draft: OrderDraft) async throws {
+        try await orderService.updateOrder(id: id, draft: draft)
         
     }
     
     // UPLOAD INVOICE
-    func uploadInvoice(fileURL: URL, bookingId: UUID) async throws {
-        _ = try await bookingService.uploadInvoice(
+    func uploadInvoice(fileURL: URL, orderId: UUID) async throws {
+        _ = try await orderService.uploadInvoice(
             fileURL: fileURL,
-            bookingId: bookingId
+            orderId: orderId
         )
     }
     
@@ -45,9 +45,30 @@ class OrderConfirmationViewModel {
         }
     }
     
+    // CHECK PRODUCT AVAILABAILITY
+    func checkAvailability(
+        productId: UUID,
+        startDate: Date,
+        endDate: Date
+    ) async throws -> Bool {
+        
+        let orders = try await orderService.fetchProductBookings(productId: productId)
+        
+        let hasConflict = orders.contains { b in
+            guard let s = b.rentStartDate,
+                  let e = b.rentEndDate else {
+                return false
+            }
+            
+            return startDate <= e && endDate >= s
+        }
+        
+        return !hasConflict
+    }
     
-    // VALIDATE BOOKING FORM
-    func isFormValid(_ draft: BookingDraft) -> Bool {
+    
+    // VALIDATE ORDER FORM
+    func isFormValid(_ draft: OrderDraft) -> Bool {
         
         if draft.customerName.isEmpty ||
            draft.customerAddress.isEmpty ||

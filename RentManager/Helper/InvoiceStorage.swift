@@ -10,7 +10,7 @@ import Foundation
 struct InvoiceStorage {
     
     // SAVE PDF KE LOCAL
-    static func save(fileURL: URL, bookingId: UUID) throws -> URL {
+    static func save(fileURL: URL, orderId: UUID) throws -> URL {
         
         let fileManager = FileManager.default
         
@@ -21,7 +21,7 @@ struct InvoiceStorage {
             try fileManager.createDirectory(at: folder, withIntermediateDirectories: true)
         }
         
-        let localURL = folder.appendingPathComponent("invoice-\(bookingId).pdf")
+        let localURL = folder.appendingPathComponent("invoice-\(orderId).pdf")
         
         if fileManager.fileExists(atPath: localURL.path) {
             try fileManager.removeItem(at: localURL)
@@ -33,14 +33,14 @@ struct InvoiceStorage {
     }
     
     // GET PDF FROM LOCAL
-    static func get(bookingId: UUID) -> URL? {
+    static func get(orderId: UUID) -> URL? {
         
         let fileManager = FileManager.default
         
         let documents = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let localURL = documents
             .appendingPathComponent("invoices")
-            .appendingPathComponent("invoice-\(bookingId).pdf")
+            .appendingPathComponent("invoice-\(orderId).pdf")
         
         return fileManager.fileExists(atPath: localURL.path) ? localURL : nil
     }

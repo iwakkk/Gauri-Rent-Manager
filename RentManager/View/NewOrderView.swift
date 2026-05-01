@@ -19,18 +19,24 @@ struct NewOrderView: View {
     
     var body: some View {
         NavigationStack{
-            VStack(alignment: .leading) {
+            ScrollView{
                 
-                Text("Enter or paste order form here.")
-                    .font(.headline)
-                
-                TextEditor(text: $bookingFormText)
-                    .frame(height: 300)
-                    .padding(8)
-                    .background(Color(.systemGray6))
-                    .cornerRadius(12)
-                
-                Spacer()
+                VStack(alignment: .leading) {
+                    
+                    Text("Enter or paste order form here.")
+                        .font(.headline)
+                    
+                    TextEditor(text: $bookingFormText)
+                        .frame(height: 300)
+                        .padding(8)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                    
+                    Spacer()
+                }
+            }
+            .onTapGesture {
+                hideKeyboard()
             }
             .padding()
             .navigationTitle("New Order")
@@ -43,7 +49,7 @@ struct NewOrderView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        let parsedDraft = viewModel.parseBookingText(bookingFormText,  products: viewModel.allProducts)
+                        let parsedDraft = viewModel.parseOrderText(bookingFormText,  products: viewModel.allProducts)
                         viewModel.parsedDraft = parsedDraft
                         goToNextPage = true
                     } label: {
@@ -55,9 +61,9 @@ struct NewOrderView: View {
             .navigationDestination(isPresented: $goToNextPage) {
                 if let draft = viewModel.parsedDraft {
                     OrderConfirmationView(
-                        draft: draft,
                         bookingId: $bookingId,
-                        showOrderSheet: $showOrderSheet)
+                        showOrderSheet: $showOrderSheet,
+                        draft: draft,)
                 }
             }
             .task {
@@ -91,7 +97,7 @@ struct NewOrderView: View {
     
         DispatchQueue.global(qos: .userInitiated).async {
             
-            let parsed = viewModel.parseBookingText(
+            let parsed = viewModel.parseOrderText(
                 text,
                 products: viewModel.allProducts
             )

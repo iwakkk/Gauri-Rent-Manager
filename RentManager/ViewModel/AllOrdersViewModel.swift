@@ -11,24 +11,24 @@ import SwiftUI
 @Observable
 class AllOrdersViewModel {
     
-    var bookings: [Bookings] = []
-    var itemsByBooking: [UUID: [BookingItems]] = [:]
+    var orders: [Orders] = []
+    var itemsByOrder: [UUID: [OrderItems]] = [:]
     
-    private let service = BookingsService()
+    private let service = OrderService()
     
     func loadOrders() async {
         do {
-            let fetchedBookings = try await service.fetchBookings()
+            let fetchedOrders = try await service.fetchOrders()
             
-            self.bookings = fetchedBookings
-            self.itemsByBooking.removeAll()
+            self.orders = fetchedOrders
+            self.itemsByOrder.removeAll()
             
-            for booking in fetchedBookings {
+            for order in fetchedOrders {
                 Task {
                     do {
-                        let items = try await self.service.fetchItems(for: booking.id)
+                        let items = try await self.service.fetchItems(for: order.id)
                         
-                        self.itemsByBooking[booking.id] = items
+                        self.itemsByOrder[order.id] = items
                     } catch {
                         print(error)
                     }

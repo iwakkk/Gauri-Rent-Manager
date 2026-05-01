@@ -1,5 +1,5 @@
 //
-//  BookingItemDraft.swift
+//  OrderItemDraft.swift
 //  RentManager
 //
 //  Created by Edward Suwandi on 25/02/26.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct BookingItemDraft: Identifiable {
+struct OrderItemDraft: Identifiable {
     let id = UUID()
     
     var selectedProduct: Products?

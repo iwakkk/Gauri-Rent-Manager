@@ -20,7 +20,6 @@ struct NewProductView: View {
             color: "",
             size: [],
             price: 0,
-            isRented: false,
             imageUrl: nil
 
     )
@@ -41,17 +40,20 @@ struct NewProductView: View {
                         
                         FormFieldRow(title: "Product Name", text: $draft.name)
                         FormFieldRow(title: "Color", text: $draft.color)
+                        
                         FormFieldRow(
                             title: "Price",
                             text: Binding(
                                 get: {
-                                    String(draft.price).replacingOccurrences(of: ".0", with: "")
+                                    draft.price == 0 ? "" :
+                                    "Rp \(Int(draft.price).formatted(.number.grouping(.automatic)))"
                                 },
                                 set: { newValue in
-                                    draft.price = Double(newValue) ?? 0
+                                    let numbers = newValue.filter { $0.isNumber }
+                                    draft.price = Double(numbers) ?? 0
                                 }
                             ),
-                            keyboard: .decimalPad
+                            keyboard: .numberPad
                         )
                     }
                     
@@ -113,6 +115,9 @@ struct NewProductView: View {
                     
                 }
                 .padding()
+            }
+            .onTapGesture {
+                hideKeyboard()
             }
             .navigationTitle("New Product")
             .toolbar {

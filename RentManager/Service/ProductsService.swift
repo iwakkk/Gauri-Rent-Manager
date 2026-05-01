@@ -78,5 +78,7 @@ struct ProductsService {
         
         return publicURL.absoluteString
     }
+    
+    
 }
     

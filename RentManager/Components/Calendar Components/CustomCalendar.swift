@@ -10,7 +10,7 @@ import SwiftUI
 struct CustomCalendar: View {
     
     @Binding var selectedDate: Date
-    var bookings: [Bookings]
+    var orders: [Orders]
     
     @State private var viewModel = CalendarViewModel()
     @State private var currentMonth: Date = Date()
@@ -87,10 +87,10 @@ struct CustomCalendar: View {
             .padding(.horizontal)
         }
         .onAppear {
-            viewModel.bookings = bookings
+            viewModel.orders = orders
         }
-        .onChange(of: bookings) { newValue in
-            viewModel.bookings = newValue
+        .onChange(of: orders) { newValue in
+            viewModel.orders = newValue
         }
     }
     

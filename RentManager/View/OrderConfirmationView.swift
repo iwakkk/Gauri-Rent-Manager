@@ -9,17 +9,19 @@ import SwiftUI
 
 struct OrderConfirmationView: View {
     
-    @State var draft: BookingDraft
     
     @Binding var bookingId: UUID?
     @Binding var showOrderSheet: Bool
     
+    @State var draft: OrderDraft
     @State private var showConfirmation = false
+    @State private var showDateConflictAlert = false
     @State private var goToInvoicePage = false
     @State private var showValidationAlert = false
     @State private var viewModel = OrderConfirmationViewModel()
     @State private var productsViewModel = ProductsViewModel()
     @State private var businessViewModel = BusinessProfileViewModel()
+    @State private var conflictMessage: String = ""
     
     var body: some View {
         ScrollView {
@@ -31,9 +33,9 @@ struct OrderConfirmationView: View {
                 )
                 .padding()
                 .background(Color(.white))
-                        .cornerRadius(16)
-                        .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
-                        
+                .cornerRadius(16)
+                .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+                
                 
                 OrderSectionView(
                     draft: $draft,
@@ -41,23 +43,26 @@ struct OrderConfirmationView: View {
                 )
                 .padding()
                 .background(Color(.white))
-                        .cornerRadius(16)
-                        .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
-                        
+                .cornerRadius(16)
+                .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+                
                 RentPeriodSectionView(draft: $draft)
                     .padding()
                     .background(Color(.white))
-                            .cornerRadius(16)
-                            .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
-                            
+                    .cornerRadius(16)
+                    .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+                
                 CostSectionView(draft: $draft)
                     .padding()
                     .background(Color(.white))
                     .cornerRadius(16)
                     .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
-                    
+                
             }
             .padding()
+        }
+        .onTapGesture {
+            hideKeyboard()
         }
         .background(Color.gauribackground.ignoresSafeArea())
         .navigationTitle("Rent Details")
@@ -65,7 +70,69 @@ struct OrderConfirmationView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     if viewModel.isFormValid(draft) {
-                        showConfirmation = true
+                        Task {
+                            do {
+                                var allMessages: [String] = []
+                                var hasConflict = false
+                                
+                                let formatter = DateFormatter()
+                                formatter.dateFormat = "d MMM"
+                                formatter.locale = Locale(identifier: "id_ID")
+                                
+                                for item in draft.items {
+                                    guard let product = item.selectedProduct else { continue }
+                                    
+                                    let ranges = productsViewModel.bookedRanges[product.id] ?? []
+                                    
+                                    
+                                    let conflicts = ranges.filter { range in
+                                        let (start, end) = range
+                                        
+                                        return draft.rentStartDate <= end &&
+                                               draft.rentEndDate >= start
+                                    }
+                                    
+                                    if conflicts.isEmpty { continue }
+                                    
+                                    hasConflict = true
+                                    
+                                    let scheduleText = ranges.isEmpty
+                                    ? "No existing bookings"
+                                    : ranges.map { range in
+                                        let start = formatter.string(from: range.0)
+                                        let end = formatter.string(from: range.1)
+                                        return "• \(start) - \(end)"
+                                    }.joined(separator: "\n")
+                                    
+                                    let message = """
+                                    \(product.name)
+
+                                    Existing bookings:
+                                    \(scheduleText)
+                                    """
+                                    
+                                    allMessages.append(message)
+                                }
+                                
+                                if hasConflict {
+                                    
+                                    conflictMessage = """
+                                    These products are not available:
+
+                                    \(allMessages.joined(separator: "\n\n----------------\n\n"))
+
+                                    Please choose different dates.
+                                    """
+                                    
+                                    showDateConflictAlert = true
+                                    return
+                                }
+                                
+                                showConfirmation = true
+                            } catch {
+                                print("Error:", error)
+                            }
+                        }
                     } else {
                         showValidationAlert = true
                     }
@@ -75,17 +142,23 @@ struct OrderConfirmationView: View {
                 .buttonStyle(.borderedProminent)
             }
         }
+        .alert("Date not available", isPresented: $showDateConflictAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(conflictMessage)
+        }
         .alert("Confirmation", isPresented: $showConfirmation) {
             Button("Cancel", role: .cancel) { }
             Button("Next to Invoice") {
                 
                 Task {
                     do {
+                        
                         if let id = bookingId {
-                            try await viewModel.updateBooking(id, draft)
+                            try await viewModel.updateOrder(id, draft)
                             
                         } else {
-                            let newId = try await viewModel.createBooking(draft)
+                            let newId = try await viewModel.createOrder(draft)
                             bookingId = newId
                         }
                         
@@ -97,31 +170,29 @@ struct OrderConfirmationView: View {
                             business: businessViewModel.business
                         )
                         
-                        // 1. GENERATE PDF
+                        // GENERATE PDF
                         guard let pdfURL = PDFGenerator.generate(from: invoiceView) else {
-                            print("❌ Failed generate PDF")
+                            print(" Failed generate PDF")
                             return
                         }
                         
-                        // 2. SAVE KE LOCAL
-                        let localURL = try InvoiceStorage.save(fileURL: pdfURL, bookingId: id)
-                        print("✅ Saved local:", localURL)
+                        // SAVE TO LOCAL
+                        let localURL = try InvoiceStorage.save(fileURL: pdfURL, orderId: id)
+                        print(" Saved local:", localURL)
                         
-                        // 3. UPLOAD KE SUPABASE (BACKGROUND)
+                        // UPLOAD TO SUPABASE
                         Task {
                             do {
-                                try await viewModel.uploadInvoice(fileURL: pdfURL, bookingId: id)
-                                print("☁️ Uploaded to Supabase")
+                                try await viewModel.uploadInvoice(fileURL: pdfURL, orderId: id)
+                                print(" Uploaded to Supabase")
                             } catch {
-                                print("⚠️ Upload failed:", error)
+                                print(" Upload failed:", error)
                             }
                         }
-                        
-                        // 4. NAVIGATE
                         goToInvoicePage = true
                         
                     } catch {
-                        print("❌ error:", error)
+                        print("error:", error)
                     }
                 }
             }
