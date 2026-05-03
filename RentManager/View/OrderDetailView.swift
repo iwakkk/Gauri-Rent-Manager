@@ -125,7 +125,7 @@ struct OrderDetailView: View {
         .alert("Product Already Rented", isPresented: $showRentedAlert) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text("One or more dresses are currently rented.")
+            Text(rentedMessage)
         }
         
         // CONFIRM ALERT
@@ -136,44 +136,16 @@ struct OrderDetailView: View {
                         
                         // CHECK ONLY WHEN GOING TO SHIP
                         if next == .toShip {
-                            
-                            var conflicts: [String] = []
-                            
-                            let formatter = DateFormatter()
-                            formatter.dateFormat = "d MMM"
-                            formatter.locale = Locale(identifier: "id_ID")
-                            
-                            for item in viewModel.items {
-                                guard let product = item.products else { continue }
-                                
-                                let ranges = productsViewModel.bookedRanges[product.id] ?? []
-                                
-                                let hasConflict = ranges.contains { range in
-                                    let (start, end) = range
-                                    
-                                    return viewModel.order.rentStartDate! <= end &&
-                                           viewModel.order.rentEndDate! >= start
-                                }
-                                
-                                if hasConflict {
-                                    
-                                    let text = ranges.map {
-                                        "• \(formatter.string(from: $0.0)) - \(formatter.string(from: $0.1))"
-                                    }.joined(separator: "\n")
-                                    
-                                    conflicts.append("""
-                                    \(product.name):
-                                    \(text)
-                                    """)
-                                }
-                            }
-                            
-                            if !conflicts.isEmpty {
-                                rentedMessage = """
-                                Cannot proceed to ship.
+                            let products = viewModel.items.compactMap { $0.products }
 
-                                \(conflicts.joined(separator: "\n\n"))
-                                """
+                            let result = productsViewModel.checkConflicts(
+                                products: products,
+                                startDate: viewModel.order.rentStartDate!,
+                                endDate: viewModel.order.rentEndDate!
+                            )
+
+                            if result.hasConflict {
+                                rentedMessage = result.message
                                 showRentedAlert = true
                                 return
                             }

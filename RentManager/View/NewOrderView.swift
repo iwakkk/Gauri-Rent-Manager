@@ -15,7 +15,7 @@ struct NewOrderView: View {
     @State private var viewModel = NewOrderViewModel()
     @Binding var showOrderSheet : Bool
     
-    @State var bookingId: UUID? = nil
+    @State var orderId: UUID? = nil
     
     var body: some View {
         NavigationStack{
@@ -61,7 +61,7 @@ struct NewOrderView: View {
             .navigationDestination(isPresented: $goToNextPage) {
                 if let draft = viewModel.parsedDraft {
                     OrderConfirmationView(
-                        bookingId: $bookingId,
+                        orderId: $orderId,
                         showOrderSheet: $showOrderSheet,
                         draft: draft,)
                 }

@@ -11,7 +11,7 @@ import SwiftUI
 struct InvoiceContentView: View {
     
     var draft: OrderDraft
-    let bookingId: UUID
+    let orderId: UUID
     let business: BusinessProfile?
     
     
@@ -21,7 +21,7 @@ struct InvoiceContentView: View {
             VStack(spacing: 20) {
                 
                 HeaderSectionView(
-                    invoiceNumber: bookingId.uuidString
+                    invoiceNumber: orderId.uuidString
                         .prefix(8)
                         .uppercased(),
                     business: business
@@ -145,7 +145,7 @@ struct InvoiceContentView: View {
 
     InvoiceContentView(
         draft: draft,
-        bookingId: UUID(),
+        orderId: UUID(),
         business: business
     )
     .scaleEffect(0.6)

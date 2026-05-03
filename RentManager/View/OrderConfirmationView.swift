@@ -9,8 +9,7 @@ import SwiftUI
 
 struct OrderConfirmationView: View {
     
-    
-    @Binding var bookingId: UUID?
+    @Binding var orderId: UUID?
     @Binding var showOrderSheet: Bool
     
     @State var draft: OrderDraft
@@ -72,62 +71,20 @@ struct OrderConfirmationView: View {
                     if viewModel.isFormValid(draft) {
                         Task {
                             do {
-                                var allMessages: [String] = []
-                                var hasConflict = false
-                                
-                                let formatter = DateFormatter()
-                                formatter.dateFormat = "d MMM"
-                                formatter.locale = Locale(identifier: "id_ID")
-                                
-                                for item in draft.items {
-                                    guard let product = item.selectedProduct else { continue }
-                                    
-                                    let ranges = productsViewModel.bookedRanges[product.id] ?? []
-                                    
-                                    
-                                    let conflicts = ranges.filter { range in
-                                        let (start, end) = range
-                                        
-                                        return draft.rentStartDate <= end &&
-                                               draft.rentEndDate >= start
-                                    }
-                                    
-                                    if conflicts.isEmpty { continue }
-                                    
-                                    hasConflict = true
-                                    
-                                    let scheduleText = ranges.isEmpty
-                                    ? "No existing bookings"
-                                    : ranges.map { range in
-                                        let start = formatter.string(from: range.0)
-                                        let end = formatter.string(from: range.1)
-                                        return "• \(start) - \(end)"
-                                    }.joined(separator: "\n")
-                                    
-                                    let message = """
-                                    \(product.name)
+                                let products = draft.items.compactMap { $0.selectedProduct }
 
-                                    Existing bookings:
-                                    \(scheduleText)
-                                    """
-                                    
-                                    allMessages.append(message)
-                                }
-                                
-                                if hasConflict {
-                                    
-                                    conflictMessage = """
-                                    These products are not available:
+                                let result = productsViewModel.checkConflicts(
+                                    products: products,
+                                    startDate: draft.rentStartDate,
+                                    endDate: draft.rentEndDate
+                                )
 
-                                    \(allMessages.joined(separator: "\n\n----------------\n\n"))
-
-                                    Please choose different dates.
-                                    """
-                                    
+                                if result.hasConflict {
+                                    conflictMessage = result.message
                                     showDateConflictAlert = true
                                     return
                                 }
-                                
+
                                 showConfirmation = true
                             } catch {
                                 print("Error:", error)
@@ -154,19 +111,19 @@ struct OrderConfirmationView: View {
                 Task {
                     do {
                         
-                        if let id = bookingId {
+                        if let id = orderId {
                             try await viewModel.updateOrder(id, draft)
                             
                         } else {
                             let newId = try await viewModel.createOrder(draft)
-                            bookingId = newId
+                            orderId = newId
                         }
                         
-                        let id = bookingId!
+                        let id = orderId!
                         
                         let invoiceView = InvoiceContentView(
                             draft: draft,
-                            bookingId: id,
+                            orderId: id,
                             business: businessViewModel.business
                         )
                         
@@ -203,8 +160,8 @@ struct OrderConfirmationView: View {
             Button("OK", role: .cancel) { }
         }
         .navigationDestination(isPresented: $goToInvoicePage) {
-            if let id = bookingId {
-                InvoiceView(bookingId: id, showOrderSheet: $showOrderSheet)
+            if let id = orderId {
+                InvoiceView(orderId: id, showOrderSheet: $showOrderSheet)
             }
             else {
                 Text("Booking ID not found")

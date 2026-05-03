@@ -49,7 +49,7 @@ class ProductsViewModel {
             await loadProducts()
             
         } catch {
-            print("❌ create product error:", error)
+            print("create product error:", error)
         }
     }
     
@@ -66,7 +66,7 @@ class ProductsViewModel {
             }
             
         } catch {
-            print("❌ fetch error:", error)
+            print("fetch error:", error)
         }
     }
     
@@ -77,7 +77,7 @@ class ProductsViewModel {
             try await service.updateProduct(product)
             await loadProducts()
         } catch {
-            print("❌ update error:", error)
+            print("update error:", error)
         }
     }
     
@@ -87,7 +87,7 @@ class ProductsViewModel {
             try await service.deleteProduct(id: id)
             await loadProducts()
         } catch {
-            print("❌ delete error:", error)
+            print("delete error:", error)
         }
     }
     
@@ -105,7 +105,58 @@ class ProductsViewModel {
             }
             
         } catch {
-            print("❌ error:", error)
+            print("error:", error)
         }
+    }
+    
+    // CHECK PRODUCT CONFLICT
+    func checkConflicts(
+        products: [Products],
+        startDate: Date,
+        endDate: Date
+    ) -> (hasConflict: Bool, message: String) {
+        
+        var messages: [String] = []
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMM"
+        formatter.locale = Locale(identifier: "id_ID")
+        
+        for product in products {
+            let ranges = bookedRanges[product.id] ?? []
+            
+            let conflicts = ranges.filter { (start, end) in
+                startDate <= end && endDate >= start
+            }
+            
+            if conflicts.isEmpty { continue }
+            
+            let scheduleText = ranges.map {
+                "• \(formatter.string(from: $0.0)) - \(formatter.string(from: $0.1))"
+            }.joined(separator: "\n")
+            
+            let message = """
+            \(product.name)
+
+            Existing Orders:
+            \(scheduleText)
+            """
+            
+            messages.append(message)
+        }
+        
+        if messages.isEmpty {
+            return (false, "")
+        }
+        
+        let finalMessage = """
+        These products are not available:
+
+        \(messages.joined(separator: "\n\n----------------\n\n"))
+
+        Please choose different dates.
+        """
+        
+        return (true, finalMessage)
     }
 }

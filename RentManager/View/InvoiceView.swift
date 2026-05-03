@@ -9,7 +9,7 @@ import SwiftUI
 
 struct InvoiceView: View {
     
-    let bookingId: UUID
+    let orderId: UUID
     
     @Binding var showOrderSheet: Bool
     
@@ -25,7 +25,7 @@ struct InvoiceView: View {
             else {
                 
                 // CHECK LOCAL FILE
-                if let localURL = InvoiceStorage.get(orderId: bookingId) {
+                if let localURL = InvoiceStorage.get(orderId: orderId) {
                     
                     PDFKitView(url: localURL)
                     
@@ -55,7 +55,7 @@ struct InvoiceView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 
-                if let localURL = InvoiceStorage.get(orderId: bookingId) {
+                if let localURL = InvoiceStorage.get(orderId: orderId) {
                     
                     ShareLink(item: localURL) {
                         Image(systemName: "square.and.arrow.up")
@@ -71,7 +71,7 @@ struct InvoiceView: View {
             }
         }
         .task {
-            await viewModel.loadOrder(currentId: bookingId)
+            await viewModel.loadOrder(currentId: orderId)
         }
     }
 }

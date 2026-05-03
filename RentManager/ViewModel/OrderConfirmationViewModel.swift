@@ -45,28 +45,6 @@ class OrderConfirmationViewModel {
         }
     }
     
-    // CHECK PRODUCT AVAILABAILITY
-    func checkAvailability(
-        productId: UUID,
-        startDate: Date,
-        endDate: Date
-    ) async throws -> Bool {
-        
-        let orders = try await orderService.fetchProductBookings(productId: productId)
-        
-        let hasConflict = orders.contains { b in
-            guard let s = b.rentStartDate,
-                  let e = b.rentEndDate else {
-                return false
-            }
-            
-            return startDate <= e && endDate >= s
-        }
-        
-        return !hasConflict
-    }
-    
-    
     // VALIDATE ORDER FORM
     func isFormValid(_ draft: OrderDraft) -> Bool {
         

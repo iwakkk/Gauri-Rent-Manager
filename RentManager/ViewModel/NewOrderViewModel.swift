@@ -43,7 +43,7 @@ class NewOrderViewModel {
     ]
     
     // NORMALIZE TEXT
-    func normalizeMonth(_ text: String) -> String {
+    func normalizeText(_ text: String) -> String {
         text
             .lowercased()
             .replacingOccurrences(of: ".", with: "")
@@ -98,7 +98,7 @@ class NewOrderViewModel {
     // DATE EXTRACTION
     func extractDates(from text: String) -> (Date?, Date?) {
         
-        let normalizedText = normalizeMonth(text)
+        let normalizedText = normalizeText(text)
         let year = Calendar.current.component(.year, from: Date())
         
         guard let line = normalizedText

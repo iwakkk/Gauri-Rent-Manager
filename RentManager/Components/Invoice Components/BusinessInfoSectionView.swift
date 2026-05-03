@@ -80,7 +80,7 @@ struct BusinessInfoSectionView: View {
 
     InvoiceContentView(
         draft: draft,
-        bookingId: UUID(),
+        orderId: UUID(),
         business: business
     )
     .scaleEffect(0.6)
