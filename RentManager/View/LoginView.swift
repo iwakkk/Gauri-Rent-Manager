@@ -23,14 +23,11 @@ struct LoginView: View {
         
         ZStack {
             Color.gauribackground.ignoresSafeArea()
-            
-            ScrollView{
                 
                 VStack(spacing: 24) {
                     
                     Spacer()
                     VStack(spacing: 8) {
-                        
                         Text("Gauri Rent Manager")
                             .font(.title.bold())
                             .foregroundStyle(Color.gauriprimary)
@@ -106,10 +103,10 @@ struct LoginView: View {
                     
                     Spacer()
                 }
-            }
-            .onTapGesture {
-                hideKeyboard()
-            }
+            
+        }
+        .onTapGesture {
+            hideKeyboard()
         }
         .fullScreenCover(isPresented: $showRegister) {
             RegisterView()

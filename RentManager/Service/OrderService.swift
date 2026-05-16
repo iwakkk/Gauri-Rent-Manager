@@ -222,7 +222,7 @@ struct OrderService {
         return result
     }
     
-    // CUSTOMER
+    // FIND CUSTOMER
     func findCustomer(draft: OrderDraft) async throws -> UUID {
 
         let existing: [Customers] = try await supabase

@@ -15,7 +15,6 @@ struct AllOrdersView: View {
     @State var orders: [Orders] = []
     @State private var viewModel = AllOrdersViewModel()
     @State private var selectedTab: OrderStatus? = nil
-    
     @State private var invoiceCount = 0
     @State private var invoiceSize = 0.0
     
