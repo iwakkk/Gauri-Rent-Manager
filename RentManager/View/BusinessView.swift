@@ -14,6 +14,8 @@ struct BusinessView: View {
     
     var body: some View {
         VStack {
+            
+            // Title
             Title(
                 title: "Business",
                 actionIcon: "square.and.pencil",
@@ -30,7 +32,11 @@ struct BusinessView: View {
                     Spacer()
                 } else {
                     List {
+                        
+                        // Business image and name
                         VStack{
+                            
+                            // Load business image from database
                             if let urlString = viewModel.business?.businessImageURL,
                                let url = URL(string: urlString) {
                                 
@@ -55,6 +61,8 @@ struct BusinessView: View {
                                     .padding(20)
                                     .foregroundColor(.gray.opacity(0.6))
                             }
+                            
+                            // Business name
                             Text(viewModel.business?.businessName ?? "")
                                 .font(.title2)
                                 .foregroundStyle(.primary)
@@ -62,12 +70,14 @@ struct BusinessView: View {
                         .frame(maxWidth: .infinity)
                         .listRowBackground(Color.clear)
                         
+                        // Business details section
                         Section("Business Details") {
                             InfoRow(icon: "phone" ,title: "Phone", value: viewModel.business?.businessPhone)
                             InfoRow(icon: "location" ,title: "Address", value: viewModel.business?.businessAddress)
                             InfoRow(icon: "envelope" ,title: "Email", value: viewModel.business?.email)
                         }
                         
+                        // Business payment info section
                         Section("Bank") {
                             InfoRow(icon: "building.columns", title: "Bank", value: viewModel.business?.bankName)
                             InfoRow(icon: "creditcard",title: "Number", value: viewModel.business?.bankNumber)
@@ -81,9 +91,12 @@ struct BusinessView: View {
             .background(Color.gauribackground.ignoresSafeArea())
         }
        
+        // Load business profile
         .task {
             await viewModel.loadBusinessProfile()
         }
+        
+        // Navigate to edit business view
         .sheet(isPresented: $showEditSheet) {
             EditBusinessView(viewModel: viewModel)
         }

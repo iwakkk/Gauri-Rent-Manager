@@ -9,25 +9,28 @@ import SwiftUI
 
 struct ContentView: View {
     
+    // Access global app state
     @EnvironmentObject var appState: AppState
-    @State private var goToNewBooking = false
     
     var body: some View {
         NavigationStack {
             
             if appState.currentUser != nil {
                 MainTabView()
-                    .navigationDestination(isPresented: $goToNewBooking) {
-                        NewOrderView(showOrderSheet: .constant(false))
-                    }
             } else {
                 LoginView()
             }
         }
+        // Handle Share Extension
         .onOpenURL { url in
             if url.host == "new-booking" {
+                
+                // Check if user has logged in or not
                 if appState.currentUser != nil {
-                    goToNewBooking = true
+                    
+                    // Change global state to open orders tab and show new order sheet
+                    appState.selectedTab = 0
+                    appState.shouldOpenNewOrder = true
                 }
             }
         }

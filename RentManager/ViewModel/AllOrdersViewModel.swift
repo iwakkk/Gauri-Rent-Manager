@@ -16,6 +16,7 @@ class AllOrdersViewModel {
     
     private let service = OrderService()
     
+    // Func to load all orders
     func loadOrders() async {
         do {
             let fetchedOrders = try await service.fetchOrders()

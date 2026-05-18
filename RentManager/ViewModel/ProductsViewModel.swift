@@ -17,7 +17,7 @@ class ProductsViewModel {
     private let service = ProductsService()
     private let orderService = OrderService()
     
-    // VALIDASI PRODUCT
+    // Validate product form
     func isValid(draft: ProductDraft) -> Bool {
         guard !draft.name.trimmingCharacters(in: .whitespaces).isEmpty else { return false }
         guard !draft.color.trimmingCharacters(in: .whitespaces).isEmpty else { return false }
@@ -26,7 +26,7 @@ class ProductsViewModel {
         return true
     }
     
-    // CREATE PRODUCT
+    // Create product
     func createProduct(from draft: ProductDraft, imageData: Data?) async {
         do {
             var imageUrl: String? = nil
@@ -53,7 +53,7 @@ class ProductsViewModel {
         }
     }
     
-    // LOAD PRODUCTS
+    // Load products
     func loadProducts() async {
         isLoading = true
         defer { isLoading = false }
@@ -71,7 +71,7 @@ class ProductsViewModel {
     }
     
     
-    // UPDATE PRODUCT
+    // Update product
     func updateProduct(_ product: Products) async {
         do {
             try await service.updateProduct(product)
@@ -81,7 +81,7 @@ class ProductsViewModel {
         }
     }
     
-    // DELETE PRODUCT
+    // Delete product
     func deleteProduct(id: UUID) async {
         do {
             try await service.deleteProduct(id: id)
@@ -91,7 +91,7 @@ class ProductsViewModel {
         }
     }
     
-    // LOAD BOOKED PRODUCT DATE RANGE
+    // Load booked product date range
     func loadBookedRanges(for productId: UUID) async {
         do {
             let result = try await orderService.fetchProductBookings(productId: productId)
@@ -109,28 +109,35 @@ class ProductsViewModel {
         }
     }
     
-    // CHECK PRODUCT CONFLICT
+    // Check Product Conflicts
     func checkConflicts(
         products: [Products],
         startDate: Date,
         endDate: Date
     ) -> (hasConflict: Bool, message: String) {
         
+        // Store conflict messages
         var messages: [String] = []
         
         let formatter = DateFormatter()
         formatter.dateFormat = "d MMM"
         formatter.locale = Locale(identifier: "id_ID")
         
+        // Loop each product
         for product in products {
+            
+            // Get date range for the products
             let ranges = bookedRanges[product.id] ?? []
             
+            // Filter ranges that overlap with selected date range
             let conflicts = ranges.filter { (start, end) in
                 startDate <= end && endDate >= start
             }
             
+            // Skip to next product if there is no conflict
             if conflicts.isEmpty { continue }
             
+            // Create message
             let scheduleText = ranges.map {
                 "• \(formatter.string(from: $0.0)) - \(formatter.string(from: $0.1))"
             }.joined(separator: "\n")

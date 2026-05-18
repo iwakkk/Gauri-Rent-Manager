@@ -14,7 +14,6 @@ struct EditBusinessView: View {
     @State var phone: String = ""
     @State var address: String = ""
     @State var email: String = ""
-    
     @State var bankName: String = ""
     @State var bankNumber: String = ""
     @State var bankAccountName: String = ""
@@ -23,10 +22,10 @@ struct EditBusinessView: View {
     
     var body: some View {
         NavigationStack {
-            
             ScrollView {
                 VStack(spacing: 20) {
                     
+                    // Business Detail Section
                     VStack(spacing: 16) {
                         FormFieldRow(title: "Business Name", text: $name)
                         FormFieldRow(title: "Phone", text: $phone, keyboard: .phonePad)
@@ -40,6 +39,7 @@ struct EditBusinessView: View {
                     )
                     .padding(.horizontal)
                     
+                    // Business Payment Info Section
                     VStack(spacing: 16) {
                         FormFieldRow(title: "Bank Name", text: $bankName)
                         FormFieldRow(title: "Account Number", text: $bankNumber, keyboard: .numberPad)
@@ -72,7 +72,7 @@ struct EditBusinessView: View {
                     }
                 }
                 
-                // Save
+                // Save changed details
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         Task {
@@ -101,7 +101,7 @@ struct EditBusinessView: View {
         }
     }
     
-    // Load data
+    // Load data with viewmodel and fill the fields with loaded data
     func loadData() {
         let b = viewModel.business
         

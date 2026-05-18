@@ -16,7 +16,6 @@ struct InvoiceView: View {
     @State private var viewModel = InvoiceViewModel()
     
     var body: some View {
-        
         VStack {
             
             if viewModel.isLoading {
@@ -24,20 +23,18 @@ struct InvoiceView: View {
             }
             else {
                 
-                // CHECK LOCAL FILE
+                // Check invoice in local file
                 if let localURL = InvoiceStorage.get(orderId: orderId) {
-                    
                     PDFKitView(url: localURL)
-                    
                 }
-                // FALLBACK: LOAD SUPABASE
+                
+                // Load invoice from Supabase
                 else if let urlString = viewModel.order?.invoiceURL,
                         let url = URL(string: urlString) {
-                    
                     PDFKitView(url: url)
-                    
                 }
-
+                
+                // No Invoice Found
                 else {
                     Text("No Invoice Found")
                         .foregroundColor(.secondary)
@@ -55,13 +52,17 @@ struct InvoiceView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 
+                // Share invoice from local storage
                 if let localURL = InvoiceStorage.get(orderId: orderId) {
                     
                     ShareLink(item: localURL) {
                         Image(systemName: "square.and.arrow.up")
                     }
                     
-                } else if let urlString = viewModel.order?.invoiceURL,
+                }
+                
+                // Share invoice from supabase
+                else if let urlString = viewModel.order?.invoiceURL,
                           let url = URL(string: urlString) {
                     
                     ShareLink(item: url) {

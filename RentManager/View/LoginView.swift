@@ -27,6 +27,8 @@ struct LoginView: View {
                 VStack(spacing: 24) {
                     
                     Spacer()
+                    
+                    // Title
                     VStack(spacing: 8) {
                         Text("Gauri Rent Manager")
                             .font(.title.bold())
@@ -36,6 +38,7 @@ struct LoginView: View {
                             .font(.title2.bold())
                     }
                     
+                    // Fields
                     VStack(spacing: 16) {
                         
                         TextField("Email", text: $email)
@@ -52,6 +55,7 @@ struct LoginView: View {
                     
                     Button {
                         
+                        // Validate Login
                         if let error = viewModel.validateLogin(
                             email: email,
                             password: password
@@ -63,6 +67,7 @@ struct LoginView: View {
                         
                         isLoading = true
                         
+                        // Login with inserted email and password
                         Task {
                             let user = await viewModel.login(
                                 email: email,
@@ -71,6 +76,7 @@ struct LoginView: View {
                             
                             isLoading = false
                             
+                            // Set appstate to current user
                             if let user = user {
                                 appState.currentUser = user
                             } else {
@@ -95,6 +101,7 @@ struct LoginView: View {
                     .padding(.horizontal)
                     .disabled(isLoading)
                     
+                    // Register Button
                     Button("Don't have an account? Register") {
                         showRegister = true
                     }
@@ -108,6 +115,8 @@ struct LoginView: View {
         .onTapGesture {
             hideKeyboard()
         }
+        
+        // Navigate to register view
         .fullScreenCover(isPresented: $showRegister) {
             RegisterView()
         }

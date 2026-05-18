@@ -10,17 +10,19 @@ import SwiftUI
 struct NewOrderView: View {
     
     @Environment(\.dismiss) var dismiss
+    
     @State private var goToNextPage = false
     @State private var bookingFormText = ""
     @State private var viewModel = NewOrderViewModel()
-    @Binding var showOrderSheet : Bool
-    
     @State var orderId: UUID? = nil
+    
+    @Binding var showOrderSheet : Bool
     
     var body: some View {
         NavigationStack{
             ScrollView{
                 
+                // Textfield to input form
                 VStack(alignment: .leading) {
                     
                     Text("Enter or paste order form here.")
@@ -47,6 +49,8 @@ struct NewOrderView: View {
                         dismiss()
                     }
                 }
+                
+                // Parse order text and trigger navigate to next page
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         let parsedDraft = viewModel.parseOrderText(bookingFormText,  products: viewModel.allProducts)
@@ -58,6 +62,8 @@ struct NewOrderView: View {
                     .buttonStyle(.borderedProminent)
                 }
             }
+            
+            // Navigate to Order Confirmation View
             .navigationDestination(isPresented: $goToNextPage) {
                 if let draft = viewModel.parsedDraft {
                     OrderConfirmationView(
@@ -78,6 +84,7 @@ struct NewOrderView: View {
         
     }
     
+    // Func to load shared text from share extension.
     func loadSharedText() {
         print("TRY LOAD SHARED TEXT")
         
@@ -92,19 +99,6 @@ struct NewOrderView: View {
         
         DispatchQueue.main.async {
             bookingFormText = text
-        }
-        
-    
-        DispatchQueue.global(qos: .userInitiated).async {
-            
-            let parsed = viewModel.parseOrderText(
-                text,
-                products: viewModel.allProducts
-            )
-            
-            DispatchQueue.main.async {
-                viewModel.parsedDraft = parsed
-            }
         }
         
         defaults?.removeObject(forKey: "sharedText")

@@ -11,7 +11,7 @@ import Supabase
 @Observable
 class AuthViewModel {
     
-    // LOGIN
+    // Login
     func login(email: String, password: String) async -> Users? {
         do {
 
@@ -37,7 +37,7 @@ class AuthViewModel {
         }
     }
     
-    // REGISTER
+    // Register
     func register(email: String, password: String) async -> Bool {
         do {
             let response = try await supabase.auth.signUp(
@@ -63,7 +63,7 @@ class AuthViewModel {
         }
     }
     
-    // VALIDASI REGISTER
+    // Validasi Register
     func validateRegister(
         email: String,
         password: String,
@@ -91,7 +91,7 @@ class AuthViewModel {
         return nil
     }
     
-    // VALIDASI LOGIN
+    // Validasi Login
     func validateLogin(email: String, password: String) -> String? {
         
         if email.trimmingCharacters(in: .whitespaces).isEmpty ||

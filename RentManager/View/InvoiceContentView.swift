@@ -5,21 +5,20 @@
 //  Created by Edward Suwandi on 06/03/26.
 //
 
-
 import SwiftUI
 
 struct InvoiceContentView: View {
     
     var draft: OrderDraft
+    
     let orderId: UUID
     let business: BusinessProfile?
     
-    
     var body: some View {
         if let business = business {
-            
             VStack(spacing: 20) {
                 
+                // Header Section
                 HeaderSectionView(
                     invoiceNumber: orderId.uuidString
                         .prefix(8)
@@ -31,9 +30,11 @@ struct InvoiceContentView: View {
                 
                 HStack(alignment: .top) {
                     
+                    // Company Profile Section
                     BusinessInfoSectionView(business: business)
                     Spacer()
                     
+                    // Billed To Section
                     BilledToSectionView(
                         customerName: draft.customerName,
                         customerPhone: draft.customerPhone,
@@ -44,6 +45,7 @@ struct InvoiceContentView: View {
                 }
                 .padding(.vertical)
                 
+                // Order Items Table
                 OrderItemsTableView(
                     items: draft.items.map {
                         DisplayOrderItem(
@@ -61,24 +63,23 @@ struct InvoiceContentView: View {
                 HStack(alignment: .bottom){
                     VStack(alignment: .leading){
                         
+                        // Order Details Section
                         DateInfoSectionView(
                             startDate: draft.rentStartDate,
                             endDate: draft.rentEndDate,
                             accountNumber: draft.customerBankAccount
                         )
-                        
-                       
-                        
+                                 
+                        // Business Payment Info section
                         PaymentInfoSection(
                             bankName: business.bankName, bankNumber: business.bankNumber, accountName: business.bankAccountName
                         )
-                        
-                        
-                        
-                        
+
                     }
                     
                     Spacer()
+                    
+                    // Order Items Total Section
                     TotalSectionView(
                         subtotal: draft.subtotalAmount,
                         shipping: draft.shippingFee,
@@ -86,9 +87,6 @@ struct InvoiceContentView: View {
                         deposit: draft.deposit
                     ).frame(width: 265)
                 }
-                
-                
-                
             }
             .padding(40)
             .padding(.bottom,50)
@@ -107,14 +105,12 @@ struct InvoiceContentView: View {
             color: "Red",
             size: "M",
             quantity: 2
-//            subtotal: 200_000
         ),
         OrderItemDraft(
             productName: "Wedding Gown",
             color: "White",
             size: "L",
-            quantity: 1,
-//            subtotal: 500_000
+            quantity: 1
         )
     ]
 
@@ -126,9 +122,7 @@ struct InvoiceContentView: View {
         rentStartDate: Date(),
         rentEndDate: Calendar.current.date(byAdding: .day, value: 3, to: Date())!,
         items: dummyItems,
-//        subtotalAmount: 700_000,
         shippingFee: 20_000
-//        totalAmount: 720_000
     )
 
     let business = BusinessProfile(

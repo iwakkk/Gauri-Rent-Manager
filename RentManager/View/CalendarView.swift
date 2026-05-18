@@ -8,15 +8,14 @@
 import SwiftUI
 
 struct CalendarView: View {
+    
     @State private var selectedDate = Date()
     @State private var viewModel = AllOrdersViewModel()
     
-    @State private var hasScrolled = false
-    @State private var isCollapsed = false
-    
     var body: some View {
-        
         VStack {
+            
+            // Title
             Title(
                 title: "Calendar",
                 actionIcon: nil,
@@ -25,10 +24,12 @@ struct CalendarView: View {
             
             VStack {
                 
+                // Filter only show active order in the calendar
                 let visibleOrders = viewModel.orders.filter {
                     $0.status != .unpaid && $0.status != .cancelled
                 }
                 
+                // Custom Calendar
                 CustomCalendar(
                     selectedDate: $selectedDate,
                     orders: visibleOrders
@@ -37,6 +38,7 @@ struct CalendarView: View {
                 
                 Divider()
                 
+                // Indicators Legend
                 HStack(spacing: 16) {
                     
                     HStack(spacing: 6) {
@@ -62,11 +64,13 @@ struct CalendarView: View {
                 .padding(.horizontal)
                 .padding(.top, 8)
                 
+                // Order List
                 ScrollView {
                     VStack(spacing: 12) {
                         
                         let calendar = Calendar.current
                         
+                        // Sort by latest rent start date
                         let filteredOrders = visibleOrders.filter { booking in
                             
                             guard let start = booking.rentStartDate,
@@ -83,6 +87,7 @@ struct CalendarView: View {
                         } else {
                             ForEach(filteredOrders) { booking in
                                 
+                                // Navigate to orderdetail
                                 NavigationLink(value: booking) {
                                     OrderCard(
                                         order: booking,
@@ -98,6 +103,7 @@ struct CalendarView: View {
             .background(Color.gauribackground.ignoresSafeArea())
         }
         
+        // Load orders
         .task {
             await viewModel.loadOrders()
         }

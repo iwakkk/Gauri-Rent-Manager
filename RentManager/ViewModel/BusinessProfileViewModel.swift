@@ -16,6 +16,7 @@ class BusinessProfileViewModel {
     
     let service = BusinessService()
     
+    // Load Business Profile
     func loadBusinessProfile() async {
         isLoading = true
         defer { isLoading = false }
@@ -27,6 +28,7 @@ class BusinessProfileViewModel {
         }
     }
     
+    // Update Business profile
     func updateBusiness(with draft: BusinessProfileDraft) async {
         guard let current = business else { return }
         

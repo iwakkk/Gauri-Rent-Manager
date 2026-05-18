@@ -11,9 +11,14 @@ import Combine
 @MainActor
 class AppState: ObservableObject {
     
+    // Store currently logged-in user
     @Published var currentUser: Users?
     
-    private let isDevMode = false
+    // Used to switch tab and open New Order View from Share Extension
+    @Published var selectedTab = 0
+    @Published var shouldOpenNewOrder = false
+    
+    private let isDevMode = true
         
         init() {
             if isDevMode {

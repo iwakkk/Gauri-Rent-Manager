@@ -22,9 +22,7 @@ struct ProductsView: View {
                 
                 VStack {
                     ScrollView {
-                        
                         LazyVStack(spacing: 12) {
-                            
                             ForEach(viewModel.products.sorted(by: { $0.name < $1.name }), id: \.id) { product in
                                 
                                 let ranges = viewModel.bookedRanges[product.id] ?? []
@@ -37,7 +35,6 @@ struct ProductsView: View {
                             }
                         }
                     }
-                    
                 }
                 .padding(.vertical)
                 .background(Color.gauribackground.ignoresSafeArea())

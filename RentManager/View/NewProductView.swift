@@ -11,9 +11,11 @@ import PhotosUI
 struct NewProductView: View {
     
     @Environment(\.dismiss) var dismiss
+    
     var viewModel: ProductsViewModel
     
-    
+    @State private var selectedImage: PhotosPickerItem?
+    @State private var imageData: Data? = nil
     @State var draft : ProductDraft = ProductDraft(
         id: UUID(),
             name: "",
@@ -24,14 +26,9 @@ struct NewProductView: View {
 
     )
     
-    @State private var selectedImage: PhotosPickerItem?
-    @State private var imageData: Data? = nil
-    
     var body: some View {
         NavigationStack {
-            
             ScrollView {
-                
                 VStack(alignment: .leading, spacing: 24) {
 
                     VStack(spacing: 14) {
@@ -55,7 +52,7 @@ struct NewProductView: View {
                         )
                     }
                     
-                    // IMAGE
+                    // Image
                     Text("Product Image")
                         .font(.subheadline)
 
@@ -109,8 +106,6 @@ struct NewProductView: View {
                         }
                     }
                     .buttonStyle(.plain)
-                    
-                    
                 }
                 .padding()
             }
@@ -150,8 +145,8 @@ struct NewProductView: View {
             }
         }
     }
-    
 }
+
 #Preview {
     ContentView()
         .environmentObject(AppState())

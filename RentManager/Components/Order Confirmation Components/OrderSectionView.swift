@@ -38,5 +38,10 @@ struct OrderSectionView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .onAppear {
+            if draft.items.isEmpty {
+                draft.items.append(OrderItemDraft())
+            }
+        }
     }
 }

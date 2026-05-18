@@ -26,6 +26,7 @@ struct OrderConfirmationView: View {
         ScrollView {
             VStack(spacing: 32) {
                 
+                // Customer Section View
                 CustomerSectionView(
                     draft: $draft,
                     customers: viewModel.customers
@@ -35,7 +36,7 @@ struct OrderConfirmationView: View {
                 .cornerRadius(16)
                 .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
                 
-                
+                // Product Section View
                 OrderSectionView(
                     draft: $draft,
                     viewModel: productsViewModel
@@ -45,12 +46,14 @@ struct OrderConfirmationView: View {
                 .cornerRadius(16)
                 .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
                 
+                // Rent Period Section View
                 RentPeriodSectionView(draft: $draft)
                     .padding()
                     .background(Color(.white))
                     .cornerRadius(16)
                     .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
                 
+                // Cost Section View
                 CostSectionView(draft: $draft)
                     .padding()
                     .background(Color(.white))
@@ -68,11 +71,14 @@ struct OrderConfirmationView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
+                    // Check if all required form is filled
                     if viewModel.isFormValid(draft) {
                         Task {
                             do {
+                                // Get the selected product
                                 let products = draft.items.compactMap { $0.selectedProduct }
 
+                                // Check product availability
                                 let result = productsViewModel.checkConflicts(
                                     products: products,
                                     startDate: draft.rentStartDate,
@@ -111,14 +117,18 @@ struct OrderConfirmationView: View {
                 Task {
                     do {
                         
+                        // If the id has created, update the order with the same order id
                         if let id = orderId {
                             try await viewModel.updateOrder(id, draft)
                             
-                        } else {
+                        }
+                        // If id has not created create order with the new id
+                        else {
                             let newId = try await viewModel.createOrder(draft)
                             orderId = newId
                         }
                         
+                        // Change UUID type from optional to non optional, to pass it to Invoice Content View
                         let id = orderId!
                         
                         let invoiceView = InvoiceContentView(
@@ -127,17 +137,17 @@ struct OrderConfirmationView: View {
                             business: businessViewModel.business
                         )
                         
-                        // GENERATE PDF
+                        // Generate PDF
                         guard let pdfURL = PDFGenerator.generate(from: invoiceView) else {
                             print(" Failed generate PDF")
                             return
                         }
                         
-                        // SAVE TO LOCAL
+                        // Save to local
                         let localURL = try InvoiceStorage.save(fileURL: pdfURL, orderId: id)
                         print(" Saved local:", localURL)
                         
-                        // UPLOAD TO SUPABASE
+                        // Upload to supabase
                         Task {
                             do {
                                 try await viewModel.uploadInvoice(fileURL: pdfURL, orderId: id)

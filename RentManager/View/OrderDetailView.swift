@@ -31,22 +31,24 @@ struct OrderDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 
-                // CUSTOMER INFO
+                // Customer Info Section
                 CustomerInfoSection(order: viewModel.order)
                 
+                // Rent Detail Section
                 RentDetailSection(
                        order: viewModel.order,
                        rentPeriod: rentPeriod
                    )
                    
-                   OrderItemsSection(
-                       items: viewModel.items,
-                       isLoading: viewModel.isLoading
-                   )
-                   
-                   SummarySection(order: viewModel.order)
+                // Order Items Section
+               OrderItemsSection(
+                   items: viewModel.items,
+                   isLoading: viewModel.isLoading
+               )
+                // Summary Section
+                SummarySection(order: viewModel.order)
                 
-                // INVOICE
+                // Invoice
                 if viewModel.order.invoiceURL != nil {
                     
                     Button {
@@ -77,7 +79,7 @@ struct OrderDetailView: View {
         .background(Color.gauribackground.ignoresSafeArea())
         .toolbar {
             
-            // CANCEL BUTTON
+            // Cancel Button
             if viewModel.order.status == .unpaid {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -121,20 +123,21 @@ struct OrderDetailView: View {
                 .padding(.horizontal)
             }
         }
-        // RENTED ALERT
+        
+        // Rented Alert
         .alert("Product Already Rented", isPresented: $showRentedAlert) {
             Button("OK", role: .cancel) {}
         } message: {
             Text(rentedMessage)
         }
         
-        // CONFIRM ALERT
+        // Confirmation Alert
         .alert("Confirmation", isPresented: $showConfirmAlert) {
             Button("Yes") {
                 Task {
                     if let next = viewModel.order.status.nextStatus {
                         
-                        // CHECK ONLY WHEN GOING TO SHIP
+                        // Check selected product availability
                         if next == .toShip {
                             let products = viewModel.items.compactMap { $0.products }
 
@@ -164,26 +167,28 @@ struct OrderDetailView: View {
         .sheet(isPresented: $showInvoiceSheet) {
             NavigationStack {
                 VStack {
-                    // CHECK LOCAL
+                    
+                    // Check local PDF
                     if let localURL = InvoiceStorage.get(orderId: viewModel.order.id) {
                         
                         PDFKitView(url: localURL)
                             .onAppear {
-                                print("📄 Using LOCAL invoice")
+                                print("Using LOCAL invoice")
                             }
                         
                     }
-                    // CHECK SUPABASE
+                    
+                    // Check supabase
                     else if let urlString = viewModel.order.invoiceURL,
                             let remoteURL = URL(string: urlString) {
                         
                         PDFKitView(url: remoteURL)
                             .onAppear {
-                                print("🌐 Using REMOTE invoice")
+                                print("Using REMOTE invoice")
                             }
                         
                     }
-                    // INVOICE UNAVAILABLE
+                    // Invoice unavailable
                     else {
                         Text("Invoice not available")
                             .foregroundColor(.secondary)
@@ -193,7 +198,7 @@ struct OrderDetailView: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     
-                    // SHARE
+                    // Share invoice
                     ToolbarItem(placement: .topBarTrailing) {
                         
                         if let localURL = InvoiceStorage.get(orderId: viewModel.order.id) {
@@ -211,7 +216,7 @@ struct OrderDetailView: View {
                         }
                     }
                     
-                    //  CLOSE
+                    // Close
                     ToolbarItem(placement: .topBarLeading) {
                         Button("Done") {
                             showInvoiceSheet = false

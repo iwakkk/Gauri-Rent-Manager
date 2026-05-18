@@ -20,7 +20,6 @@ struct RegisterView: View {
     @State private var viewModel = AuthViewModel()
     
     var body: some View {
-        
         ZStack {
             Color.gauribackground.ignoresSafeArea()
             
@@ -59,7 +58,7 @@ struct RegisterView: View {
                 
                 Button {
                     
-                    // VALIDASI VIEWMODEL
+                    // Validasi Password
                     if let error = viewModel.validateRegister(
                         email: email,
                         password: password,

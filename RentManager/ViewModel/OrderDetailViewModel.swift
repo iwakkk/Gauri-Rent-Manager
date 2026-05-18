@@ -25,20 +25,20 @@ class OrderDetailViewModel {
         self.order = order
     }
     
-    // LOAD SINGLE ORDER DETAILS
+    // Func to load single order details
     func loadOrderItems() async {
         isLoading = true
         do {
             items = try await service.fetchItems(for: order.id)
         } catch {
-            print("❌ Failed:", error)
+            print("Failed:", error)
             items = []
         }
         isLoading = false
     }
     
     
-    // UPDATE STATUS
+    // Func to update status
     func updateStatus(to status: OrderStatus) async {
         isUpdating = true
         do {
@@ -56,7 +56,7 @@ class OrderDetailViewModel {
         isUpdating = false
     }
     
-    // CANCEL ORDER
+    // Func to cancel order
     func cancelOrder() async {
         isUpdating = true
         do {

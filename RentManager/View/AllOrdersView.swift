@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AllOrdersView: View {
     
+    @EnvironmentObject var appState: AppState
     @Environment(\.dismiss) var dismiss
     
     @State var showOrderSheet = false
@@ -20,20 +21,35 @@ struct AllOrdersView: View {
     
     var filteredOrders: [Orders] {
         let result: [Orders]
-           
+         
+        // Check current selected tab
         if let selectedTab {
+            
+            // Shows all orders with status matching the currently selected tab
             result =  viewModel.orders.filter { $0.status == selectedTab }
         } else {
+            
+            // Show all orders a nil selected tab means the user is currently on the "all orders" tab
             result = viewModel.orders
         }
+        
+        // Sort the result
         return result.sorted {
+            
+            //Check if the first order is completed or cancelled
             let aIsInactive = $0.status == .completed || $0.status == .cancelled
+            
+            // Check if the second order is completed or cancelled
             let bIsInactive = $1.status == .completed || $1.status == .cancelled
             
+            // Check if one order is inactive while the other is active
             if aIsInactive != bIsInactive {
+                
+                // Place the active order before the inactive order
                 return !aIsInactive
             }
             
+            // Sort by closest rent start date first
             return ($0.rentStartDate ?? .distantFuture) < ($1.rentStartDate ?? .distantFuture)
         }
     }
@@ -42,7 +58,7 @@ struct AllOrdersView: View {
         NavigationStack{
             VStack{
                 
-                // TITLE
+                // Title
                 Title(
                     title: "Orders",
                     actionIcon: "plus.circle.fill",
@@ -51,7 +67,7 @@ struct AllOrdersView: View {
                     }
                 )
               
-                // ORDER LIST
+                // Order Status Tab
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
                         
@@ -61,7 +77,6 @@ struct AllOrdersView: View {
                         ) {
                             selectedTab = nil
                         }
-                        
                         
                         ForEach(OrderStatus.allCases, id: \.self) { status in
                             StatusFilter(
@@ -75,7 +90,7 @@ struct AllOrdersView: View {
                     .padding(.horizontal)
                 }
 
-
+                // Orders List
                 ScrollView {
                     if filteredOrders.isEmpty{
                         OrderEmptyState()
@@ -94,10 +109,9 @@ struct AllOrdersView: View {
                             }
                         }
                         .padding(.vertical)
-                        
                     }
-                    
                 }
+                // Check invoice local size and count.
                 .onAppear {
                     invoiceCount = InvoiceStorage.getInvoiceFileCount()
                     invoiceSize = InvoiceStorage.getInvoiceTotalSize()
@@ -106,9 +120,13 @@ struct AllOrdersView: View {
                        print("Total size: \(invoiceSize) MB")
                 }
                 .background(Color.gauribackground.ignoresSafeArea())
+
+                // Load orders
                 .task {
                     await viewModel.loadOrders()
                 }
+                
+                // Load orders when done creating new order
                 .fullScreenCover(isPresented: $showOrderSheet, onDismiss: {
                     Task {
                         await viewModel.loadOrders()
@@ -116,17 +134,22 @@ struct AllOrdersView: View {
                 }) {
                     NewOrderView(showOrderSheet: $showOrderSheet)
                 }
+                
+                // Navigate to order detail view
                 .navigationDestination(for: Orders.self) { order in
                     OrderDetailView(viewModel: OrderDetailViewModel(order: order), selectedTab: $selectedTab)
                 }
+                
+                // Navigate to new order view when receiving new text from share extension
+                .onChange(of: appState.shouldOpenNewOrder) { _, newValue in
+                    if newValue {
+                        showOrderSheet = true
+                        appState.shouldOpenNewOrder = false
+                    }
+                }
             }
-            
         }
-        
-        
-        
     }
-    
 }
 
 #Preview {

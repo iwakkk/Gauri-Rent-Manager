@@ -10,18 +10,18 @@ import SwiftUI
 struct CustomCalendar: View {
     
     @Binding var selectedDate: Date
-    var orders: [Orders]
     
     @State private var viewModel = CalendarViewModel()
     @State private var currentMonth: Date = Date()
     
+    var orders: [Orders]
     private let daysOfWeek = ["MIN","SEN","SEL","RAB","KAM","JUM","SAB"]
     private let calendar = Calendar.current
     
     var body: some View {
         VStack {
             
-            // MONTH NAVIGATION
+            // Month Navigation
             HStack {
                 Button {
                     currentMonth = calendar.date(byAdding: .month, value: -1, to: currentMonth) ?? Date()
@@ -47,7 +47,7 @@ struct CustomCalendar: View {
             }
             .padding(.horizontal)
             
-            // DAYS OF WEEK
+            // Days of Week
             HStack {
                 ForEach(daysOfWeek, id: \.self) { day in
                     Text(day)
@@ -59,17 +59,18 @@ struct CustomCalendar: View {
             .padding(.horizontal)
             .padding(.top, 4)
             
-            // GRID
+            // Date Grid with 7 Columns
             LazyVGrid(
                 columns: Array(repeating: GridItem(.flexible()), count: 7),
                 spacing: 4
             ) {
+                // Generate calendar dates from view model
                 ForEach(viewModel.generateDays(for: currentMonth), id: \.self) { date in
                     
-                    let normalized = viewModel.normalize(date)
-                    
+                    // Check whether the date belongs to the currently displayed month, used to style dates from prev/next month differently
                     let isInMonth = calendar.isDate(date, equalTo: currentMonth, toGranularity: .month)
                     
+                    // Display a single calendar date cell
                     DateCell(
                         date: date,
                         selectedDate: selectedDate,
@@ -94,7 +95,7 @@ struct CustomCalendar: View {
         }
     }
     
-    // MARK: MONTH TITLE
+    // Month Title
     private func monthTitle() -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"

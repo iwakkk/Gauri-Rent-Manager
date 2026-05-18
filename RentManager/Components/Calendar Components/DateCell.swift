@@ -27,16 +27,19 @@ struct DateCell: View {
                 
                 ZStack {
                     
+                    // Date Cel Background
                     RoundedRectangle(cornerRadius: 8)
                         .fill(backgroundColor)
                     
                     VStack(spacing: 2) {
                         
+                        // Date
                         Text("\(calendar.component(.day, from: date))")
                             .font(.subheadline)
                             .fontWeight(isSelected ? .semibold : .regular)
                             .foregroundColor(textColor.opacity(opacitySetting))
                         
+                        // Order Count Indicator
                         if count > 0 {
                             HStack(spacing: 3) {
                                 Circle()
@@ -58,7 +61,7 @@ struct DateCell: View {
         .buttonStyle(.plain)
     }
     
-    // BACKGROUND
+    // Background Color for Date Cell
     private var backgroundColor: Color {
         if isSelected {
             return .blue
@@ -80,7 +83,7 @@ struct DateCell: View {
         }
     }
     
-    // STATES
+    // States
     private var isSelected: Bool {
         calendar.isDate(date, inSameDayAs: selectedDate)
     }

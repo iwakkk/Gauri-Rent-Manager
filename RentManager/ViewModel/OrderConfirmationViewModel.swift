@@ -15,20 +15,20 @@ class OrderConfirmationViewModel {
     private let customerService = CustomerService()
     private let orderService = OrderService()
     
-    // CREATE ORDER
+    // Func to create order
     func createOrder(_ draft: OrderDraft) async throws -> UUID {
         let orderId = try await orderService.createOrder(draft)
         
         return orderId
     }
 
-    // UPDATE ORDER
+    // Func to update order
     func updateOrder(_ id: UUID, _ draft: OrderDraft) async throws {
         try await orderService.updateOrder(id: id, draft: draft)
         
     }
     
-    // UPLOAD INVOICE
+    // Func to upload invoice to supabase
     func uploadInvoice(fileURL: URL, orderId: UUID) async throws {
         _ = try await orderService.uploadInvoice(
             fileURL: fileURL,
@@ -36,7 +36,7 @@ class OrderConfirmationViewModel {
         )
     }
     
-    // LOAD CUSTOMER
+    // Func to load customers
     func loadCustomers() async {
         do {
             customers = try await customerService.fetchCustomers()
@@ -45,7 +45,7 @@ class OrderConfirmationViewModel {
         }
     }
     
-    // VALIDATE ORDER FORM
+    // Func to validate order form
     func isFormValid(_ draft: OrderDraft) -> Bool {
         
         if draft.customerName.isEmpty ||

@@ -34,11 +34,10 @@ struct ProductDetailView: View {
     
     var body: some View {
         NavigationStack {
-            
             ScrollView {
                 VStack(spacing: 20) {
                     
-                    // IMAGE
+                    // Image
                     VStack {
                         if let imageUrl = draft.imageUrl,
                            let url = URL(string: imageUrl) {
@@ -61,7 +60,7 @@ struct ProductDetailView: View {
                     .padding(.horizontal)
                     
                     
-                    // FORM CARD
+                    // Form Card
                     VStack(spacing: 16) {
                         
                         FormFieldRow(title: "Product Name", text: $draft.name)
@@ -139,7 +138,7 @@ struct ProductDetailView: View {
                 }
             }
             
-            // ALERT DELETE
+            // Delete Alert
             .alert("Delete this product?", isPresented: $showDeleteAlert) {
                 Button("Delete", role: .destructive) {
                     Task {
@@ -154,7 +153,7 @@ struct ProductDetailView: View {
         }
     }
     
-    // CHANGE DETECTION
+    // Detect changes
     private func checkChanges() {
         hasChanges =
             draft.name != product.name ||
