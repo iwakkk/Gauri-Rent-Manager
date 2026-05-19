@@ -11,6 +11,7 @@ struct ProductCard: View {
     
     let product: Products
     let bookedRanges: [(Date, Date)]
+    let recoveryRanges: [(Date, Date)]
     
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
@@ -64,10 +65,49 @@ struct ProductCard: View {
             
             Spacer()
             
-            // MARK: - STATUS (RIGHT SIDE)
-            VStack(alignment: .trailing, spacing: 4) {
+            // STATUS
+            VStack(alignment: .trailing, spacing: 6) {
                 
-                if bookedRanges.isEmpty {
+                // 🔴 RENT RANGES
+                if !bookedRanges.isEmpty {
+                    
+                    VStack(alignment: .trailing, spacing: 4) {
+                        
+                        ForEach(Array(bookedRanges.enumerated()), id: \.offset) { _, range in
+                            
+                            Text("\(formatDate(range.0)) - \(formatDate(range.1))")
+                                .font(.caption2)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color.red.opacity(0.15))
+                                .foregroundColor(.red)
+                                .clipShape(Capsule())
+                        }
+                    }
+                }
+                
+                // 🟡 RECOVERY RANGES (NEW)
+                if !recoveryRanges.isEmpty {
+                    
+                    VStack(alignment: .trailing, spacing: 4) {
+                        
+                        ForEach(Array(recoveryRanges.enumerated()), id: \.offset) { _, range in
+                            
+                            let end = formatDate(range.1)
+                            
+                            Text("In Maintenance Until: \(end)")
+                                .font(.caption2)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color.orange.opacity(0.15))
+                                .foregroundColor(.orange)
+                                .clipShape(Capsule())
+                        }
+                    }
+                }
+                
+                // 🟢 AVAILABLE
+                if bookedRanges.isEmpty && recoveryRanges.isEmpty {
                     
                     Text("Available")
                         .font(.caption2)
@@ -77,30 +117,6 @@ struct ProductCard: View {
                         .background(Color.green.opacity(0.15))
                         .foregroundColor(.green)
                         .clipShape(Capsule())
-                    
-                } else {
-                    
-                    ScrollView(.vertical, showsIndicators: false) {
-                        
-                        VStack(alignment: .trailing, spacing: 4) {
-                            
-                            ForEach(Array(bookedRanges.enumerated()), id: \.offset) { _, range in
-                                
-                                let start = formatDate(range.0)
-                                let end = formatDate(range.1)
-                                
-                                Text("\(start) - \(end)")
-                                    .font(.caption2)
-                                    .fontWeight(.semibold)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(Color.red.opacity(0.15))
-                                    .foregroundColor(.red)
-                                    .clipShape(Capsule())
-                            }
-                        }
-                    }
-                    .frame(maxHeight: 80) // penting supaya card tidak ikut memanjang
                 }
             }
         }

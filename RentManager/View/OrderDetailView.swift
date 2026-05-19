@@ -16,6 +16,7 @@ struct OrderDetailView: View {
     @State private var showConfirmAlert = false
     @State private var showRentedAlert = false
     @State private var rentedMessage = ""
+    @State private var showReturnSheet = false
     
     @Binding var selectedTab: OrderStatus?
     @Environment(\.dismiss) var dismiss
@@ -46,7 +47,12 @@ struct OrderDetailView: View {
                    isLoading: viewModel.isLoading
                )
                 // Summary Section
-                SummarySection(order: viewModel.order)
+                SummarySection(
+                    order: viewModel.order,
+                    refund: viewModel.returnData?.deposit_refund,
+                    remainingCharge: viewModel.returnData?.remaining_charge,
+                    condition: viewModel.returnData?.condition
+                )
                 
                 // Invoice
                 if viewModel.order.invoiceURL != nil {
@@ -79,8 +85,6 @@ struct OrderDetailView: View {
         .background(Color.gauribackground.ignoresSafeArea())
         .toolbar {
             
-            // Cancel Button
-            if viewModel.order.status == .unpaid {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         showCancelAlert = true
@@ -89,7 +93,7 @@ struct OrderDetailView: View {
                             .foregroundColor(.red)
                     }
                 }
-            }
+            
         }
         .alert("Cancel Order?", isPresented: $showCancelAlert) {
             
@@ -137,6 +141,11 @@ struct OrderDetailView: View {
                 Task {
                     if let next = viewModel.order.status.nextStatus {
                         
+                        if next == .completed {
+                            showReturnSheet = true
+                            return
+                        }
+                        
                         // Check selected product availability
                         if next == .toShip {
                             let products = viewModel.items.compactMap { $0.products }
@@ -154,6 +163,8 @@ struct OrderDetailView: View {
                             }
                         }
                         
+                        
+                        
                         await viewModel.updateStatus(to: next)
                         selectedTab = viewModel.order.status
                         dismiss()
@@ -163,6 +174,23 @@ struct OrderDetailView: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("Are you sure you want to continue?")
+        }
+        .sheet(isPresented: $showReturnSheet) {
+
+            ReturnInspectionView(
+                orders: viewModel.order,
+                items: viewModel.items
+            ) {
+                
+                Task {
+
+                    await viewModel.updateStatus(to: .completed)
+
+                    selectedTab = viewModel.order.status
+
+                    dismiss()
+                }
+            }
         }
         .sheet(isPresented: $showInvoiceSheet) {
             NavigationStack {
@@ -229,9 +257,11 @@ struct OrderDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .task {
             await viewModel.loadOrderItems()
+            await viewModel.fetchDressReturn(orderId: viewModel.order.id)
             for item in viewModel.items {
                 if let productId = item.products?.id {
                     await productsViewModel.loadBookedRanges(for: productId)
+                    await productsViewModel.loadRecoveryRanges(for: productId)
                 }
             }
         }

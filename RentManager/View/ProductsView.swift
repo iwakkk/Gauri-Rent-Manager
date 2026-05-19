@@ -27,7 +27,7 @@ struct ProductsView: View {
                                 
                                 let ranges = viewModel.bookedRanges[product.id] ?? []
                                 
-                                ProductCard(product: product, bookedRanges: ranges)
+                                ProductCard(product: product, bookedRanges: ranges, recoveryRanges: viewModel.recoveryRanges[product.id] ?? [])
                                     .padding(.horizontal)
                                     .onTapGesture {
                                         selectedProduct = product

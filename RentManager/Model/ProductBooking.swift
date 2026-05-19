@@ -15,6 +15,8 @@ struct ProductBooking: Codable, Identifiable {
     let rentStartDate: Date?
     let rentEndDate: Date?
     let status: String
+    let availableAgainDate: Date?
+    let condition: String?
     
     enum CodingKeys: String, CodingKey {
         case productId = "product_id"
@@ -22,6 +24,8 @@ struct ProductBooking: Codable, Identifiable {
         case rentStartDate = "rent_start_date"
         case rentEndDate = "rent_end_date"
         case status
+        case availableAgainDate = "available_again_date"
+        case condition
     }
 }
 
